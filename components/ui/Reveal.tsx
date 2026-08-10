@@ -47,6 +47,27 @@ export function Reveal({
       return;
     }
 
+    /*
+     * Já dentro da primeira tela quando a página carrega: revela na hora, sem
+     * passar pelo observer.
+     *
+     * O `rootMargin` abaixo tira 12% da borda de baixo da área de detecção
+     * para o bloco só acender quando já entrou de verdade na tela — o que é o
+     * comportamento certo para quem está rolando, e o errado para quem acabou
+     * de chegar. Numa janela de 800px, esses 12% viram uma faixa morta de
+     * 96px: o botão de doar do hero caía dentro dela, nunca intersectava, e
+     * ficava em `opacity: 0` até a pessoa rolar — numa dobra em que ele já
+     * estava visível o tempo todo, só que transparente.
+     *
+     * A comparação é com `window.innerHeight` puro, sem a margem, porque a
+     * pergunta aqui é outra: não é "já entrou o bastante ao rolar?", é "está
+     * na tela agora?".
+     */
+    if (node.getBoundingClientRect().top < window.innerHeight) {
+      node.dataset.visible = "true";
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry?.isIntersecting) {

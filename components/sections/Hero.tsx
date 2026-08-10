@@ -32,12 +32,46 @@ import { VturbPlayer } from "../ui/VturbPlayer";
  * não existe constante para desatualizar: mexeu no texto da dobra, o vídeo se
  * reajusta sozinho e a dobra continua fechando em uma tela.
  */
+/**
+ * Quanto da dobra **não** é vídeo: manchete, linha de apoio, botão, link
+ * secundário, selo e os respiros entre eles.
+ *
+ * Serve de teto para o vídeo em tela baixa (ver `maxWidth` no slot). É o único
+ * número medido a olho desta dobra, e ele erra para o lado seguro: reservar
+ * demais encolhe o vídeo alguns pixels, reservar de menos deixa o vídeo passar
+ * por cima do botão de doar — que foi o bug que este valor existe para evitar.
+ *
+ * Medido com o texto todo visível (celular alto, onde a reserva é maior): ~101px
+ * de manchete + ~66px de linha de apoio + 42px de botão + ~60px de link e selo
+ * + ~50px de respiros + ~30px de padding ≈ 349px. 20rem (320px) fica logo
+ * abaixo disso porque em tela baixa a linha de apoio e o selo somem sozinhos.
+ */
+const RESERVA_SEM_VIDEO = "20rem";
+
 export function Hero() {
+  /*
+   * Quantas vezes o vídeo é mais largo que alto. Com o VTurb no ar, sai do
+   * `ratio` do player (altura em % da largura); sem ele, do `aspect` do poster.
+   * Um número só alimenta o formato do slot **e** o teto de largura — assim os
+   * dois não têm como sair de sincronia.
+   */
+  const [largura, altura] = heroVideo.aspect.split("/").map(Number);
+  const razao = heroVideo.vturb ? 100 / heroVideo.vturb.ratio : largura / altura;
+
   return (
     <section id="topo" className="screen-section surface-alt relative overflow-hidden">
       <PawTrails />
 
-      <div className="container-narrow relative flex h-full max-w-[620px] flex-col items-stretch gap-[clamp(0.5rem,1.1vh,0.75rem)] py-[clamp(0.5rem,1.4vh,1rem)]">
+      {/*
+        `justify-center` + slot do vídeo que não cresce: a pilha inteira
+        (texto → vídeo → CTA → selo) fica junta e o que sobra da tela vira
+        respiro em cima e embaixo, em partes iguais.
+
+        Antes o slot do vídeo era `flex: 1 1 auto` e engolia toda a folga da
+        dobra sozinho — no celular isso abria ~130px de vazio entre o vídeo e o
+        botão de doar, e a pessoa lia a dobra como se o CTA não existisse.
+      */}
+      <div className="container-narrow relative flex h-full max-w-[620px] flex-col items-stretch justify-center gap-[clamp(0.625rem,1.4vh,1rem)] py-[clamp(0.75rem,1.8vh,1.25rem)]">
         <Reveal className="flex flex-col items-center gap-2 text-center">
           {/*
             H1 único da página, centralizado em qualquer largura. O segundo
@@ -83,28 +117,32 @@ export function Hero() {
           elemento da dobra por decisão: é o vídeo de vendas da campanha.
 
           ── Quem manda no tamanho é a LARGURA ────────────────────────────
-          Este slot (`screen-section__flex`) fica com a altura que sobra da
-          dobra e serve só de moldura: quem tem o formato é a caixa de dentro,
+          O slot serve só de moldura: quem tem o formato é a caixa de dentro,
           que é `w-full` e tira a altura do `aspect-ratio`.
 
-          A ordem importava e estava invertida. Antes o `aspect-ratio` estava
-          no próprio item flexível, com `w-auto`: a altura vinha da sobra da
-          dobra e a largura era calculada a partir dela. Quando o bloco de
-          números saiu do hero, essa sobra cresceu, a largura calculada passou
-          do teto de `100vw`, e aí o navegador tinha altura e largura definidas
-          ao mesmo tempo — caso em que o `aspect-ratio` é simplesmente ignorado.
-          Resultado: um retângulo em pé, com o poster cortado nas laterais.
+          `flex-1` saiu daqui (era `screen-section__flex`). Crescer fazia o
+          slot absorver toda a folga da dobra e jogar o botão de doar para
+          longe do vídeo. Agora ele não cresce: em tela alta o vídeo fica no
+          tamanho natural e a folga vira respiro dividido pelo `justify-center`
+          do container.
 
-          Do jeito certo o pior caso é outro. Se a caixa não couber na altura,
-          `max-h-full` corta o excesso e ela fica mais *baixa* que o formato —
-          nunca mais alta. Ou seja: quadrado ou deitado, jamais em pé.
+          ── O teto em tela baixa é de LARGURA, não de altura ─────────────
+          Um `max-height` cortaria o vídeo pela borda de baixo: o player do
+          VTurb tira a própria altura de um `padding-top` em %, então limitar a
+          altura da moldura não encolhe o vídeo, só esconde um pedaço dele.
 
-          No celular ele sai da coluna de texto (`-mx-5` anula o padding de
-          20px do container e a largura vira a tela inteira), o que dá alguns
-          pixels a mais de vídeo onde a tela é estreita. A partir de `sm` a
-          coluna já é larga o bastante e ele volta para dentro dela.
+          Limitando a **largura** o formato é respeitado: menos largura, menos
+          altura na mesma proporção, e o vídeo inteiro continua à vista. O teto
+          é a altura que sobra da dobra (`100svh` menos `RESERVA_SEM_VIDEO`)
+          convertida em largura pela `razao`. Em tela alta esse teto é maior que
+          a coluna e não faz nada; em tela baixa ele é quem manda.
+
+          No celular o vídeo sai da coluna de texto: o `-mx-5` está no slot (e
+          não na caixa) justamente para o teto de largura poder encolher a caixa
+          mantendo-a centralizada — com a margem negativa na caixa, ela encolhia
+          para a esquerda.
         */}
-        <div className="screen-section__flex flex min-h-0 items-center">
+        <div className="-mx-5 flex min-h-0 shrink items-center justify-center sm:mx-0">
           <Reveal
             delay={1}
             /* Com o VTurb no ar, o formato do slot é o do próprio player
@@ -114,8 +152,9 @@ export function Hero() {
               aspectRatio: heroVideo.vturb
                 ? `100 / ${heroVideo.vturb.ratio}`
                 : heroVideo.aspect,
+              maxWidth: `calc((100svh - ${RESERVA_SEM_VIDEO}) * ${razao})`,
             }}
-            className="relative -mx-5 max-h-full w-[100vw] overflow-hidden rounded-md border border-ink-900/10 bg-ink-900/5 shadow sm:mx-0 sm:w-full"
+            className="relative w-full overflow-hidden rounded-md border border-ink-900/10 bg-ink-900/5 shadow"
           >
             {heroVideo.vturb ? (
               <VturbPlayer
