@@ -1,26 +1,436 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Neutros — #14110F #56504B #B9B2AC #FFFFFF #FAF7F4 */
+  --sos-ink-900-c: 20 17 15;
+  --sos-ink-600-c: 86 80 75;
+  --sos-ink-300-c: 185 178 172;
+  --sos-surface-c: 255 255 255;
+  --sos-surface-alt-c: 250 247 244;
+
+  --sos-ink-900: rgb(var(--sos-ink-900-c));
+  --sos-ink-600: rgb(var(--sos-ink-600-c));
+  --sos-ink-300: rgb(var(--sos-ink-300-c));
+  --sos-surface: rgb(var(--sos-surface-c));
+  --sos-surface-alt: rgb(var(--sos-surface-alt-c));
+
+  /* Ação — #E11D2E #B8151F #FFFFFF — vermelho de marca, fixo. */
+  --sos-action-c: 225 29 46;
+  --sos-action-hover-c: 184 21 31;
+  --sos-action-ink-c: 255 255 255;
+
+  --sos-action: rgb(var(--sos-action-c));
+  --sos-action-hover: rgb(var(--sos-action-hover-c));
+  --sos-action-ink: rgb(var(--sos-action-ink-c));
+
+  /* Sinalização */
+  --sos-success-c: 27 138 75;
+  --sos-warning-c: 200 118 10;
+  --sos-error-c: 196 33 33;
+  --sos-progress-c: 232 163 61;
+
+  --sos-success: rgb(var(--sos-success-c));
+  --sos-warning: rgb(var(--sos-warning-c));
+  --sos-error: rgb(var(--sos-error-c));
+  --sos-progress: rgb(var(--sos-progress-c));
+
+  /* Faixa cinematográfica escura e rodapé */
+  --sos-night-c: 11 10 9;
+  --sos-night: rgb(var(--sos-night-c));
+  --sos-graphite-c: 33 31 29;
+  --sos-graphite: rgb(var(--sos-graphite-c));
+
+  /* Acento de detalhe — vermelho de marca (selos, links, patinhas do fundo). */
+  --org-accent: var(--sos-action);
+  --org-accent-soft: rgba(225, 29, 46, 0.12);
+
+  /* Verde — só os botões de doação, para se destacar do vermelho de detalhe. */
+  --sos-donate-c: 27 138 75;
+  --sos-donate-hover-c: 20 107 58;
+  --sos-donate-ink-c: 255 255 255;
+
+  --sos-donate: rgb(var(--sos-donate-c));
+  --sos-donate-hover: rgb(var(--sos-donate-hover-c));
+  --sos-donate-ink: rgb(var(--sos-donate-ink-c));
+
+  /* Tipografia */
+  --font-display: var(--font-inter), "Inter", system-ui, sans-serif;
+  --font-body: var(--font-inter), "Inter", system-ui, sans-serif;
+  --lh-body: 1.6;
+  --measure: 68ch;
+
+  /* Raios e sombra */
+  --r-sm: 8px;
+  --r-md: 16px;
+  --shadow: 0 2px 12px rgba(20, 17, 15, 0.08);
+
+  --grid-wide: 1280px;
+  --grid-narrow: 1040px;
+  --grid: 1140px;
+
+  /* Altura da barra fixa. A logo (68px) ocupa quase toda ela de propósito: a
+     barra é enxuta e a marca é o que preenche o centro. Se a marca crescer de
+     novo, este número sobe junto — a folga aqui é de poucos pixels. */
+  --header-h: 72px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@media (min-width: 1024px) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --header-h: 77px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@theme inline {
+  --color-ink-900: var(--sos-ink-900);
+  --color-ink-600: var(--sos-ink-600);
+  --color-ink-300: var(--sos-ink-300);
+  --color-surface: var(--sos-surface);
+  --color-surface-alt: var(--sos-surface-alt);
+
+  --color-action: var(--sos-action);
+  --color-action-hover: var(--sos-action-hover);
+  --color-action-ink: var(--sos-action-ink);
+
+  --color-success: var(--sos-success);
+  --color-warning: var(--sos-warning);
+  --color-error: var(--sos-error);
+  --color-progress: var(--sos-progress);
+
+  --color-night: var(--sos-night);
+  --color-graphite: var(--sos-graphite);
+
+  --color-donate: var(--sos-donate);
+  --color-donate-hover: var(--sos-donate-hover);
+  --color-donate-ink: var(--sos-donate-ink);
+
+  --color-accent: var(--org-accent);
+  --color-accent-soft: var(--org-accent-soft);
+
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+
+  --shadow-DEFAULT: var(--shadow);
+
+  --text-small: 14px;
+  --text-small--line-height: 1.5;
+  --text-body: 17px;
+  --text-body--line-height: var(--lh-body);
+  --text-h3: 19px;
+  --text-h3--line-height: 1.3;
+  --text-h3--font-weight: 600;
+  --text-h3-lg: 22px;
+  --text-h3-lg--line-height: 1.3;
+  --text-h3-lg--font-weight: 600;
+  --text-h2: 24px;
+  --text-h2--line-height: 1.2;
+  --text-h2--font-weight: 800;
+  --text-h2-lg: 34px;
+  --text-h2-lg--line-height: 1.2;
+  --text-h2-lg--font-weight: 800;
+  --text-h1: 30px;
+  --text-h1--line-height: 1.15;
+  --text-h1--font-weight: 800;
+  --text-h1-lg: 46px;
+  --text-h1-lg--line-height: 1.15;
+  --text-h1-lg--font-weight: 800;
+  --text-display: 38px;
+  --text-display--line-height: 1.06;
+  --text-display--font-weight: 800;
+  --text-display-lg: 64px;
+  --text-display-lg--line-height: 1.04;
+  --text-display-lg--font-weight: 800;
+
+  --width-grid: var(--grid);
+  --width-wide: var(--grid-wide);
+  --width-narrow: var(--grid-narrow);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--sos-surface);
+    color: var(--sos-ink-900);
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: var(--lh-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 3px solid var(--sos-action);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background: var(--sos-action);
+    color: var(--sos-action-ink);
+  }
+
+  /*
+   * Alvo de âncora nunca fica embaixo da barra fixa.
+   *
+   * Sem isto, clicar em "Doe ração" no menu leva a rolagem até o topo exato da
+   * seção — que é justamente a faixa que o cabeçalho `sticky` está ocupando —,
+   * e o título da seção chega escondido atrás dele. `:where()` zera a
+   * especificidade, então qualquer classe continua ganhando desta regra.
+   */
+  :where([id]) {
+    scroll-margin-top: calc(var(--header-h) + 12px);
+  }
+}
+
+@layer components {
+  .container-grid {
+    width: 100%;
+    max-width: 1140px;
+    margin-inline: auto;
+    padding-inline: 20px;
+  }
+
+  .container-wide {
+    width: 100%;
+    max-width: 1280px;
+    margin-inline: auto;
+    padding-inline: 20px;
+  }
+
+  @media (min-width: 768px) {
+    .container-wide {
+      padding-inline: 40px;
+    }
+  }
+
+  .container-narrow {
+    width: 100%;
+    max-width: var(--grid-narrow);
+    margin-inline: auto;
+    padding-inline: 20px;
+  }
+
+  @media (min-width: 768px) {
+    .container-narrow {
+      padding-inline: 32px;
+    }
+  }
+
+  /*
+   * A dobra que fecha em exatamente uma tela, abaixo da barra fixa.
+   *
+   * `height` travada, e não `min-height`: com `min-height` a seção crescia
+   * quando o conteúdo passava da conta, e a dobra estourava a tela — que é o
+   * que esta classe existe para impedir. Travada, quem cede é o elemento
+   * flexível de dentro (o vídeo, via `.screen-section__flex`).
+   *
+   * `svh` porque `vh` ignora a barra do navegador no celular e deixaria a
+   * dobra sempre um naco maior que a tela.
+   */
+  .screen-section {
+    height: calc(100svh - var(--header-h));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /*
+   * O elemento que absorve a sobra da dobra.
+   *
+   * `min-height: 0` porque item de flex não encolhe abaixo do próprio conteúdo
+   * sem isso — é o que permite o vídeo diminuir em tela baixa em vez de
+   * empurrar o botão de doar para fora.
+   */
+  .screen-section__flex {
+    min-height: 0;
+    flex: 1 1 auto;
+  }
+
+  .band-night {
+    background-color: var(--sos-night);
+    color: #fff;
+  }
+
+  .band-night h1,
+  .band-night h2,
+  .band-night h3 {
+    color: #fff;
+  }
+
+  .band-night p {
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  .prose-campaign p {
+    max-width: var(--measure);
+    color: var(--sos-ink-600);
+    margin-bottom: 16px;
+  }
+
+  .prose-campaign p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .surface-alt {
+    background-color: var(--sos-surface-alt);
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/* Animações — apenas CSS, e todas respeitam prefers-reduced-motion  */
+/* ---------------------------------------------------------------- */
+
+@keyframes sos-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sos-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sos-pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(225, 29, 46, 0.35);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(225, 29, 46, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(225, 29, 46, 0);
+  }
+}
+
+/* Rastro de patinhas do fundo do hero — um passo acende, fica e apaga. */
+@keyframes sos-paw-step {
+  0%,
+  100% {
+    opacity: 0;
+    transform: var(--paw-rotate) scale(0.8);
+  }
+  2% {
+    opacity: var(--paw-opacity);
+    transform: var(--paw-rotate) scale(1);
+  }
+  16% {
+    opacity: var(--paw-opacity);
+    transform: var(--paw-rotate) scale(1);
+  }
+  23% {
+    opacity: 0;
+    transform: var(--paw-rotate) scale(1);
+  }
+}
+
+.paw-step {
+  position: absolute;
+  opacity: 0;
+  color: var(--org-accent);
+  transform: var(--paw-rotate);
+  animation: sos-paw-step var(--paw-cycle, 9s) linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .paw-step {
+    opacity: var(--paw-opacity);
+  }
+}
+
+.anim-fade-up {
+  animation: sos-fade-up 0.28s ease-out both;
+}
+
+.anim-fade-in {
+  animation: sos-fade-in 0.2s ease-out both;
+}
+
+.anim-pulse-ring {
+  animation: sos-pulse-ring 2.4s ease-out infinite;
+}
+
+/* Revelação suave ao entrar na viewport — sem biblioteca, só CSS. */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal[data-visible="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+.reveal-delay-1 {
+  transition-delay: 0.08s;
+}
+.reveal-delay-2 {
+  transition-delay: 0.16s;
+}
+.reveal-delay-3 {
+  transition-delay: 0.24s;
+}
+
+/* Régua que cresce sob os eyebrows */
+.rule-accent::after {
+  content: "";
+  display: block;
+  width: 48px;
+  height: 3px;
+  margin-top: 12px;
+  border-radius: 999px;
+  background: var(--org-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
