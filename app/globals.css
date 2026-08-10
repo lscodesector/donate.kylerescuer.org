@@ -296,6 +296,23 @@
   .surface-alt {
     background-color: var(--sos-surface-alt);
   }
+
+  /*
+   * Fileira que rola na horizontal sem a barra de rolagem à mostra — hoje só
+   * os cards de adoção.
+   *
+   * A barra é escondida, não a rolagem: o conteúdo continua acessível por
+   * arrasto, roda do mouse e teclado, e a pista de que dá para arrastar fica
+   * com o próprio card cortado na borda do trilho.
+   */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* ---------------------------------------------------------------- */

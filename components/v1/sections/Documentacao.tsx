@@ -1,6 +1,6 @@
 import Image from "next/image";
-import { cnpjDocument, copy, googleReviews, org, whatsappHref } from "@/content/landing";
-import { IconFile, IconMail, IconPin, IconStar, IconWhatsApp } from "../ui/Icons";
+import { cnpjDocument, copy, googleReviews, org, whatsappHref } from "@/content/v1/landing";
+import { IconFile, IconMail, IconPin, IconShield, IconStar, IconWhatsApp } from "../ui/Icons";
 import { Reveal } from "../ui/Reveal";
 import { SectionHead } from "../ui/SectionHead";
 
@@ -17,9 +17,11 @@ export function Documentacao() {
     <section id="documentacao" className="surface-alt py-[clamp(2.5rem,6vh,4.5rem)]">
       <div className="container-narrow flex max-w-[660px] flex-col gap-5">
         <SectionHead
+          icon={IconShield}
           eyebrow={copy.documentacao.eyebrow}
           title={copy.documentacao.title}
           lead={copy.documentacao.lead}
+          align="left"
         />
 
         {/* Cartão CNPJ: o documento em si, não só o número.
@@ -27,8 +29,8 @@ export function Documentacao() {
             embaixo é papel em branco — a moldura recorta a faixa útil e ancora
             no topo, onde estão o brasão, o número e a razão social. */}
         <Reveal className="overflow-hidden rounded-md border border-ink-900/10 bg-surface shadow">
-          <div className="flex flex-col items-center gap-3 border-b border-ink-900/[.07] p-4 text-center sm:flex-row sm:items-start sm:text-left">
-            <IconFile size={20} className="shrink-0 text-action sm:mt-0.5" />
+          <div className="flex items-start gap-3 border-b border-ink-900/[.07] p-4">
+            <IconFile size={20} className="mt-0.5 shrink-0 text-action" />
             <div className="flex flex-col">
               <span className="text-[14px] font-extrabold text-ink-900">{cnpjDocument.title}</span>
               <span className="text-[12px] text-ink-600">{cnpjDocument.subtitle}</span>
@@ -52,7 +54,7 @@ export function Documentacao() {
             href={cnpjDocument.src}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex min-h-[48px] items-center justify-center gap-2 border-t border-ink-900/10 px-4 text-[13px] font-extrabold text-accent transition-colors hover:bg-surface-alt sm:justify-start"
+            className="flex min-h-[48px] items-center gap-2 border-t border-ink-900/10 px-4 text-[13px] font-extrabold text-accent transition-colors hover:bg-surface-alt"
           >
             <IconFile size={15} />
             Ver documento
@@ -64,7 +66,7 @@ export function Documentacao() {
             href={whatsappHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex h-full flex-col items-center gap-1 rounded-md border border-ink-900/10 bg-surface p-4 text-center shadow transition-colors hover:border-donate/50 sm:items-start sm:text-left"
+            className="flex h-full flex-col gap-1 rounded-md border border-ink-900/10 bg-surface p-4 shadow transition-colors hover:border-donate/50"
           >
             <span className="flex items-center gap-2 text-[12px] font-extrabold uppercase tracking-[0.06em] text-accent">
               <IconWhatsApp size={16} />
@@ -81,7 +83,7 @@ export function Documentacao() {
 
           <a
             href={`mailto:${org.email}`}
-            className="flex h-full flex-col items-center gap-1 rounded-md border border-ink-900/10 bg-surface p-4 text-center shadow transition-colors hover:border-donate/50 sm:items-start sm:text-left"
+            className="flex h-full flex-col gap-1 rounded-md border border-ink-900/10 bg-surface p-4 shadow transition-colors hover:border-donate/50"
           >
             <span className="flex items-center gap-2 text-[12px] font-extrabold uppercase tracking-[0.06em] text-accent">
               <IconMail size={16} />
@@ -92,17 +94,8 @@ export function Documentacao() {
             <span className="break-words text-[13px] font-semibold leading-[1.35] text-ink-900">
               {org.email}
             </span>
-            <span className="text-[12px] leading-[1.4] text-ink-600">
+            <span className="mt-auto pt-2 text-[12px] leading-[1.4] text-ink-600">
               Dúvidas, informações e prestação de contas.
-            </span>
-            {/* O card inteiro já é o `mailto:`, mas sem esta linha ele era o
-                único dos três sem chamada visível — só o endereço escrito,
-                que se lê como informação e não como "clique aqui". `span`, e
-                não `button`: um botão de verdade dentro do link seria
-                interativo dentro de interativo. */}
-            <span className="mt-auto flex items-center gap-1.5 pt-2 text-[13px] font-extrabold text-donate">
-              <IconMail size={15} className="shrink-0" />
-              Enviar e-mail
             </span>
           </a>
 
@@ -110,7 +103,7 @@ export function Documentacao() {
             href={org.mapsHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex h-full flex-col items-center gap-1 rounded-md border border-ink-900/10 bg-surface p-4 text-center shadow transition-colors hover:border-donate/50 sm:items-start sm:text-left sm:col-span-2"
+            className="flex h-full flex-col gap-1 rounded-md border border-ink-900/10 bg-surface p-4 shadow transition-colors hover:border-donate/50 sm:col-span-2"
           >
             <span className="flex items-center gap-2 text-[12px] font-extrabold uppercase tracking-[0.06em] text-accent">
               <IconPin size={16} />
@@ -132,7 +125,7 @@ export function Documentacao() {
               href={googleReviews.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-full flex-col items-center gap-1 rounded-md border border-ink-900/10 bg-surface p-4 text-center shadow transition-colors hover:border-donate/50 sm:items-start sm:text-left sm:col-span-2"
+              className="flex h-full flex-col gap-1 rounded-md border border-ink-900/10 bg-surface p-4 shadow transition-colors hover:border-donate/50 sm:col-span-2"
             >
               <span className="flex items-center gap-2 text-[12px] font-extrabold uppercase tracking-[0.06em] text-accent">
                 <IconStar size={16} />

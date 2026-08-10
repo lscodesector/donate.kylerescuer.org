@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { whatsappHref } from "@/content/landing";
+import { whatsappHref } from "@/content/v1/landing";
 import { IconWhatsApp } from "./ui/Icons";
 
 /**
@@ -16,10 +16,6 @@ import { IconWhatsApp } from "./ui/Icons";
  *
  * Antes a folga era fixa, calculada para a barra. No topo, onde a barra ainda
  * não existe, isso deixava o botão boiando alto no meio do nada.
- *
- * As folgas encolheram junto com a barra: sem a barra de meta, ela tem uma
- * linha de texto e o botão (~93px no celular, ~68px a partir de `sm`) no lugar
- * das três linhas de progresso que tinha antes.
  *
  * O limite (520px) é o mesmo de `StickyDonateBar`. Mudou lá, muda aqui.
  */
@@ -40,7 +36,7 @@ export function FloatingActions() {
       rel="noopener noreferrer"
       aria-label="Fale conosco no WhatsApp"
       className={`fixed right-4 z-40 flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_8px_28px_-6px_rgba(37,211,102,.7)] transition-[bottom,transform] duration-200 hover:scale-105 md:right-6 ${
-        barVisible ? "bottom-[104px] sm:bottom-[80px]" : "bottom-4 md:bottom-6"
+        barVisible ? "bottom-[148px] sm:bottom-[96px]" : "bottom-4 md:bottom-6"
       }`}
     >
       <IconWhatsApp size={28} />

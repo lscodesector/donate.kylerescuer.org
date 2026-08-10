@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { RACAO_HREF, copy } from "@/content/landing";
+import { copy } from "@/content/v1/landing";
+import { DonateButton } from "../DonateButton";
 import { IconHeart, IconShield } from "../ui/Icons";
 import { Reveal } from "../ui/Reveal";
 
@@ -22,26 +23,18 @@ export function FinalCta() {
       </div>
 
       <div className="container-narrow relative flex max-w-[660px] flex-col gap-5">
-        {/* O título fecha a página e é centralizado em qualquer largura, como
-            as cabeças de seção. O texto de apoio centraliza só no celular. */}
-        <Reveal className="flex flex-col gap-4 text-center sm:text-left">
-          <h2 className="text-center text-[clamp(1.5rem,1rem+2vw,2.375rem)] font-extrabold leading-[1.15] text-white">
+        <Reveal className="flex flex-col gap-4">
+          <h2 className="text-[clamp(1.5rem,1rem+2vw,2.375rem)] font-extrabold leading-[1.15] text-white">
             {copy.final.title}
           </h2>
-          <p className="mx-auto max-w-[58ch] text-[15px] leading-[1.65] text-white/80 sm:mx-0 sm:text-[16px]">
+          <p className="max-w-[58ch] text-[15px] leading-[1.65] text-white/80 sm:text-[16px]">
             {copy.final.text}
           </p>
 
-          {/* Sobe de volta para a seção de ração, como todo CTA de doação da
-              página — o fechamento não abre um caminho de doação diferente do
-              que a pessoa já viu. */}
-          <a
-            href={RACAO_HREF}
-            className="inline-flex min-h-[56px] w-full items-center justify-center gap-2 rounded-full bg-donate px-8 text-[clamp(1rem,1.8vh,1.125rem)] font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow-[0_10px_30px_-8px_rgba(27,138,75,.6)] transition-colors hover:bg-donate-hover"
-          >
+          <DonateButton className="inline-flex min-h-[56px] w-full items-center justify-center gap-2 rounded-full bg-donate px-8 text-[clamp(1rem,1.8vh,1.125rem)] font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow-[0_10px_30px_-8px_rgba(27,138,75,.6)] transition-colors hover:bg-donate-hover">
             <IconHeart size={20} />
             {copy.final.ctaPrimary}
-          </a>
+          </DonateButton>
 
           {/* Leva ao FAQ da própria página, não ao WhatsApp: a dúvida se
               resolve aqui mesmo, sem tirar a pessoa do fluxo de doação. */}

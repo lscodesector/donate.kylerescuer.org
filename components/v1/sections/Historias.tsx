@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { copy, stories } from "@/content/landing";
+import { copy, stories } from "@/content/v1/landing";
 import { IconSparkle } from "../ui/Icons";
 import { Reveal } from "../ui/Reveal";
 import { SectionHead } from "../ui/SectionHead";

@@ -1,4 +1,4 @@
-import { campaign, formatBRL } from "@/content/landing";
+import { campaign, formatBRL } from "@/content/v1/landing";
 import { IconUsers } from "./Icons";
 
 /**

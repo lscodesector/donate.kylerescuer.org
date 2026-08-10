@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({
@@ -59,6 +60,24 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         suppressHydrationWarning
       >
         {children}
+
+        {/*
+          Marca o instante em que a página começou a carregar — o player do
+          VTurb (ver `VturbPlayer`) usa isto para medir o tempo até o vídeo
+          aparecer. Fica aqui, e não dentro do componente do player, porque
+          `beforeInteractive` só é aceito no layout raiz — é a única forma de o
+          Next.js garantir que o script rode antes da hidratação em qualquer
+          rota da página. Como as duas versões (v1 e v2) tocam o mesmo player,
+          um script global não duplica nada.
+        */}
+        <Script
+          id="vturb-plt"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html:
+              "!function(i,n){i._plt=i._plt||(n&&n.timeOrigin?n.timeOrigin+n.now():Date.now())}(window,performance);",
+          }}
+        />
       </body>
     </html>
   );

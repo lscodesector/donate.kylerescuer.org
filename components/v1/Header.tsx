@@ -3,19 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { RACAO_HREF, org } from "@/content/landing";
+import { org } from "@/content/v1/landing";
 import { IconClose, IconHeart, IconMenu } from "./ui/Icons";
 
-/*
- * "Adotar" saiu daqui junto com a seção `Adocao` da v2 — a âncora `#adotar`
- * não existe mais na página. Não virou link para o app da Lusa de propósito:
- * um item de menu que leva para fora logo na primeira dobra é vazamento numa
- * página que existe para receber doação. O caminho da adoção ficou no rodapé
- * e no FAQ, que é onde quem procura por ele vai olhar.
- */
 const NAV = [
-  { href: "#abrigos", label: "Abrigos" },
-  { href: RACAO_HREF, label: "Doe ração" },
+  { href: "#impacto", label: "Impacto" },
+  { href: "#racao", label: "Doe ração" },
   { href: "#transparencia", label: "Transparência" },
   { href: "#duvidas", label: "Dúvidas" },
 ];
@@ -84,10 +77,8 @@ export function Header() {
             />
           </Link>
 
-          {/* Rola para a seção de ração — nunca abre modal. É o mesmo destino
-              do CTA do hero, do impacto, da barra fixa e do fechamento. */}
           <a
-            href={RACAO_HREF}
+            href="#racao"
             className="inline-flex h-[44px] shrink-0 items-center justify-center justify-self-end gap-2 whitespace-nowrap rounded-full bg-donate px-4 text-[14px] font-extrabold text-donate-ink shadow transition-colors hover:bg-donate-hover sm:px-6"
           >
             <IconHeart size={16} />
@@ -130,12 +121,12 @@ export function Header() {
 
             <div className="mt-8 flex flex-col gap-6">
               <a
-                href={RACAO_HREF}
+                href="#racao"
                 onClick={() => setMenuOpen(false)}
                 className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-full bg-donate px-8 text-[15px] font-extrabold text-donate-ink shadow"
               >
                 <IconHeart size={18} />
-                Quero doar ração
+                Quero doar
               </a>
 
               {/* Sem link de WhatsApp aqui: o botão flutuante já cobre o

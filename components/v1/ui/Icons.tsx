@@ -160,16 +160,6 @@ export const IconPaw = ({ size = 20, ...rest }: IconProps) => (
   </svg>
 );
 
-/** Setas em ciclo — a doação que se repete todo mês. */
-export const IconRepeat = (p: IconProps) => (
-  <svg {...base(p)}>
-    <path d="M4 9a5 5 0 0 1 5-5h9" />
-    <path d="m15 1 3 3-3 3" />
-    <path d="M20 15a5 5 0 0 1-5 5H6" />
-    <path d="m9 23-3-3 3-3" />
-  </svg>
-);
-
 export const IconPulse = (p: IconProps) => (
   <svg {...base(p)}>
     <path d="M2.5 12h4l2-6 4 12 2.5-6h6.5" />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { copy as texts, pix } from "@/content/landing";
+import { copy as texts, pix } from "@/content/v1/landing";
 import { IconCheck, IconCopy, IconPix } from "../ui/Icons";
 
 /**
@@ -42,10 +42,7 @@ export function Pix() {
   return (
     <section id="pix" className="bg-donate py-[clamp(2.5rem,6vh,4.5rem)] text-white">
       <div className="container-narrow flex max-w-[660px] flex-col gap-5">
-        {/* Cabeça própria (esta seção é escura e o `SectionHead` é claro), mas
-            centralizada igual às outras. O losango do Pix fica: é a marca do
-            meio de pagamento, e não um ícone decorativo de título. */}
-        <div className="flex flex-col items-center gap-1 text-center">
+        <div className="flex flex-col gap-1">
           <p className="flex items-center gap-2 text-[13px] font-extrabold uppercase tracking-[0.12em] text-white/80">
             <IconPix size={18} />
             {texts.pix.eyebrow}
@@ -53,13 +50,13 @@ export function Pix() {
           <h2 className="text-[clamp(1.375rem,1.05rem+1.3vw,2.125rem)] font-extrabold leading-[1.15] text-white">
             {texts.pix.title}
           </h2>
-          <p className="mx-auto max-w-[54ch] text-[15px] leading-[1.6] text-white/85">
+          <p className="max-w-[54ch] text-[15px] leading-[1.6] text-white/85">
             {texts.pix.text}
           </p>
         </div>
 
         <div className="flex flex-col gap-3 rounded-md bg-white p-4 shadow sm:p-5">
-          <div className="flex flex-col items-center gap-1 text-center sm:items-start sm:text-left">
+          <div className="flex flex-col gap-1">
             <span className="text-[12px] font-extrabold uppercase tracking-[0.06em] text-ink-600">
               Chave {pix.keyType}
             </span>
@@ -90,19 +87,11 @@ export function Pix() {
 
         <ol className="flex flex-col gap-3">
           {texts.pix.steps.map((step, i) => (
-            /* No celular a bolinha do passo vai para cima do texto e tudo
-               centraliza; a partir de `sm` volta a ser número à esquerda e
-               frase ao lado. */
-            <li
-              key={step}
-              className="flex flex-col items-center gap-1.5 text-center sm:flex-row sm:items-start sm:gap-3 sm:text-left"
-            >
+            <li key={step} className="flex items-start gap-3">
               <span className="flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-full bg-white/20 text-[13px] font-extrabold text-white">
                 {i + 1}
               </span>
-              <p className="text-[14px] leading-[1.5] text-white/90 sm:pt-0.5 sm:text-[15px]">
-                {step}
-              </p>
+              <p className="pt-0.5 text-[14px] leading-[1.5] text-white/90 sm:text-[15px]">{step}</p>
             </li>
           ))}
         </ol>

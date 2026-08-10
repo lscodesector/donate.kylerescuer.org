@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { checkoutHref, copy, formatBRL, rationTiers } from "@/content/landing";
-import { MonthlyDonateButton } from "../MonthlyDonateButton";
-import { IconBowl, IconHeart, IconRepeat } from "../ui/Icons";
+import { checkoutHref, copy, formatBRL, rationTiers } from "@/content/v1/landing";
+import { DonateButton } from "../DonateButton";
+import { IconArrowRight, IconBowl, IconHeart } from "../ui/Icons";
 import { Reveal } from "../ui/Reveal";
 import { SectionHead } from "../ui/SectionHead";
 
@@ -21,9 +21,11 @@ export function Racao() {
     <section id="racao" className="surface-alt py-[clamp(2.5rem,6vh,4.5rem)]">
       <div className="container-narrow flex max-w-[660px] flex-col gap-[clamp(1.5rem,4vh,2.25rem)]">
         <SectionHead
+          icon={IconBowl}
           eyebrow={copy.racao.eyebrow}
           title={copy.racao.title}
           lead={copy.racao.lead}
+          align="left"
         />
 
         <div className="grid grid-cols-2 gap-3 sm:gap-4">
@@ -62,11 +64,7 @@ export function Racao() {
                   )}
                 </div>
 
-                {/* Centralizado em qualquer largura, como os cards de adoção:
-                    o cartão de faixa tem a mesma largura estreita no celular e
-                    no desktop (a grade é de duas colunas nos dois), então não
-                    existe "versão desktop" dele para alinhar à esquerda. */}
-                <div className="flex flex-1 flex-col items-center gap-1.5 p-4 text-center">
+                <div className="flex flex-1 flex-col gap-1.5 p-4">
                   {/* Valor primeiro: é o que a pessoa está decidindo. */}
                   <span className="text-[clamp(1.25rem,1.05rem+0.7vw,1.625rem)] font-extrabold leading-[1.1] text-ink-900">
                     {price}
@@ -86,7 +84,7 @@ export function Racao() {
                   {/* Checkout interno: a pessoa segue no site até o Pix. */}
                   <Link
                     href={checkoutHref(tier.id)}
-                    className="mt-auto inline-flex w-full min-h-[48px] items-center justify-center gap-1.5 rounded-sm bg-donate px-2 text-[13px] font-extrabold uppercase tracking-[0.02em] text-donate-ink transition-colors hover:bg-donate-hover"
+                    className="mt-auto inline-flex min-h-[48px] items-center justify-center gap-1.5 rounded-sm bg-donate px-2 text-[13px] font-extrabold uppercase tracking-[0.02em] text-donate-ink transition-colors hover:bg-donate-hover"
                   >
                     <IconHeart size={15} />
                     <span className="truncate">Doar {price}</span>
@@ -97,33 +95,33 @@ export function Racao() {
           })}
         </div>
 
-        {/* Doação mensal — o único CTA da página que abre o modal em vez de
-            rolar para cá.
-
-            O botão "Escolher outro valor" que ficava ao lado saiu: ele mandava
-            para o Pix de valor livre, que já está logo abaixo nesta mesma
-            página, e dividia o clique entre duas saídas que resolvem a mesma
-            coisa. Sem ele, o bloco tem uma pergunta e uma resposta.
-
-            O Pix que sai do modal cobra só o primeiro mês, e tanto o modal
-            quanto o checkout dizem isso — a cobrança automática ainda depende
-            de um gateway. */}
-        <Reveal
-          id="mensal"
-          className="flex flex-col items-center gap-3 rounded-md border border-ink-900/10 bg-surface p-4 text-center sm:items-start sm:p-5 sm:text-left"
-        >
+        {/* Outro valor e recorrência. A mensal abre o modal já na aba certa;
+            o Pix que sai de lá cobra só o primeiro mês, e o próprio checkout
+            diz isso — a cobrança automática ainda depende de um gateway. */}
+        <Reveal className="flex flex-col gap-3 rounded-md border border-ink-900/10 bg-surface p-4 sm:p-5">
           <div className="flex flex-col gap-1">
-            <h3 className="flex items-center justify-center gap-2 text-[17px] font-extrabold text-ink-900 sm:justify-start">
-              <IconRepeat size={18} className="shrink-0 text-accent" />
-              {copy.mensal.title}
-            </h3>
-            <p className="text-[14px] leading-[1.55] text-ink-600">{copy.mensal.text}</p>
+            <h3 className="text-[17px] font-extrabold text-ink-900">{copy.outroValor.title}</h3>
+            <p className="text-[14px] leading-[1.55] text-ink-600">{copy.outroValor.text}</p>
           </div>
 
-          <MonthlyDonateButton className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-full bg-action px-5 text-[14px] font-extrabold uppercase tracking-[0.02em] text-white transition-colors hover:bg-action-hover">
-            <IconHeart size={16} />
-            {copy.mensal.cta}
-          </MonthlyDonateButton>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            {/* Fica no site: o Pix de valor livre está na própria página. */}
+            <a
+              href="#pix"
+              className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-full border-2 border-donate px-5 text-[14px] font-extrabold uppercase tracking-[0.02em] text-donate transition-colors hover:bg-donate/[.08]"
+            >
+              {copy.outroValor.ctaCustom}
+              <IconArrowRight size={16} />
+            </a>
+
+            <DonateButton
+              freq="mensal"
+              className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-full bg-action px-5 text-[14px] font-extrabold uppercase tracking-[0.02em] text-white transition-colors hover:opacity-90"
+            >
+              <IconHeart size={16} />
+              {copy.outroValor.ctaRecurring}
+            </DonateButton>
+          </div>
         </Reveal>
       </div>
     </section>
