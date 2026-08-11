@@ -8,7 +8,7 @@ import { SectionHead } from "../ui/SectionHead";
  * Documentação e canais oficiais.
  *
  * O card de avaliação do Google só aparece quando `googleReviews.enabled` for
- * `true` — enquanto não houver nota e número confirmados, ele fica fora da
+ * `true` - enquanto não houver nota e número confirmados, ele fica fora da
  * interface. Publicar avaliação inventada numa página de doação é enganar quem
  * doa, e não é algo que se conserta depois.
  */
@@ -26,7 +26,7 @@ export function Documentacao() {
 
         {/* Cartão CNPJ: o documento em si, não só o número.
             O arquivo é a página A4 inteira (1600×2264) e mais de um terço dela
-            embaixo é papel em branco — a moldura recorta a faixa útil e ancora
+            embaixo é papel em branco - a moldura recorta a faixa útil e ancora
             no topo, onde estão o brasão, o número e a razão social. */}
         <Reveal className="overflow-hidden rounded-md border border-ink-900/10 bg-surface shadow">
           <div className="flex items-start gap-3 border-b border-ink-900/[.07] p-4">
@@ -119,7 +119,7 @@ export function Documentacao() {
             </span>
           </a>
 
-          {/* Só entra quando houver dado real — ver `googleReviews`. */}
+          {/* Só entra quando houver dado real - ver `googleReviews`. */}
           {googleReviews.enabled && (
             <a
               href={googleReviews.href}

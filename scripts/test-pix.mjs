@@ -2,11 +2,11 @@
  * Testes do gerador de BR Code (`lib/pix.ts`).
  *
  * Roda com `npm run test:pix`. Existe porque um CRC errado não quebra o build
- * nem o lint — ele quebra na mão de quem tenta doar, quando o app do banco
+ * nem o lint - ele quebra na mão de quem tenta doar, quando o app do banco
  * recusa o código. É o tipo de erro que só aparece tarde demais.
  */
 // O Node 24 remove os tipos do TypeScript sozinho, então o módulo real é
-// importado direto — sem cópia da lógica e sem etapa de build no meio.
+// importado direto - sem cópia da lógica e sem etapa de build no meio.
 import { crc16, gerarPixCopiaECola } from "../lib/pix.ts";
 
 let falhas = 0;

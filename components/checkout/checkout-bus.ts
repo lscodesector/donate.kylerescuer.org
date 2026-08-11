@@ -9,7 +9,7 @@
 
 export const CHECKOUT_EVENT = "sos:abrir-checkout";
 
-/** O que o checkout mostra no topo — o item que está sendo doado. */
+/** O que o checkout mostra no topo - o item que está sendo doado. */
 export type CheckoutItem = {
   /**
    * `racao` é uma faixa de kg; `mensal` é o valor escolhido no modal de
@@ -29,7 +29,9 @@ export type CheckoutItem = {
 };
 
 export function openCheckout(item: CheckoutItem) {
-  window.dispatchEvent(new CustomEvent<CheckoutItem>(CHECKOUT_EVENT, { detail: item }));
+  window.dispatchEvent(
+    new CustomEvent<CheckoutItem>(CHECKOUT_EVENT, { detail: item }),
+  );
 }
 
 /**
@@ -38,7 +40,7 @@ export function openCheckout(item: CheckoutItem) {
  * O popup de saída e o checkout escutam os dois o mesmo "voltar" do
  * navegador. Sem este sinal, quem abre o checkout e aperta voltar recebe a
  * oferta de retenção ("Antes de sair…") no lugar de simplesmente fechar o
- * modal — que é exatamente o cruzamento de gatilhos que este arquivo existe
+ * modal - que é exatamente o cruzamento de gatilhos que este arquivo existe
  * para impedir. Enquanto for `true`, o `BackIntercept` não faz nada.
  *
  * É um módulo com estado, e não um contexto, porque quem lê (`BackIntercept`)
@@ -59,10 +61,10 @@ export function isCheckoutOpen() {
  * "O próximo `popstate` é meu, ignore."
  *
  * `isCheckoutOpen()` cobre o caso de a pessoa fechar o checkout apertando
- * voltar — o modal ainda está aberto quando o evento chega. Não cobre o
+ * voltar - o modal ainda está aberto quando o evento chega. Não cobre o
  * contrário: fechar pelo X, pelo Esc ou clicando no fundo. Aí o modal precisa
  * tirar do histórico a entrada que ele mesmo empurrou, chama `history.back()`,
- * e esse `popstate` chega quando o checkout **já está fechado** — o
+ * e esse `popstate` chega quando o checkout **já está fechado** - o
  * `BackIntercept` o leria como "a pessoa está saindo da página" e abriria a
  * oferta de retenção sozinha, um instante depois de o checkout sumir.
  *

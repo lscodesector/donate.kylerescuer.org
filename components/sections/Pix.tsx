@@ -7,7 +7,7 @@ import { IconCheck, IconCopy, IconPix } from "../ui/Icons";
 /**
  * Pix direto: a chave, o botão de copiar e os três passos.
  *
- * É o caminho de menor atrito da página — quem já decidiu doar não precisa
+ * É o caminho de menor atrito da página - quem já decidiu doar não precisa
  * passar por formulário nenhum. Fica em verde, a cor de doação do site, e
  * ocupa a faixa inteira para não ser confundido com um card comum.
  */

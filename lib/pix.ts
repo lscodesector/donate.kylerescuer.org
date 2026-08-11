@@ -2,7 +2,7 @@
  * Gera o "copia e cola" do Pix (BR Code), no padrão EMV®QRCPS do Banco Central.
  *
  * É um Pix estático com valor: o mesmo código que qualquer banco monta para uma
- * cobrança sem integração. Não existe PSP nem webhook aqui — a página não tem
+ * cobrança sem integração. Não existe PSP nem webhook aqui - a página não tem
  * como saber se alguém pagou (ver `app/doar/[tier]/page.tsx`).
  *
  * O formato é uma sequência de campos `ID + tamanho(2 dígitos) + valor`, e
@@ -17,7 +17,7 @@ function campo(id: string, valor: string): string {
 }
 
 /**
- * CRC16/CCITT-FALSE — polinômio 0x1021, valor inicial 0xFFFF, sem reflexão e
+ * CRC16/CCITT-FALSE - polinômio 0x1021, valor inicial 0xFFFF, sem reflexão e
  * sem XOR final. É o que a especificação do BR Code exige.
  */
 export function crc16(payload: string): string {
@@ -71,7 +71,7 @@ export function gerarPixCopiaECola({
   const partes = [
     campo("00", "01"), // Payload Format Indicator
     merchantAccount, // Conta do recebedor (chave Pix)
-    campo("52", "0000"), // Merchant Category Code — 0000 = não informado
+    campo("52", "0000"), // Merchant Category Code - 0000 = não informado
     campo("53", "986"), // Moeda: 986 = BRL
     ...(valorCents && valorCents > 0
       ? [campo("54", (valorCents / 100).toFixed(2))]

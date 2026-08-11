@@ -61,7 +61,7 @@ export function Header() {
               agora abre com a manchete, que é o que precisa ser lido primeiro. */}
           <Link
             href="#topo"
-            aria-label={`${org.name} — início`}
+            aria-label={`${org.name} - início`}
             className="flex min-w-0 items-center justify-center"
           >
             {/* Só a marca, sem o nome escrito ao lado: a logo já traz o nome no

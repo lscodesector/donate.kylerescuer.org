@@ -9,7 +9,7 @@ import { IconArrowLeft, IconArrowRight } from "./Icons";
  * A rolagem em si continua sendo do navegador (`overflow-x` + `scroll-snap`),
  * não do JavaScript: arrasto, roda do mouse, teclado e leitor de tela seguem
  * funcionando exatamente como funcionavam, e sem JavaScript a fileira continua
- * rolável — o que some são só as setas, que são atalho, não a única saída.
+ * rolável - o que some são só as setas, que são atalho, não a única saída.
  *
  * Este componente é cliente para que a seção que o usa não precise ser: ela
  * passa os `<li>` já renderizados no servidor como `children`.
@@ -17,7 +17,7 @@ import { IconArrowLeft, IconArrowRight } from "./Icons";
  * ── Sobre o passo ─────────────────────────────────────────────────────────
  * Cada clique anda a largura de **um card**, lida do DOM (primeiro filho +
  * `column-gap`) em vez de fixada num número. Os cards mudam de largura no
- * `sm`, e um passo fixo erraria o alvo em uma das duas larguras — com o
+ * `sm`, e um passo fixo erraria o alvo em uma das duas larguras - com o
  * `scroll-snap` no meio, o erro vira um card meio cortado na borda.
  *
  * ── Sobre as setas ────────────────────────────────────────────────────────
@@ -31,7 +31,7 @@ export function CardsCarousel({
   className = "",
 }: {
   children: ReactNode;
-  /** Nome da fileira para leitores de tela — vai nos rótulos das setas. */
+  /** Nome da fileira para leitores de tela - vai nos rótulos das setas. */
   label: string;
   /** Classes do trilho (largura, padding, sangria). */
   className?: string;
@@ -82,7 +82,7 @@ export function CardsCarousel({
     const gap = Number.parseFloat(getComputedStyle(el).columnGap) || 0;
     const passo = card ? card.offsetWidth + gap : el.clientWidth;
 
-    // `scrollBy` não olha `prefers-reduced-motion` sozinho — quem pediu menos
+    // `scrollBy` não olha `prefers-reduced-motion` sozinho - quem pediu menos
     // movimento recebe o salto direto, sem a animação de rolagem.
     const reduzido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     el.scrollBy({ left: passo * direcao, behavior: reduzido ? "auto" : "smooth" });

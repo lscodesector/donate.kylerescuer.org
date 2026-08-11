@@ -3,7 +3,7 @@ import { IconPaw } from "./Icons";
 
 /**
  * Rastro decorativo de patinhas andando, igual ao fundo do hero institucional.
- * Nada translada de fato — cada pata acende e apaga na sua vez via CSS
+ * Nada translada de fato - cada pata acende e apaga na sua vez via CSS
  * (`.paw-step`, `sos-paw-step` em globals.css); só opacidade e transform, sem
  * custo de layout.
  */
@@ -30,8 +30,8 @@ type Rastro = {
 };
 
 /*
- * O bando. Rumos para todo lado — horizontais cruzando de ponta a ponta,
- * verticais subindo e descendo, diagonais saindo dos cantos e arcos fechados —,
+ * O bando. Rumos para todo lado - horizontais cruzando de ponta a ponta,
+ * verticais subindo e descendo, diagonais saindo dos cantos e arcos fechados -,
  * cada um no seu ciclo e entrando numa hora diferente. Como os ciclos não são
  * múltiplos entre si, o conjunto nunca repete o mesmo arranjo.
  *
@@ -68,7 +68,7 @@ const RASTROS: Rastro[] = [
   { x: 4, y: 66, angulo: -58, curva: 9, pares: 6, avanco: 22, tamanho: 22, opacidade: 0.21, ciclo: 8.3, offset: 0.25 },
   // Arco fechado descendo pela direita.
   { x: 96, y: 14, angulo: 120, curva: -7.5, pares: 6, avanco: 21, tamanho: 24, opacidade: 0.19, ciclo: 10.1, offset: 0.6 },
-  // Atravessa o miolo de cima a baixo — some atrás do texto e reaparece.
+  // Atravessa o miolo de cima a baixo - some atrás do texto e reaparece.
   { x: 50, y: -8, angulo: 96, curva: -2.2, pares: 6, avanco: 25, tamanho: 20, opacidade: 0.19, ciclo: 7.6, offset: 0.85 },
   // Sobe pelo centro-esquerda, no contrafluxo do anterior.
   { x: 30, y: 108, angulo: -86, curva: 1.8, pares: 4, avanco: 26, tamanho: 22, opacidade: 0.18, ciclo: 14.3, offset: 0.08 },

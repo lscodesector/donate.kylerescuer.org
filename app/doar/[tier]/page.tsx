@@ -11,10 +11,18 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-/** Uma rota estática por faixa — as faixas são conhecidas em build. */
+/** Uma rota estática por faixa - as faixas são conhecidas em build. */
 export function generateStaticParams() {
   return rationTiers.map((tier) => ({ tier: tier.id }));
 }
+
+/**
+ * Só existem as faixas listadas acima. O site é estático (ver
+ * `next.config.ts`): não há servidor para montar uma faixa desconhecida sob
+ * demanda, então qualquer outro `/doar/<algo>` cai no 404 gerado em build.
+ * O `notFound()` abaixo vira, na prática, só a guarda de tipo.
+ */
+export const dynamicParams = false;
 
 export default async function CheckoutPage({
   params,
@@ -28,12 +36,12 @@ export default async function CheckoutPage({
   const price = formatBRL(tier.priceCents);
 
   /*
-   * O BR Code é montado no servidor e o QR sai como SVG — nada disso custa
+   * O BR Code é montado no servidor e o QR sai como SVG - nada disso custa
    * JavaScript no cliente, e o SVG fica nítido em qualquer densidade de tela.
    *
    * É um Pix estático de verdade, com a chave real da organização: quem ler o
    * código paga para a SOS Animal Help. O que a página NÃO tem é confirmação
-   * de pagamento — ver o aviso em `CheckoutPix`.
+   * de pagamento - ver o aviso em `CheckoutPix`.
    */
   const copiaECola = gerarPixCopiaECola({
     chave: pix.key,

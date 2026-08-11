@@ -8,14 +8,14 @@ import { IconArrowRight, IconClose, IconHeart, IconShield } from "./ui/Icons";
 /**
  * Evento que abre o modal. É um evento de janela, e não um contexto React,
  * porque quem dispara está espalhado por seções que são Server Components
- * (hero, impacto, fechamento) — elas não podem receber um callback por prop
+ * (hero, impacto, fechamento) - elas não podem receber um callback por prop
  * sem virar cliente inteiras. Quem abre só precisa de um botão.
  */
 export const DONATION_MODAL_EVENT = "sos:abrir-doacao";
 
 type Freq = "unica" | "mensal";
 
-/** `freq` escolhe a aba já aberta — o CTA de mensal cai direto nela. */
+/** `freq` escolhe a aba já aberta - o CTA de mensal cai direto nela. */
 export function openDonationModal(freq: Freq = "unica") {
   window.dispatchEvent(new CustomEvent<Freq>(DONATION_MODAL_EVENT, { detail: freq }));
 }
@@ -47,7 +47,7 @@ export function DonationModal() {
     return () => window.removeEventListener(DONATION_MODAL_EVENT, onAbrir);
   }, []);
 
-  // Esc fecha e o scroll do fundo trava — sem isso a página rola atrás do modal.
+  // Esc fecha e o scroll do fundo trava - sem isso a página rola atrás do modal.
   useEffect(() => {
     if (!aberto) return;
     const onKey = (e: KeyboardEvent) => {
@@ -110,8 +110,8 @@ export function DonationModal() {
           </button>
         </div>
 
-        {/* Única x mensal. A recorrência ainda não é cobrada automaticamente —
-            ver o aviso no checkout — mas a escolha já viaja para lá. */}
+        {/* Única x mensal. A recorrência ainda não é cobrada automaticamente -
+            ver o aviso no checkout - mas a escolha já viaja para lá. */}
         <div
           role="tablist"
           aria-label="Frequência da doação"

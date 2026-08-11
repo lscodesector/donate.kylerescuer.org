@@ -39,16 +39,16 @@ type Props = {
 };
 
 /**
- * Checkout do Pix **em página** — o caminho de quem está sem JavaScript.
+ * Checkout do Pix **em página** - o caminho de quem está sem JavaScript.
  *
  * Com JavaScript ligado, nenhum CTA chega aqui: o clique é interceptado e o
  * checkout abre em modal por cima da landing (ver
  * `components/checkout/CheckoutModal.tsx`). Esta página continua sendo o
  * destino do `href` dos mesmos botões, então ela é o que resta quando o script
- * não carrega — e por isso não pode ser apagada.
+ * não carrega - e por isso não pode ser apagada.
  *
  * O QR e o copia-e-cola são REAIS: vêm da chave da organização e podem ser
- * pagos de verdade. O que é encenado é só o tempo de "gerando o código" — o
+ * pagos de verdade. O que é encenado é só o tempo de "gerando o código" - o
  * payload já veio pronto do servidor, e a espera existe para a tela ter o
  * ritmo de um checkout de gateway.
  *
@@ -224,7 +224,7 @@ export function CheckoutPix({
                   Ele levava direto para `/obrigado`, e era uma declaração de
                   quem doou, não uma confirmação: sem provedor de pagamento a
                   página não tem como saber se o Pix caiu. Qualquer pessoa
-                  chegava à tela de "obrigado" sem pagar nada — inclusive quem
+                  chegava à tela de "obrigado" sem pagar nada - inclusive quem
                   fechou o app do banco no meio.
 
                   A tela de sucesso só pode aparecer quando o backend disser

@@ -8,7 +8,7 @@ import { openDonationModal } from "./DonationModal";
  *
  * Existe para que seções que são Server Components (hero, impacto, fechamento)
  * continuem sendo servidor: só este botão vira cliente, e não a seção inteira.
- * A aparência vem toda de `className` — aqui não há estilo próprio de propósito,
+ * A aparência vem toda de `className` - aqui não há estilo próprio de propósito,
  * porque cada lugar da página tem o seu.
  */
 export function DonateButton({

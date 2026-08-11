@@ -41,13 +41,13 @@ import {
 
 /**
  * ╔══════════════════════════════════════════════════════════════════════╗
- * ║  CHECKOUT — modal sobre a landing, nunca outra página                 ║
+ * ║  CHECKOUT - modal sobre a landing, nunca outra página                 ║
  * ╚══════════════════════════════════════════════════════════════════════╝
  *
  * Antes, cada CTA de doação era um link para `/doar/<faixa>`: a pessoa saía da
  * página, perdia o lugar em que estava e, se desistisse, voltava para o topo.
  * Agora o clique abre este modal por cima da landing. As rotas `/doar/*`
- * continuam existindo — ver o aviso sobre elas no fim deste bloco.
+ * continuam existindo - ver o aviso sobre elas no fim deste bloco.
  *
  * ── As etapas ─────────────────────────────────────────────────────────────
  *
@@ -67,7 +67,7 @@ import {
  * ── O resumo do item e o CTA ficam fora do scroll ─────────────────────────
  * Foto, quantidade, valor e impacto ficam numa faixa entre o cabeçalho e o
  * corpo; o CTA de cada etapa mora num rodapé fixo. Só o miolo rola. É o que
- * mantém "o que estou doando" e "Copiar chave Pix" sempre na tela — antes o
+ * mantém "o que estou doando" e "Copiar chave Pix" sempre na tela - antes o
  * botão ficava embaixo do QR e do código, dois scrolls abaixo da dobra.
  *
  * ── ✅ A tela de sucesso depende do gateway, e só dele ────────────────────
@@ -75,16 +75,16 @@ import {
  * existe timeout que conclua, e gerar o QR não conclui nada. A única porta é
  * o gateway responder `paid: true`, por um de dois caminhos:
  *
- *   1. **Polling** — a cada 5s enquanto a etapa `pix` estiver aberta, até 15
+ *   1. **Polling** - a cada 5s enquanto a etapa `pix` estiver aberta, até 15
  *      minutos (`payments.statusPollMaxMs`).
- *   2. **Planilha, no retorno** — em celular, abrir o app do banco costuma
+ *   2. **Planilha, no retorno** - em celular, abrir o app do banco costuma
  *      descarregar esta página, e aí o polling morre junto. Quando a aba volta
  *      a ficar visível, consultamos a planilha (que o webhook do gateway
  *      alimenta) pelo `lead_id` guardado. Sem isso, quem pagou voltaria para um
  *      "aguardando confirmação" que nunca termina.
  *
  * O caminho 2 roda mesmo com o modal fechado e mesmo depois de a página ter
- * recarregado — por isso o efeito dele não depende de `aberto`.
+ * recarregado - por isso o efeito dele não depende de `aberto`.
  *
  * ── ⚠️ As rotas `/doar/*` NÃO passam pelo gateway ⚠️ ─────────────────────
  * Elas são o caminho de quem está sem JavaScript e montam um Pix **estático**
@@ -175,7 +175,7 @@ export function CheckoutModal() {
    * Enquanto o modal estiver aberto ele é dono do botão "voltar": uma entrada
    * própria no histórico, e o `popstate` fecha o modal em vez de tirar a
    * pessoa da página. O `setCheckoutOpen` avisa o `BackIntercept` para ficar
-   * quieto nesse intervalo — sem isso os dois disputam o mesmo "voltar" e a
+   * quieto nesse intervalo - sem isso os dois disputam o mesmo "voltar" e a
    * oferta de retenção aparece por cima do checkout.
    */
   useEffect(() => {
@@ -195,7 +195,7 @@ export function CheckoutModal() {
       window.removeEventListener("popstate", onPopState);
       /* Fechado pelo X, pelo Esc ou pelo fundo: a entrada sintética continua
          no histórico e precisa sair, senão o próximo "voltar" não faz nada.
-         O `popstate` que isso gera chega com o checkout já fechado — daí a
+         O `popstate` que isso gera chega com o checkout já fechado - daí a
          bandeira, para o `BackIntercept` não confundir com uma saída. */
       if (history.state?.sosCheckout) {
         suppressNextBackIntercept();
@@ -282,7 +282,7 @@ export function CheckoutModal() {
 
         /*
          * A cobrança e o piso da tela de espera correm juntos. O piso existe
-         * para a tela ser lida em vez de piscar — quando a API responde antes
+         * para a tela ser lida em vez de piscar - quando a API responde antes
          * dele, quem manda é ele; quando demora mais, ele não custa nada.
          */
         const [data] = await Promise.all([
@@ -314,7 +314,7 @@ export function CheckoutModal() {
           setQr(image);
         } else {
           /* Sem imagem pronta: desenhamos o QR do copia-e-cola com a
-             biblioteca que já está no pacote — nada de script de CDN. */
+             biblioteca que já está no pacote - nada de script de CDN. */
           const { toDataURL } = await import("qrcode");
           const desenhado = await toDataURL(code, {
             margin: 0,
@@ -325,7 +325,7 @@ export function CheckoutModal() {
           if (geracaoRef.current === minha) setQr(desenhado);
         }
 
-        /* A API pode responder já paga — respeitar isso evita cinco segundos
+        /* A API pode responder já paga - respeitar isso evita cinco segundos
            de "aguardando" para quem não precisa esperar nada. */
         if (data.paid) confirmarPagamento(data);
       } catch (err) {
@@ -514,7 +514,7 @@ export function CheckoutModal() {
         tabIndex={-1}
         /*
          * `90dvh` e não `90vh`: no celular a `vh` ignora a barra do navegador,
-         * e o rodapé com o CTA principal ficava atrás dela — que é justamente
+         * e o rodapé com o CTA principal ficava atrás dela - que é justamente
          * o botão que precisa estar sempre visível.
          */
         className="anim-fade-up flex max-h-[90dvh] w-full max-w-[520px] flex-col overflow-hidden rounded-t-lg bg-surface shadow-xl sm:rounded-lg"
@@ -767,7 +767,7 @@ function StepDados({
         />
         {nomeInvalido && (
           <span className="text-[12px] font-semibold text-error">
-            Diga como podemos te chamar — ou marque “Quero doar anonimamente”.
+            Diga como podemos te chamar - ou marque “Quero doar anonimamente”.
           </span>
         )}
       </label>
@@ -865,7 +865,7 @@ function StepDados({
       {/*
         O botão de verdade mora no rodapé fixo do modal, fora deste `<form>`.
         Este existe só para o Enter num campo de texto enviar, como em qualquer
-        formulário — daí o `tabIndex={-1}` e o `aria-hidden`: ele não é uma
+        formulário - daí o `tabIndex={-1}` e o `aria-hidden`: ele não é uma
         parada de tabulação nem é anunciado, e fica de fora do laço de foco do
         modal (que ignora `[tabindex="-1"]`). Só `display: none` não serve:
         alguns navegadores desistem do envio implícito sem um botão renderizado.
@@ -974,7 +974,7 @@ function StepErro({
 /**
  * A tela que só o gateway abre.
  *
- * Nenhum botão leva até aqui — ver o bloco de confirmação no topo do arquivo.
+ * Nenhum botão leva até aqui - ver o bloco de confirmação no topo do arquivo.
  */
 function StepPago({ totalCents }: { totalCents: number }) {
   return (
@@ -1029,13 +1029,13 @@ function StepPix({
 
       <p className="flex items-center justify-center gap-2 text-[12px] font-extrabold uppercase tracking-[0.08em] text-donate">
         <IconCheck size={15} />
-        Pix gerado — escaneie ou copie
+        Pix gerado - escaneie ou copie
       </p>
 
       {/*
         168px, e não os 220px do checkout antigo. O QR precisa ser legível pela
         câmera do celular, não ocupar a tela: com 220 mais o código e o resumo,
-        o botão de copiar caía abaixo da dobra num celular pequeno — que é o
+        o botão de copiar caía abaixo da dobra num celular pequeno - que é o
         problema que este passo inteiro foi reorganizado para resolver.
       */}
       <div className="mx-auto rounded-md border-2 border-ink-900/10 bg-white p-2">

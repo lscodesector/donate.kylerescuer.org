@@ -6,7 +6,7 @@ import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 
  * Revelação ao entrar na viewport. Sem biblioteca: IntersectionObserver +
  * uma classe CSS. Dispara uma vez e desconecta.
  *
- * O estado começa em `false` nos dois lados — servidor e cliente. Já esteve
+ * O estado começa em `false` nos dois lados - servidor e cliente. Já esteve
  * começando em `typeof IntersectionObserver === 'undefined'`, que no servidor
  * dá `true` e no navegador dá `false`: o HTML saía com `data-visible="true"` e
  * a hidratação reclamava do atributo que não batia. Como o React não corrige
@@ -14,7 +14,7 @@ import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 
  * animação inteira não acontecia.
  *
  * Quem cobre o caso de JavaScript desligado é o `<noscript>` do layout, que
- * força `.reveal` a ficar visível — a lógica de exibir sem JS é do CSS, não
+ * força `.reveal` a ficar visível - a lógica de exibir sem JS é do CSS, não
  * deste componente.
  */
 export function Reveal({
@@ -52,11 +52,11 @@ export function Reveal({
      * passar pelo observer.
      *
      * O `rootMargin` abaixo tira 12% da borda de baixo da área de detecção
-     * para o bloco só acender quando já entrou de verdade na tela — o que é o
+     * para o bloco só acender quando já entrou de verdade na tela - o que é o
      * comportamento certo para quem está rolando, e o errado para quem acabou
      * de chegar. Numa janela de 800px, esses 12% viram uma faixa morta de
      * 96px: o botão de doar do hero caía dentro dela, nunca intersectava, e
-     * ficava em `opacity: 0` até a pessoa rolar — numa dobra em que ele já
+     * ficava em `opacity: 0` até a pessoa rolar - numa dobra em que ele já
      * estava visível o tempo todo, só que transparente.
      *
      * A comparação é com `window.innerHeight` puro, sem a margem, porque a

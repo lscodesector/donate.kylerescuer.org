@@ -7,7 +7,7 @@ import { RACAO_HREF, org } from "@/content/landing";
 import { IconClose, IconHeart, IconMenu } from "./ui/Icons";
 
 /*
- * "Adotar" saiu daqui junto com a seção `Adocao` da v2 — a âncora `#adotar`
+ * "Adotar" saiu daqui junto com a seção `Adocao` da v2 - a âncora `#adotar`
  * não existe mais na página. Não virou link para o app da Lusa de propósito:
  * um item de menu que leva para fora logo na primeira dobra é vazamento numa
  * página que existe para receber doação. O caminho da adoção ficou no rodapé
@@ -68,7 +68,7 @@ export function Header() {
               agora abre com a manchete, que é o que precisa ser lido primeiro. */}
           <Link
             href="#topo"
-            aria-label={`${org.name} — início`}
+            aria-label={`${org.name} - início`}
             className="flex min-w-0 items-center justify-center"
           >
             {/* Só a marca, sem o nome escrito ao lado: a logo já traz o nome no
@@ -84,7 +84,7 @@ export function Header() {
             />
           </Link>
 
-          {/* Rola para a seção de ração — nunca abre modal. É o mesmo destino
+          {/* Rola para a seção de ração - nunca abre modal. É o mesmo destino
               do CTA do hero, do impacto, da barra fixa e do fechamento. */}
           <a
             href={RACAO_HREF}

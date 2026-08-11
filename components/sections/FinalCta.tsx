@@ -5,7 +5,7 @@ import { Reveal } from "../ui/Reveal";
 
 /**
  * Fechamento. A pessoa já viu o vídeo, as histórias, os valores e a
- * documentação — aqui só falta o botão, sem nada disputando espaço com ele.
+ * documentação - aqui só falta o botão, sem nada disputando espaço com ele.
  */
 export function FinalCta() {
   return (
@@ -33,7 +33,7 @@ export function FinalCta() {
           </p>
 
           {/* Sobe de volta para a seção de ração, como todo CTA de doação da
-              página — o fechamento não abre um caminho de doação diferente do
+              página - o fechamento não abre um caminho de doação diferente do
               que a pessoa já viu. */}
           <a
             href={RACAO_HREF}

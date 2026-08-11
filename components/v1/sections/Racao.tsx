@@ -12,7 +12,7 @@ import { SectionHead } from "../ui/SectionHead";
  * A hierarquia dentro do card é valor → quantidade → impacto: o valor é o que
  * a pessoa está decidindo, então ele é o maior elemento. A estimativa vem com
  * "aproximadamente" e "cerca de" porque é uma referência de consumo, não uma
- * garantia — e a página não deve prometer o que não pode comprovar.
+ * garantia - e a página não deve prometer o que não pode comprovar.
  *
  * As faixas, preços e estimativas vêm de `rationTiers` em `content/landing.ts`.
  */
@@ -97,7 +97,7 @@ export function Racao() {
 
         {/* Outro valor e recorrência. A mensal abre o modal já na aba certa;
             o Pix que sai de lá cobra só o primeiro mês, e o próprio checkout
-            diz isso — a cobrança automática ainda depende de um gateway. */}
+            diz isso - a cobrança automática ainda depende de um gateway. */}
         <Reveal className="flex flex-col gap-3 rounded-md border border-ink-900/10 bg-surface p-4 sm:p-5">
           <div className="flex flex-col gap-1">
             <h3 className="text-[17px] font-extrabold text-ink-900">{copy.outroValor.title}</h3>

@@ -7,7 +7,7 @@ import { IconArrowRight, IconClose, IconRepeat, IconShield } from "./ui/Icons";
 
 /**
  * Evento que abre o modal. É um evento de janela, e não um contexto React,
- * porque quem dispara é um botão dentro de uma seção que é Server Component —
+ * porque quem dispara é um botão dentro de uma seção que é Server Component -
  * ela não pode receber um callback por prop sem virar cliente inteira.
  */
 export const DONATION_MODAL_EVENT = "sos:abrir-doacao";
@@ -17,13 +17,13 @@ export function openDonationModal() {
 }
 
 /**
- * Modal de doação **mensal** — e só mensal.
+ * Modal de doação **mensal** - e só mensal.
  *
  * As abas "Doação Única / Doação Mensal" saíram daqui. Doação única nesta
  * página é ração, e ração se escolhe por faixa de kg na seção `#racao`, onde a
  * pessoa vê quantos animais aquilo alimenta e por quantos dias. Um modal com
  * grade de valores soltos competia com aquela seção oferecendo a mesma coisa
- * sem o impacto explicado ao lado — e todo CTA da página apontava para o modal
+ * sem o impacto explicado ao lado - e todo CTA da página apontava para o modal
  * em vez de apontar para a ração.
  *
  * Sobrou o que a seção de ração não cobre: o valor que se repete todo mês.
@@ -43,7 +43,7 @@ export function DonationModal() {
     return () => window.removeEventListener(DONATION_MODAL_EVENT, onAbrir);
   }, []);
 
-  // Esc fecha e o scroll do fundo trava — sem isso a página rola atrás do modal.
+  // Esc fecha e o scroll do fundo trava - sem isso a página rola atrás do modal.
   useEffect(() => {
     if (!aberto) return;
     const onKey = (e: KeyboardEvent) => {
@@ -66,7 +66,7 @@ export function DonationModal() {
   const podeSeguir = cents !== null && cents > 0;
 
   /*
-   * Fecha este modal e abre o checkout no lugar dele — sem trocar de página.
+   * Fecha este modal e abre o checkout no lugar dele - sem trocar de página.
    *
    * Antes era `router.push('/doar/valor?cents=…')`: escolher o valor mensal
    * tirava a pessoa da landing, e voltar significava recarregar tudo e perder
@@ -191,7 +191,7 @@ export function DonationModal() {
           <IconArrowRight size={18} />
         </button>
 
-        {/* O Pix do checkout cobra só o primeiro mês — dizer isso aqui, e não
+        {/* O Pix do checkout cobra só o primeiro mês - dizer isso aqui, e não
             só lá, evita que a pessoa descubra depois de pagar. */}
         <p className="mt-3 text-center text-[12px] leading-[1.5] text-ink-600">
           O Pix cobre o primeiro mês. A equipe combina os próximos com você pelo

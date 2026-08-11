@@ -17,12 +17,12 @@ import type { Metadata } from "next";
 
 /**
  * ╔══════════════════════════════════════════════════════════════════════╗
- * ║  VERSÃO 1 DA LANDING — congelada no commit 0d0ecce                    ║
+ * ║  VERSÃO 1 DA LANDING - congelada no commit 0d0ecce                    ║
  * ╚══════════════════════════════════════════════════════════════════════╝
  *
  * Esta rota existe para comparar as duas versões da página lado a lado. Ela é
  * uma **cópia congelada**: sai inteira de `components/v1/` e `content/v1/`, e
- * nada aqui divide arquivo com a v2 — mexer numa não altera a outra.
+ * nada aqui divide arquivo com a v2 - mexer numa não altera a outra.
  *
  * O que é da v1 e não existe mais na v2: a barra de arrecadação em reais no
  * hero (`CampaignProgress`), a seção "Histórias" (legendas sobre fotos do
@@ -33,7 +33,7 @@ import type { Metadata } from "next";
  * só: o checkout (`/doar/...`), a página de obrigado e o `globals.css`. As
  * faixas de ração são idênticas nos dois conteúdos (mesmos ids e preços), então
  * um clique em "5 kg" na v1 chega no mesmo checkout da v2. Se um dia os preços
- * da v2 mudarem, `content/v1/landing.ts` precisa acompanhar — senão a v1
+ * da v2 mudarem, `content/v1/landing.ts` precisa acompanhar - senão a v1
  * anuncia um valor e cobra outro.
  *
  * ── A jornada desta versão ────────────────────────────────────────────────

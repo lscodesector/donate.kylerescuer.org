@@ -7,7 +7,7 @@
  * os mesmos nomes de evento, as mesmas chaves e o mesmo armazenamento. Isso não
  * é detalhe: o que consome esses eventos (GTM, pixel da Meta, a planilha) está
  * configurado pelos nomes de lá. Renomear um campo aqui quebra a atribuição
- * sem quebrar a página — o tipo de erro que só aparece no relatório do mês.
+ * sem quebrar a página - o tipo de erro que só aparece no relatório do mês.
  *
  *   `codex:fake-donate-click`  → InitiateCheckout, no clique que abre o Pix
  *   `codex:pix-paid`           → Purchase, quando o pagamento é confirmado
@@ -18,7 +18,7 @@
  * Ele é criado no clique, guardado em `localStorage` **e** em cookie (um deles
  * sobrevive quando o outro é bloqueado), viaja como `integration_id` na
  * cobrança e como parte do `txid`. É por ele que a planilha reencontra a
- * pessoa quando ela volta do app do banco — por isso só é apagado depois de o
+ * pessoa quando ela volta do app do banco - por isso só é apagado depois de o
  * pagamento ser confirmado.
  */
 
@@ -36,7 +36,7 @@ function setCookie(name: string, value: string, maxAge = 2_592_000) {
   document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAge}; SameSite=Lax`;
 }
 
-/** `localStorage` primeiro, cookie como rede — modo anônimo derruba o primeiro. */
+/** `localStorage` primeiro, cookie como rede - modo anônimo derruba o primeiro. */
 function getStored(name: string) {
   try {
     return localStorage.getItem(name) || getCookie(name) || "";
@@ -55,7 +55,10 @@ function setStored(name: string, value: string) {
 }
 
 function generateId(prefix: string) {
-  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID === "function"
+  ) {
     return `${prefix}_${crypto.randomUUID()}`;
   }
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
@@ -74,7 +77,7 @@ export function getLeadId() {
   return getStored(LEAD_KEY);
 }
 
-/** Só depois do pagamento confirmado — ver o comentário do topo. */
+/** Só depois do pagamento confirmado - ver o comentário do topo. */
 export function clearLeadId() {
   try {
     localStorage.removeItem(LEAD_KEY);
@@ -123,7 +126,7 @@ export type LeadTracking = Record<string, unknown> & {
  * InitiateCheckout: dispara no clique que abre o checkout, e é aqui que o
  * `lead_id` da doação nasce.
  *
- * `donorName` e `donorPhone` são acréscimo nosso — a etapa "Complete seus
+ * `donorName` e `donorPhone` são acréscimo nosso - a etapa "Complete seus
  * dados" não existe no WordPress. Eles viajam **só** no evento, nunca no corpo
  * da cobrança (ver o aviso em `createCharge`).
  */
@@ -180,7 +183,7 @@ export function trackInitiateCheckout({
 
 /**
  * Purchase: só quando o gateway confirmou. `record_action: 'update'` porque a
- * linha da planilha já existe desde o InitiateCheckout — este evento completa
+ * linha da planilha já existe desde o InitiateCheckout - este evento completa
  * aquela linha, não cria outra.
  */
 export function trackPixPaid(

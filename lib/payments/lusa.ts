@@ -1,23 +1,23 @@
 /**
  * ╔══════════════════════════════════════════════════════════════════════╗
- * ║  GATEWAY DE PAGAMENTO — Lusa Payments / InfoPago (Pix)                ║
+ * ║  GATEWAY DE PAGAMENTO - Lusa Payments / InfoPago (Pix)                ║
  * ╚══════════════════════════════════════════════════════════════════════╝
  *
  * Este é o mesmo gateway que a página em produção (`doe.sosanimalhelp.org`,
  * WordPress + Elementor) já usa. O contrato abaixo foi extraído de lá campo a
- * campo para que as duas páginas caiam na mesma conciliação — mesmo endpoint,
+ * campo para que as duas páginas caiam na mesma conciliação - mesmo endpoint,
  * mesmo formato de `txid`, mesmo `lead_id`, mesmos eventos de tracking.
  *
  * ── Por que o navegador chama direto ──────────────────────────────────────
  * Sem proxy no Next. O endpoint responde `access-control-allow-origin: *` no
  * preflight, então a chamada sai do navegador como sai hoje no WordPress.
  * Passar por uma rota nossa acrescentaria um salto de rede, um ponto de falha
- * e um IP de servidor no lugar do IP de quem doa — e não esconderia nada, já
+ * e um IP de servidor no lugar do IP de quem doa - e não esconderia nada, já
  * que não existe chave secreta neste fluxo: a URL é pública e a cobrança é
  * identificada pelo `integration_id`.
  *
  * Se um dia entrar segredo (token, assinatura), aí sim isto vira rota de
- * servidor — e só este arquivo muda.
+ * servidor - e só este arquivo muda.
  *
  * ── O ciclo ───────────────────────────────────────────────────────────────
  *
@@ -28,7 +28,7 @@
  *
  * O passo 3 existe porque o passo 2 morre junto com a aba: em celular, abrir o
  * app do banco costuma descarregar a página. Quando a pessoa volta, o polling
- * já não está rodando — mas o webhook do gateway já escreveu na planilha.
+ * já não está rodando - mas o webhook do gateway já escreveu na planilha.
  */
 
 /**
@@ -51,11 +51,11 @@
  *   expires_at         +24h
  *
  * ⚠️ **Não vem `qr_code_image`.** O desenho do QR é nosso, a partir do
- * `qr_code_text` — por isso a tela tem os dois caminhos. Se um dia a API
+ * `qr_code_text` - por isso a tela tem os dois caminhos. Se um dia a API
  * passar a mandar a imagem, ela ganha e nada mais muda.
  */
 export type ChargeResponse = {
-  /** `false` mesmo com HTTP 200 quando o gateway recusa — tratado como erro. */
+  /** `false` mesmo com HTTP 200 quando o gateway recusa - tratado como erro. */
   success?: boolean;
   /** QR já renderizado pelo gateway. Hoje não vem; a tela desenha o dela. */
   qr_code_image?: string;
@@ -126,14 +126,14 @@ export const payments = {
   /** `data-status-poll-max-ms`: 15 minutos, e o polling desiste. */
   statusPollMaxMs: 900_000,
 
-  /** Validade do código, em segundos — 24h, como em produção. */
+  /** Validade do código, em segundos - 24h, como em produção. */
   expirationSeconds: 86_400,
 
   /** Marcador que entra no `txid`, depois do `lead_id`. */
   txidMarker: "SOSANIMA",
 } as const;
 
-/** `<createUrl>/status` — o endpoint de status é derivado do de criação. */
+/** `<createUrl>/status` - o endpoint de status é derivado do de criação. */
 function deriveStatusUrl(createUrl: string) {
   const normalized = createUrl.trim().replace(/\/+$/, "");
   return normalized ? `${normalized}/status` : "";
@@ -216,7 +216,7 @@ export async function createCharge(
 
   const data = await readJson(response);
 
-  /* `success: false` com HTTP 200 é recusa do gateway travestida de sucesso —
+  /* `success: false` com HTTP 200 é recusa do gateway travestida de sucesso -
      sem esta linha a tela mostraria um Pix vazio em vez do motivo. */
   if (!response.ok || data.success === false) {
     throw new Error(
@@ -258,7 +258,7 @@ export function readStatusHandle(data: ChargeResponse) {
 }
 
 /**
- * Uma batida de consulta de status. Devolve a resposta crua — quem decide o
+ * Uma batida de consulta de status. Devolve a resposta crua - quem decide o
  * que é "pago" é quem chama, olhando `data.paid`.
  */
 export async function fetchChargeStatus(
@@ -274,7 +274,10 @@ export async function fetchChargeStatus(
     const data = await readJson(response);
     if (!response.ok) {
       throw new Error(
-        extractErrorMessage(data, "Não foi possível verificar o status do Pix."),
+        extractErrorMessage(
+          data,
+          "Não foi possível verificar o status do Pix.",
+        ),
       );
     }
     return data;
@@ -299,7 +302,7 @@ export async function fetchChargeStatus(
 /**
  * A rede de segurança para quem pagou no app do banco.
  *
- * Em celular, sair para o app costuma descarregar a página — quando a pessoa
+ * Em celular, sair para o app costuma descarregar a página - quando a pessoa
  * volta, o polling já morreu e ela veria um "aguardando confirmação" eterno
  * depois de ter pago. Esta consulta pergunta à planilha (alimentada pelo
  * webhook do gateway) se aquele `lead_id` consta como pago.
@@ -336,7 +339,7 @@ export async function checkLeadPaidOnSheet(
 
 /**
  * Registra na planilha para onde a pessoa foi mandada depois de pagar.
- * Só é chamado quando a planilha não trouxe um `redirect` próprio — é
+ * Só é chamado quando a planilha não trouxe um `redirect` próprio - é
  * "informa o que eu decidi", não "pergunta o que fazer". Falha em silêncio.
  */
 export async function logSheetRedirect(leadId: string, redirectPath: string) {

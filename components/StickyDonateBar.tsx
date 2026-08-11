@@ -16,7 +16,7 @@ import { IconBowl, IconHeart } from "./ui/Icons";
  * A barra de meta ("R$ 18.500 de R$ 58.000", "236 apoiadores") ocupava duas
  * linhas com números que a página não tinha ligados em nenhuma fonte real.
  * Numa barra que fica na tela o tempo todo, isso é o dado mais visto do site
- * inteiro — e o mais caro de manter honesto. No lugar ficou uma linha só, que
+ * inteiro - e o mais caro de manter honesto. No lugar ficou uma linha só, que
  * repete o que a página vende, e o botão que leva até lá.
  */
 export function StickyDonateBar() {

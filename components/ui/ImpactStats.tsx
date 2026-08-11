@@ -2,7 +2,7 @@ import { impactNumbers } from "@/content/landing";
 import { CountUp } from "./CountUp";
 
 /**
- * Os números da rede — vidas, abrigos, ração entregue, castrações.
+ * Os números da rede - vidas, abrigos, ração entregue, castrações.
  *
  * Vive na seção de transparência, embaixo da conta mensal da rede: em cima
  * está o que o dinheiro precisa cobrir todo mês, aqui está o que ele já
@@ -10,7 +10,7 @@ import { CountUp } from "./CountUp";
  *
  * ── Por que não no hero ───────────────────────────────────────────────────
  * Já esteve lá, primeiro como barra de meta em reais e depois em card. Saiu
- * porque a primeira dobra tem altura para uma ideia só, e ela é o vídeo —
+ * porque a primeira dobra tem altura para uma ideia só, e ela é o vídeo -
  * cada pixel gasto com número ali era pixel tirado dele. Aqui embaixo o
  * espaço não é disputado e o card pode ter o tamanho que ele merece.
  *

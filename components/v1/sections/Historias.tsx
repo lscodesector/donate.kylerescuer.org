@@ -8,7 +8,7 @@ import { SectionHead } from "../ui/SectionHead";
  * As histórias, com as fotos reais do acervo.
  *
  * O `alt` da imagem descreve a cena para quem usa leitor de tela; o título e o
- * texto visíveis são a narrativa. São coisas diferentes de propósito — legenda
+ * texto visíveis são a narrativa. São coisas diferentes de propósito - legenda
  * não é texto alternativo, e repetir uma como a outra atrapalha os dois usos.
  *
  * Foto e texto lado a lado a partir de `sm`, empilhados no celular. As fotos

@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   RACAO_HREF,
@@ -20,6 +19,7 @@ import {
   IconUsers,
   IconWhatsApp,
 } from "../ui/Icons";
+import { PhotoSlideshow } from "../ui/PhotoSlideshow";
 import { Reveal } from "../ui/Reveal";
 
 /**
@@ -33,7 +33,7 @@ import { Reveal } from "../ui/Reveal";
  * foram para dentro da ficha: o Instagram tirava a pessoa da página antes de
  * ela saber quem era o abrigo, e dois botões lado a lado num card de quatro
  * linhas disputavam o mesmo clique. Com um controle só, o card inteiro é
- * clicável sem nenhum truque de `z-index` — não há mais link por baixo do
+ * clicável sem nenhum truque de `z-index` - não há mais link por baixo do
  * botão que cobre o card.
  *
  * O botão visível é um `<span>`, não um `<button>`: quem recebe o clique e o
@@ -43,7 +43,7 @@ import { Reveal } from "../ui/Reveal";
 export function AbrigosLista() {
   const [aberto, setAberto] = useState<Shelter | null>(null);
 
-  // Quem abriu a ficha recebe o foco de volta quando ela fecha — sem isso, o
+  // Quem abriu a ficha recebe o foco de volta quando ela fecha - sem isso, o
   // teclado volta para o começo da página e a pessoa perde o lugar na lista.
   const gatilho = useRef<HTMLButtonElement | null>(null);
 
@@ -62,15 +62,21 @@ export function AbrigosLista() {
             delay={(i % 3) as 0 | 1 | 2}
             className="relative flex flex-col overflow-hidden rounded-md border border-ink-900/10 bg-surface shadow transition-colors hover:border-accent/50 sm:flex-row"
           >
-            <div className="relative aspect-[16/10] w-full shrink-0 sm:aspect-auto sm:w-[210px] sm:self-stretch">
-              <Image
-                src={shelter.image.src}
-                alt={shelter.image.alt}
-                fill
-                sizes="(min-width: 640px) 210px, 92vw"
-                className="object-cover"
-              />
-            </div>
+            {/* Sem `controls`: quem recebe o clique no card é o botão que cobre
+                tudo e abre a ficha, e seta dentro dele disputaria esse clique.
+                Aqui as fotos só passam; a ficha é que dá o comando.
+
+                `4/3` no celular, e não a faixa larga de antes: as fotos vêm
+                todas em 742×642 (quase quadradas) e num 16/10 o `object-cover`
+                comia 13% em cima - que é justo onde estão os rostos de quem
+                segura o animal. A partir de `sm` a altura é a da coluna de
+                texto ao lado, que dá mais ou menos a mesma proporção da foto. */}
+            <PhotoSlideshow
+              photos={shelter.photos}
+              label={shelter.name}
+              sizes="(min-width: 640px) 210px, 92vw"
+              className="aspect-[4/3] w-full shrink-0 sm:aspect-auto sm:w-[210px] sm:self-stretch"
+            />
 
             {/* No celular o card é uma coluna só e tudo fica centralizado;
                 a partir de `sm` a foto entra ao lado e o texto volta a
@@ -144,7 +150,7 @@ function FichaAbrigo({
 }) {
   const fecharRef = useRef<HTMLButtonElement>(null);
 
-  // Esc fecha e o scroll do fundo trava — sem isso a página rola atrás da ficha.
+  // Esc fecha e o scroll do fundo trava - sem isso a página rola atrás da ficha.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -161,7 +167,7 @@ function FichaAbrigo({
   const { profile } = shelter;
 
   // Cada linha do endereço é opcional: monta com o que existir e, sem nada,
-  // cai para a cidade do card — que é sempre melhor do que campo em branco.
+  // cai para a cidade do card - que é sempre melhor do que campo em branco.
   const endereco = [
     profile.address?.line1,
     profile.address?.line2,
@@ -186,7 +192,7 @@ function FichaAbrigo({
    * rola nada. Fecha primeiro e rola no quadro seguinte, quando a limpeza do
    * efeito já devolveu a rolagem. O `scroll-margin-top` das seções (globals)
    * cuida do cabeçalho fixo, e o `scroll-behavior: smooth` do documento cuida
-   * da animação — inclusive de desligá-la em `prefers-reduced-motion`.
+   * da animação - inclusive de desligá-la em `prefers-reduced-motion`.
    */
   const doar = () => {
     onClose();
@@ -209,15 +215,24 @@ function FichaAbrigo({
         className="max-h-[92svh] w-full max-w-[520px] overflow-y-auto rounded-t-lg bg-surface shadow-xl sm:rounded-lg"
       >
         <div className="relative">
-          <div className="relative aspect-[16/9] w-full">
-            <Image
-              src={shelter.image.src}
-              alt={shelter.image.alt}
-              fill
-              sizes="(min-width: 640px) 520px, 100vw"
-              className="object-cover"
-            />
-          </div>
+          {/* Na ficha o slide ganha seta e pontinho clicável: aqui não há botão
+              por cima, e é este o lugar de olhar o abrigo com calma - inclusive
+              voltando numa foto que já passou.
+
+              `7/6` é a proporção em que as fotos chegam (742×642), então aqui
+              elas aparecem inteiras, sem recorte nenhum. Na ficha isso importa
+              mais do que no card: é a foto que a pessoa abriu para ver.
+
+              O slide também anda mais devagar do que no card - quem abriu a
+              ficha está olhando, não passando o olho. */}
+          <PhotoSlideshow
+            photos={shelter.photos}
+            label={shelter.name}
+            controls
+            interval={4000}
+            sizes="(min-width: 640px) 520px, 100vw"
+            className="aspect-[7/6] w-full"
+          />
 
           {/* Fundo sólido atrás do X: sobre foto clara, ícone claro some. */}
           <button
@@ -346,7 +361,7 @@ function FichaAbrigo({
               <IconArrowRight size={17} />
             </button>
 
-            {/* A doação é para a rede, não para este abrigo — dizer isso aqui,
+            {/* A doação é para a rede, não para este abrigo - dizer isso aqui,
                 onde a pessoa acabou de se afeiçoar a um nome, evita a promessa
                 que a página não cumpre (ver FAQ "Posso escolher para qual
                 abrigo vai a minha ração?"). */}

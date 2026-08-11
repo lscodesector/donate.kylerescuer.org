@@ -6,7 +6,7 @@ import { Reveal } from "../ui/Reveal";
 import { SectionHead } from "../ui/SectionHead";
 
 /**
- * "Adote um deles" — os animais dos abrigos, publicados no app da Lusa.
+ * "Adote um deles" - os animais dos abrigos, publicados no app da Lusa.
  *
  * Cada card é um bicho: a foto, o nome, os dados que ajudam a decidir (idade,
  * peso, raça e em que abrigo ele está) e uma saída só, "Ver mais no Lusa App".
@@ -15,17 +15,17 @@ import { SectionHead } from "../ui/SectionHead";
  *
  * ── Por que fileira rolável, e não grid ───────────────────────────────────
  * A lista de animais é aberta: cresce a cada publicação nova no app. Um grid
- * de tamanho imprevisível empurraria a seção de ração — que é o que esta
- * página existe para vender — cada vez mais para baixo. Na fileira, dez ou
+ * de tamanho imprevisível empurraria a seção de ração - que é o que esta
+ * página existe para vender - cada vez mais para baixo. Na fileira, dez ou
  * trinta animais ocupam a mesma altura.
  *
  * A rolagem em si é CSS puro (`overflow-x` + `snap`): funciona por arrasto,
  * roda do mouse, teclado e leitor de tela de graça. O `CardsCarousel` só
- * acrescenta as setas por cima disso — sem JavaScript a fileira continua
+ * acrescenta as setas por cima disso - sem JavaScript a fileira continua
  * rolável, o que some é o atalho.
  *
  * ── Sobre o card sem foto ─────────────────────────────────────────────────
- * Entra assim mesmo, com a moldura de patinha no lugar da imagem — nome,
+ * Entra assim mesmo, com a moldura de patinha no lugar da imagem - nome,
  * idade e abrigo são o que a pessoa lê primeiro. O que não pode acontecer é
  * pôr a foto de outro animal para tapar o buraco: foto trocada em card de
  * adoção é o erro que não dá para consertar depois.
@@ -50,7 +50,7 @@ export function Adocao() {
           `-mx-5 px-5` (e o par em `md`) anulam e devolvem o padding do
           container: o corte acontece na borda da tela, não numa margem interna,
           e o primeiro e o último card encostam onde o texto encosta. Sem
-          `justify-center` de propósito — centralizar conteúdo que transborda
+          `justify-center` de propósito - centralizar conteúdo que transborda
           torna o começo da fileira inalcançável pela rolagem. */}
       <div className="container-narrow mt-6">
         <CardsCarousel

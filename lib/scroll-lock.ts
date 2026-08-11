@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 
 /**
- * Trava a rolagem do fundo enquanto um modal estiver aberto — e devolve a
+ * Trava a rolagem do fundo enquanto um modal estiver aberto - e devolve a
  * página exatamente onde ela estava quando ele fechar.
  *
  * `overflow: hidden` sozinho não basta. No iOS ele não segura a rolagem por

@@ -5,12 +5,12 @@ import { Reveal } from "../ui/Reveal";
 import { SectionHead } from "../ui/SectionHead";
 
 /**
- * Para onde vai o dinheiro — a conta mensal da rede, em reais.
+ * Para onde vai o dinheiro - a conta mensal da rede, em reais.
  *
  * É a seção da v1 reproduzida aqui: mesma cabeça (ícone de barras, título à
  * esquerda) e mesma tabela de duas colunas, rótulo à esquerda e valor à
  * direita. Foi decisão de campanha manter as duas versões idênticas nesta
- * parte — é a única seção da v2 que não usa a cabeça centralizada do resto da
+ * parte - é a única seção da v2 que não usa a cabeça centralizada do resto da
  * página, e é por isso que `SectionHead` ainda aceita `icon` e `align`.
  *
  * Tabela, e não lista de cards: são pares rótulo/valor lidos em coluna, e é o

@@ -1,13 +1,13 @@
 /**
  * Toda a informação editável desta página vive aqui: valores, kg, impacto,
  * abrigos, animais para adoção, contatos. Trocar uma campanha é trocar este
- * arquivo — nenhum componente precisa mudar.
+ * arquivo - nenhum componente precisa mudar.
  */
 
 /**
  * Âncora da seção de ração.
  *
- * É o destino de **todo** CTA de doação da página — cabeçalho, hero, impacto,
+ * É o destino de **todo** CTA de doação da página - cabeçalho, hero, impacto,
  * barra fixa e fechamento. A decisão é deliberada: a doação desta página é
  * ração, e ração se escolhe por faixa de kg, não por um valor digitado num
  * modal. A única exceção é o botão de doação mensal (ver `MonthlyDonateButton`).
@@ -26,7 +26,7 @@ export const RACAO_HREF = "#racao";
  * O componente (`components/sections/Pix.tsx`) e a copy (`copy.pix`) continuam
  * onde estavam de propósito: virar isto para `true` devolve a seção inteira,
  * sem precisar reescrever nada. Enquanto estiver `false`, a âncora `#pix` não
- * existe — por isso o link "Doar via Pix" saiu do rodapé.
+ * existe - por isso o link "Doar via Pix" saiu do rodapé.
  */
 export const showPixSection = false;
 
@@ -91,7 +91,7 @@ export function whatsappWith(message: string) {
 }
 
 /**
- * Doação recorrente pelo WhatsApp — usada só depois da doação (página de
+ * Doação recorrente pelo WhatsApp - usada só depois da doação (página de
  * obrigado). Na landing, quem quer ajudar todo mês usa o modal mensal, que
  * gera o Pix na hora; mandar para o WhatsApp ali seria trocar um caminho que
  * funciona por um que depende de alguém responder.
@@ -105,7 +105,7 @@ export const recurringHref = whatsappWith(
  *
  * Números de impacto da rede. Eles substituíram a barra de meta em reais que
  * ficava no hero: uma página que pede ração não precisa publicar quanto já
- * arrecadou — precisa mostrar quantos animais dependem daquilo. Se um destes
+ * arrecadou - precisa mostrar quantos animais dependem daquilo. Se um destes
  * números não puder ser sustentado, tire o item da lista em vez de arredondar.
  *
  * `value` é número, e não texto, porque ele é contado do zero na tela (ver
@@ -148,12 +148,12 @@ export const copy = {
   abrigos: {
     eyebrow: "Quem recebe",
     title: "Os abrigos que recebem a ração",
-    lead: "A ração não fica com a gente. Ela é entregue nos abrigos que já estão com os animais na mão — cada um com nome, endereço e perfil aberto para você conferir.",
+    lead: "A ração não fica com a gente. Ela é entregue nos abrigos que já estão com os animais na mão - cada um com nome, endereço e perfil aberto para você conferir.",
     /* Único botão do card, e o rótulo que o leitor de tela anuncia no lugar
        dele ("Saiba mais sobre Siulsan Resgate"). O card não tem mais link de
        Instagram nem de doação: os dois estão dentro da ficha. */
     ctaProfile: "Saiba mais",
-    /* Botões da ficha. O de doar continua apontando para a seção de ração —
+    /* Botões da ficha. O de doar continua apontando para a seção de ração -
        a doação é para a rede, não para aquele abrigo. */
     ctaShelter: "Doar ração",
     ctaInstagram: "Ver o dia a dia no Instagram",
@@ -162,7 +162,7 @@ export const copy = {
        este abrigo" é uma pergunta que os campos não respondem. */
     ctaWhatsapp: "Pedir os dados no WhatsApp",
     /* Já a explicação só aparece enquanto a ficha estiver sem CNPJ e sem
-       endereço — ver `ShelterProfile`. Dizer que o dado ainda não está
+       endereço - ver `ShelterProfile`. Dizer que o dado ainda não está
        publicado é melhor do que a pessoa achar que a página está escondendo. */
     profileEmpty:
       "Os dados cadastrais completos deste abrigo ainda não estão publicados aqui. Se quiser conferir antes de doar, é só pedir para a equipe.",
@@ -170,7 +170,7 @@ export const copy = {
   adocao: {
     eyebrow: "Adoção",
     title: "Adote um deles",
-    lead: "Alguns dos cães que estão nesses abrigos, publicados no app da Lusa. Dá para conhecer cada um e levar um para casa — enquanto isso não acontece, é a ração que os mantém de pé.",
+    lead: "Alguns dos cães que estão nesses abrigos, publicados no app da Lusa. Dá para conhecer cada um e levar um para casa - enquanto isso não acontece, é a ração que os mantém de pé.",
   },
   racao: {
     eyebrow: "Doe ração",
@@ -187,7 +187,7 @@ export const copy = {
    *
    * Existe para responder, antes do pedido, a pergunta que trava quem nunca
    * doou nesta página: "o que exatamente acontece quando eu clico?". São três
-   * passos porque o fluxo tem três — escolher, pagar, a ração chegar — e um
+   * passos porque o fluxo tem três - escolher, pagar, a ração chegar - e um
    * quarto seria invenção.
    */
   comoFunciona: {
@@ -226,7 +226,7 @@ export const copy = {
     eyebrow: "Transparência",
     title: "Para onde vai o dinheiro",
     lead: "Manter centenas de animais seguros exige alimentação, atendimento veterinário e uma estrutura que funciona todos os dias.",
-    /* `<caption>` da tabela de custos, só para leitor de tela — na tela quem
+    /* `<caption>` da tabela de custos, só para leitor de tela - na tela quem
        dá esse contexto é a linha de apoio acima. Sem ela, quem navega por
        tabelas ouve cinco valores sem saber de que conta eles são. */
     costsCaption:
@@ -256,7 +256,7 @@ export const copy = {
 /**
  * Copy da primeira dobra.
  *
- * `headline` e `headlineAccent` são lidos como **uma frase só** — o componente
+ * `headline` e `headlineAccent` são lidos como **uma frase só** - o componente
  * junta os dois com um espaço e pinta o segundo de vermelho. Escreva pensando
  * nisso: "Mais de 400 animais precisam comer todo santo dia."
  *
@@ -264,7 +264,7 @@ export const copy = {
  * chegar todo mês." Duas frases sem verbo na primeira, começando pela estrutura
  * da organização (quantos abrigos ela tem) em vez de por quem está com fome. E
  * "precisa chegar" não diz quem faz chegar. Agora a frase tem sujeito, verbo e
- * urgência, e os cinco abrigos desceram para a linha de apoio — que é onde
+ * urgência, e os cinco abrigos desceram para a linha de apoio - que é onde
  * cabe explicar a operação.
  */
 export const heroCopy = {
@@ -304,7 +304,7 @@ export const heroVideo: {
 } = {
   /**
    * O embed do VTurb, campo a campo. Ao trocar o vídeo da campanha, o VTurb
-   * entrega um bloco de HTML novo — é de lá que saem estes valores:
+   * entrega um bloco de HTML novo - é de lá que saem estes valores:
    *
    *   playerId       o `id` do `<vturb-smartplayer>` ("vid-…")
    *   scriptSrc      o `player.js` da conta, no fim do bloco
@@ -314,7 +314,7 @@ export const heroVideo: {
    *
    * `ratio` é a altura do vídeo em porcentagem da largura (78.14 ≈ um formato
    * levemente deitado). Ele governa duas coisas ao mesmo tempo: o espaço que
-   * o placeholder reserva e o `aspect-ratio` do slot no hero — por isso é um
+   * o placeholder reserva e o `aspect-ratio` do slot no hero - por isso é um
    * número só, e não dois valores que podem sair de sincronia.
    */
   vturb: {
@@ -334,35 +334,35 @@ export const heroVideo: {
   },
   label: "Veja como sua doação vira ração",
   /**
-   * Formato do player, em `largura / altura` — o mesmo valor que o VSL do
+   * Formato do player, em `largura / altura` - o mesmo valor que o VSL do
    * VTurb estiver usando. Trocar esta linha reajusta o slot inteiro sozinho.
    *
    * "1 / 1" (quadrado) é o que melhor preenche esta dobra. A conta: a dobra
    * tem altura travada em uma tela, e o que sobra para o vídeo depois do
    * texto e dos botões é ~510px num celular de 844px e ~560px num notebook de
    * 900px. Como o player é dimensionado pela largura, um quadrado dá ~390px de
-   * altura no celular e ~556px no notebook — praticamente a sobra inteira.
+   * altura no celular e ~556px no notebook - praticamente a sobra inteira.
    *
    * "16 / 9" também funciona e é o outro padrão de VSL, mas com a mesma
    * largura ele rende só ~219px de altura no celular: sobra um vão grande
-   * entre o vídeo e o botão. Vale se o vídeo da campanha for deitado mesmo —
+   * entre o vídeo e o botão. Vale se o vídeo da campanha for deitado mesmo -
    * é melhor ter espaço vazio do que o vídeo cortado.
    *
    * ⚠️ Formato em pé ("9 / 16") **não** cabe nesta dobra: mais alto que largo,
    * ele bate no teto de altura e é aparado. Se a campanha for de vídeo
-   * vertical, o hero precisa de outro layout — vídeo ao lado do texto, não
+   * vertical, o hero precisa de outro layout - vídeo ao lado do texto, não
    * embaixo dele.
    */
   aspect: "1 / 1",
 };
 
 /**
- * Ficha de um abrigo — o que abre quando a pessoa clica no card.
+ * Ficha de um abrigo - o que abre quando a pessoa clica no card.
  *
  * ⚠️ **Todo campo aqui é opcional e o que estiver vazio não aparece na tela.**
  * Preencha só o que der para comprovar. Protetor pequeno muitas vezes não tem
  * CNPJ e trabalha da própria casa: deixar o campo em branco é a resposta certa
- * nesse caso — publicar número ou endereço inventado numa página que pede
+ * nesse caso - publicar número ou endereço inventado numa página que pede
  * doação é o tipo de erro que não se conserta depois.
  *
  * Enquanto `cnpj` e `address` estiverem vazios, a ficha mostra sozinha um aviso
@@ -370,12 +370,12 @@ export const heroVideo: {
  * equipe para quem quiser pedir. O aviso some quando os dois forem preenchidos.
  */
 export type ShelterProfile = {
-  /** Quem responde pelo abrigo — nome da pessoa ou da ONG. */
+  /** Quem responde pelo abrigo - nome da pessoa ou da ONG. */
   responsible?: string;
   /** Só se o abrigo tiver CNPJ próprio. O da rede está em `org.cnpj`. */
   cnpj?: string;
   /**
-   * Endereço exato, no mesmo formato de `org.address` — rua **com número**,
+   * Endereço exato, no mesmo formato de `org.address` - rua **com número**,
    * complemento, cidade/UF e CEP. A ficha monta as linhas com o que existir e
    * pula o que faltar; com tudo vazio, ela cai para a cidade/estado do card.
    *
@@ -385,7 +385,7 @@ export type ShelterProfile = {
   address?: {
     /** Rua e número: "Rua das Acácias, 187". */
     line1?: string;
-    /** Complemento e bairro: "Fundos — Jardim Santa Cruz". */
+    /** Complemento e bairro: "Fundos - Jardim Santa Cruz". */
     line2?: string;
     /** Cidade e UF: "Tatuí – SP". */
     city?: string;
@@ -405,26 +405,37 @@ export type ShelterProfile = {
 export type Shelter = {
   id: string;
   name: string;
-  /** Cidade e estado — é o que aparece no card, ao lado do alfinete. */
+  /** Cidade e estado - é o que aparece no card, ao lado do alfinete. */
   location: string;
   /** Uma linha, a que resume o abrigo no card. */
   description: string;
   instagram: string;
   instagramHref: string;
-  image: { src: string; alt: string };
+  /**
+   * As fotos do abrigo, na ordem em que passam no slide - do card e da ficha.
+   *
+   * São fotos que os próprios abrigos mandaram, não banco de imagem: é por isso
+   * que elas variam de enquadramento e de luz. **Uma foto só também vale** - o
+   * slide vira imagem parada sozinho, sem pontinho nem seta.
+   *
+   * A primeira é a que o card mostra parado (e a única que baixa de cara),
+   * então ela é sempre a que apresenta o abrigo: gente com os animais, de
+   * preferência, e não o quintal vazio.
+   */
+  photos: { src: string; alt: string }[];
   profile: ShelterProfile;
 };
 
 /**
  * Os abrigos que recebem a ração.
  *
- * O card mostra o essencial — foto, nome, cidade e uma linha — e um botão só,
+ * O card mostra o essencial - foto, nome, cidade e uma linha - e um botão só,
  * "Saiba mais", que abre a ficha. Instagram, endereço, CNPJ e o WhatsApp da
  * equipe ficam **dentro** da ficha: no card eles competiam com o botão e
  * tiravam a pessoa da página antes de ela saber quem era o abrigo.
  *
  * `instagram` e `instagramHref` continuam aqui porque a ficha e o rodapé usam
- * os dois — o que saiu foi o link no card, não o dado.
+ * os dois - o que saiu foi o link no card, não o dado.
  */
 export const shelters: Shelter[] = [
   {
@@ -434,10 +445,20 @@ export const shelters: Shelter[] = [
     description: "Mais de 20 anos resgatando cães e gatos.",
     instagram: "@siulsanresgate",
     instagramHref: "https://www.instagram.com/siulsanresgate/",
-    image: {
-      src: "/sos-animal/protetora-caes-acolhimento.webp",
-      alt: "Protetora agachada, cercada por cães resgatados que se aproximam dela",
-    },
+    photos: [
+      {
+        src: "/fotos-sos/S1.webp",
+        alt: "Casal de protetores da Siulsan Resgate sorrindo, cada um com um cão resgatado no colo, em frente ao portão de tela do abrigo",
+      },
+      {
+        src: "/fotos-sos/S2.webp",
+        alt: "Cão caramelo de focinho branco, de língua para fora, olhando para a câmera no quintal do abrigo",
+      },
+      {
+        src: "/fotos-sos/S3.webp",
+        alt: "Cão preto e marrom, ainda magro, sendo escovado na grama por uma voluntária",
+      },
+    ],
     profile: {
       responsible: "",
       cnpj: "",
@@ -455,10 +476,20 @@ export const shelters: Shelter[] = [
     description: "Mais de 90 cães e gatos abrigados e protegidos.",
     instagram: "@abrigosalvecao",
     instagramHref: "https://www.instagram.com/abrigosalvecao/",
-    image: {
-      src: "/sos-animal/canil-voluntario-caes.webp",
-      alt: "Voluntário agachado no canil, com dois cães no colo e outros ao redor das casinhas de concreto",
-    },
+    photos: [
+      {
+        src: "/fotos-sos/A1.webp",
+        alt: "Protetora do Abrigo Salve Cão, de camiseta verde, sorrindo com um cão caramelo no colo em meio às árvores do terreno",
+      },
+      {
+        src: "/fotos-sos/A2.webp",
+        alt: "Protetora de camiseta vermelha segurando um filhote preto e marrom de orelhas grandes",
+      },
+      {
+        src: "/fotos-sos/A3.webp",
+        alt: "Cães soltos no pátio de terra do abrigo, entre as casinhas e os comedouros",
+      },
+    ],
     profile: {
       responsible: "",
       cnpj: "",
@@ -476,10 +507,24 @@ export const shelters: Shelter[] = [
     description: "Mais de 90 cães e gatos acolhidos.",
     instagram: "@sosjoanadarc",
     instagramHref: "https://www.instagram.com/sosjoanadarc/",
-    image: {
-      src: "/sos-animal/protetora-cao-carinho.webp",
-      alt: "Protetora recebendo o carinho de um cão resgatado na área externa do abrigo",
-    },
+    photos: [
+      {
+        src: "/fotos-sos/J1.webp",
+        alt: "Protetora da SOS Joana Darc acompanhando uma cadela branca no atendimento veterinário",
+      },
+      {
+        src: "/fotos-sos/J2.webp",
+        alt: "Protetora abraçada, de olhos fechados, com um cão caramelo resgatado no colo",
+      },
+      {
+        src: "/fotos-sos/J3.webp",
+        alt: "Cão pequeno e caramelo de orelhas em pé, ao lado da bacia de água, olhando para cima",
+      },
+      {
+        src: "/fotos-sos/J4.webp",
+        alt: "Três cães resgatados juntos no piso do abrigo: dois caramelos e um preto e marrom",
+      },
+    ],
     profile: {
       responsible: "",
       cnpj: "",
@@ -497,10 +542,16 @@ export const shelters: Shelter[] = [
     description: "Desde 2008 salvando vidas animais.",
     instagram: "@milenaefernanda.ong",
     instagramHref: "https://www.instagram.com/milenaefernanda.ong/",
-    image: {
-      src: "/sos-animal/voluntario-tres-caes.webp",
-      alt: "Protetor sentado no chão com três cães resgatados ao seu redor",
-    },
+    photos: [
+      {
+        src: "/fotos-sos/M1.webp",
+        alt: "Protetora sentada no chão do abrigo, sorrindo, cercada por gatos e cães resgatados",
+      },
+      {
+        src: "/fotos-sos/M2.webp",
+        alt: "Voluntária sorrindo com um gato cinza e branco no colo, na área dos gatos do abrigo",
+      },
+    ],
     profile: {
       responsible: "",
       cnpj: "",
@@ -514,17 +565,17 @@ export const shelters: Shelter[] = [
 ];
 
 /**
- * Adoção — os animais publicados no app da Lusa.
+ * Adoção - os animais publicados no app da Lusa.
  *
  * `appHref` é o **único** destino dos cards: um link só para a publicação da
  * SOS Animal Help no app. Quando existir link por animal, preencha o `href`
- * daquele bicho e ele passa a mandar para a página dele — o `appHref` continua
+ * daquele bicho e ele passa a mandar para a página dele - o `appHref` continua
  * valendo para todos os outros, sem mexer em componente.
  *
  * **Bicho sem foto entra assim mesmo**, com uma moldura de patinha no lugar da
  * imagem: nome, idade e abrigo são o que a pessoa lê primeiro, e o card já vale
  * sem ela. O que não pode acontecer é pôr a foto de outro animal para tapar o
- * buraco — foto trocada em card de adoção é o erro que não dá para consertar
+ * buraco - foto trocada em card de adoção é o erro que não dá para consertar
  * depois. Para ativar a foto real, jogue o arquivo em
  * `/public/sos-animal/adocao/` e preencha `image`.
  */
@@ -630,12 +681,12 @@ export const adoption = {
 };
 
 /**
- * Tiers de ração — valores de referência, fáceis de ajustar. `popular`
+ * Tiers de ração - valores de referência, fáceis de ajustar. `popular`
  * marca o cartão em destaque ("mais escolhido").
  *
  * `image` é a foto do saco daquele tier, em `/public/racao/`. Os arquivos são
- * gerados a partir dos PNG originais de `/public/fotos-sos/` — sempre as
- * embalagens **verdes**, nunca as vermelhas — e todos saem no mesmo quadrado
+ * gerados a partir dos PNG originais de `/public/fotos-sos/` - sempre as
+ * embalagens **verdes**, nunca as vermelhas - e todos saem no mesmo quadrado
  * de 900×900 com fundo branco e uma folga de 50px. Terem a mesma proporção é o
  * que faz os seis cartões ficarem iguais na grade; por isso o cartão desenha a
  * foto com `object-contain`, e não `object-cover`, que cortaria o saco.
@@ -731,16 +782,16 @@ export type RationTier = (typeof rationTiers)[number];
  * Taxa de processamento que o checkout oferece cobrir.
  *
  * ⚠️ **É configuração, não número no componente.** O checkout lê o valor daqui
- * e recalcula a cada faixa — nada de "+ R$ 4,99" escrito na tela. Mudar a
+ * e recalcula a cada faixa - nada de "+ R$ 4,99" escrito na tela. Mudar a
  * conta é mudar estas três linhas.
  *
  * Hoje é **R$ 4,99 fixo**, igual em todas as faixas e na doação mensal: é o
- * valor acordado com a operação. `percent` fica em zero — ele existe porque um
+ * valor acordado com a operação. `percent` fica em zero - ele existe porque um
  * gateway costuma cobrar percentual + fixo, e o dia em que a conta virar
  * "1,2% + R$ 0,99" é só preencher os dois campos.
  *
  * Já foi 5% do valor, o que dava R$ 1,69 no saco de 5 kg e R$ 37,15 no de
- * 150 kg — taxa que crescia com a doação sem que o custo real crescesse junto.
+ * 150 kg - taxa que crescia com a doação sem que o custo real crescesse junto.
  *
  * Com `enabled: false` a opção some do checkout e o total volta a ser só o
  * valor da ração.
@@ -748,14 +799,14 @@ export type RationTier = (typeof rationTiers)[number];
  * `defaultChecked` deixa a caixa marcada ao abrir a etapa de dados. Vem
  * marcada como no checkout de referência da rede, e a contrapartida está na
  * tela: o valor aparece em destaque, o motivo é explicado e o total logo
- * abaixo já vem somado — quem não quiser, desmarca em um clique. O que gera
+ * abaixo já vem somado - quem não quiser, desmarca em um clique. O que gera
  * contestação não é a taxa, é a pessoa descobrir depois.
  */
 export const checkoutFee = {
   enabled: true,
   /** Percentual sobre o valor doado. Zero: a taxa de hoje é só a fixa. */
   percent: 0,
-  /** Valor fixo somado depois do percentual, em centavos — R$ 4,99. */
+  /** Valor fixo somado depois do percentual, em centavos - R$ 4,99. */
   fixedCents: 499,
   defaultChecked: true,
 };
@@ -773,7 +824,7 @@ export function feeCentsFor(amountCents: number) {
  * ⚠️ CONFERIR ANTES DE PUBLICAR ⚠️
  *
  * Chave Pix da campanha. Errar aqui manda o dinheiro de quem doa para a conta
- * errada — é o único dado desta página que não dá para corrigir depois.
+ * errada - é o único dado desta página que não dá para corrigir depois.
  */
 export const pix = {
   key: org.cnpj,
@@ -782,7 +833,7 @@ export const pix = {
 };
 
 /**
- * Prova rápida de confiança — faixa escaneável logo depois do hero.
+ * Prova rápida de confiança - faixa escaneável logo depois do hero.
  * Só afirmações que a própria página sustenta: o CNPJ está no documento, os
  * abrigos estão listados com Instagram, o WhatsApp e o Pix existem.
  */
@@ -817,11 +868,11 @@ export const impactCompare = {
     "O abrigo tem folga para acolher o próximo resgate.",
   ],
   closing:
-    "Um saco de ração não alimenta um animal. Alimenta o abrigo inteiro por alguns dias — e é isso que se compra aqui.",
+    "Um saco de ração não alimenta um animal. Alimenta o abrigo inteiro por alguns dias - e é isso que se compra aqui.",
 };
 
 /**
- * ⚠️ VALORES DE EXEMPLO — TROCAR PELOS CUSTOS REAIS ANTES DE PUBLICAR ⚠️
+ * ⚠️ VALORES DE EXEMPLO - TROCAR PELOS CUSTOS REAIS ANTES DE PUBLICAR ⚠️
  *
  * Quebra de custos mensais da rede, em reais. `isMock` marca que os números
  * ainda são de exemplo: enquanto ele for `true`, a seção está publicando uma
@@ -833,7 +884,7 @@ export const impactCompare = {
  * Este é o **único** lugar da v2 onde a cifra aparece: a barra de meta em
  * reais foi retirada do hero e da barra fixa (ver `impactNumbers` e
  * `StickyDonateBar`), então não há um segundo número para sincronizar. Se a
- * barra de meta voltar um dia, ela lê daqui — nunca de um valor escrito no
+ * barra de meta voltar um dia, ela lê daqui - nunca de um valor escrito no
  * componente. A v1, que ainda tem a barra, tem a mesma cifra em
  * `content/v1/landing.ts` (`campaign.goalCents`), com a porcentagem calculada
  * de `arrecadado / meta`.
@@ -841,7 +892,7 @@ export const impactCompare = {
  * O total é somado a partir dos itens (`monthlyCostsTotal`), então a linha
  * final nunca fica fora de sincronia com a lista.
  *
- * Esta lista já esteve fora da v2, trocada por uma divisão em porcentagem — o
+ * Esta lista já esteve fora da v2, trocada por uma divisão em porcentagem - o
  * argumento era que total em reais envelhece e precisa de manutenção, enquanto
  * proporção é estável. Voltou por decisão de campanha: o valor em reais é o que
  * dá tamanho ao problema ("faltam R$ 58 mil por mês"), e é o que a v1 usava. O
@@ -853,10 +904,14 @@ export const monthlyCosts = {
   isMock: true,
   items: [
     /* A soma destes cinco é a meta da campanha: R$ 58.000. Mexeu em um item,
-       confira o total — é ele que a página publica. */
+       confira o total - é ele que a página publica. */
     { label: "Ração para os animais", cents: 2_300_000, dot: "bg-action" },
     { label: "Consultas e cirurgias", cents: 1_500_000, dot: "bg-warning" },
-    { label: "Estrutura e aluguel dos abrigos", cents: 1_000_000, dot: "bg-donate" },
+    {
+      label: "Estrutura e aluguel dos abrigos",
+      cents: 1_000_000,
+      dot: "bg-donate",
+    },
     { label: "Medicamentos", cents: 600_000, dot: "bg-progress" },
     { label: "Luz, água e manutenção", cents: 400_000, dot: "bg-ink-300" },
   ],
@@ -876,12 +931,12 @@ export const cnpjDocument = {
 };
 
 /**
- * As dúvidas — **cinco, e só cinco**.
+ * As dúvidas - **cinco, e só cinco**.
  *
  * A lista tinha oito e foi cortada por decisão de campanha: numa página de
  * conversão, FAQ longo vira parede de texto que ninguém abre, e cada pergunta
  * a mais empurra o fechamento para baixo. Ficaram as cinco que respondem uma
- * objeção real antes do pagamento — para onde vai, é seguro, como é o mensal,
+ * objeção real antes do pagamento - para onde vai, é seguro, como é o mensal,
  * posso doar outro valor, onde acompanho.
  *
  * O que saiu continua respondido em outro lugar da página, e é por isso que
@@ -899,11 +954,11 @@ export const faq = [
   },
   {
     q: "A doação é segura?",
-    a: "É. A SOS Animal Help tem CNPJ 63.153.881/0001-09, público e conferível no site da Receita Federal — o cartão CNPJ está nesta própria página. O pagamento é feito por Pix direto para a conta da organização, e é o nome dela que aparece na tela do seu banco antes de você confirmar.",
+    a: "É. A SOS Animal Help tem CNPJ 63.153.881/0001-09, público e conferível no site da Receita Federal - o cartão CNPJ está nesta própria página. O pagamento é feito por Pix direto para a conta da organização, e é o nome dela que aparece na tela do seu banco antes de você confirmar.",
   },
   {
     q: "Como funciona a doação mensal?",
-    a: "Na seção de ração há o botão “Quero ajudar todo mês”: você escolhe o valor e recebe o Pix na hora. Esse primeiro Pix cobre o primeiro mês — a cobrança ainda não é automática, então a equipe combina os meses seguintes com você pelo WhatsApp.",
+    a: "Na seção de ração há o botão “Quero ajudar todo mês”: você escolhe o valor e recebe o Pix na hora. Esse primeiro Pix cobre o primeiro mês - a cobrança ainda não é automática, então a equipe combina os meses seguintes com você pelo WhatsApp.",
   },
   {
     q: "Posso doar um valor diferente das faixas de ração?",
@@ -911,18 +966,18 @@ export const faq = [
   },
   {
     q: "Onde acompanho os abrigos?",
-    a: "Cada abrigo tem o Instagram aberto, com o dia a dia e o registro das entregas — os perfis estão nos cards da seção “Os abrigos que recebem a ração” e também no rodapé. Para pedir o comprovante de uma entrega específica, é só falar com a equipe pelo WhatsApp ou por e-mail.",
+    a: "Cada abrigo tem o Instagram aberto, com o dia a dia e o registro das entregas - os perfis estão nos cards da seção “Os abrigos que recebem a ração” e também no rodapé. Para pedir o comprovante de uma entrega específica, é só falar com a equipe pelo WhatsApp ou por e-mail.",
   },
 ] as const;
 
 /**
- * Avaliação do Google — DESATIVADA porque não há dado confirmado.
+ * Avaliação do Google - DESATIVADA porque não há dado confirmado.
  *
  * Exibir nota e número de avaliações inventados numa página de doação é
  * enganar quem doa, então o card não é renderizado enquanto `enabled` for
  * `false`. Para ativar: confirme os números reais, preencha `rating` e
  * `reviewCount`, aponte `href` para o perfil no Google e vire `enabled` para
- * `true` — o card volta sozinho, sem mexer em componente.
+ * `true` - o card volta sozinho, sem mexer em componente.
  */
 export const googleReviews = {
   enabled: false,

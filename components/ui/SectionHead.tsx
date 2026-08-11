@@ -11,7 +11,7 @@ type IconComponent = ComponentType<SVGProps<SVGSVGElement> & { size?: number }>;
  * seções: o ícone não dizia nada que o título já não dissesse e, alinhado à
  * esquerda, empurrava o texto criando uma margem diferente da do conteúdo logo
  * abaixo. Uma página com dez seções alinhadas do mesmo jeito lê como uma coisa
- * só. Por isso os defaults são estes — quem não passa nada recebe o padrão.
+ * só. Por isso os defaults são estes - quem não passa nada recebe o padrão.
  *
  * `icon` e `align` existem para a exceção: hoje só a seção de transparência,
  * que reproduz o layout da v1 (ícone de barras + título à esquerda, sobre a
@@ -19,7 +19,7 @@ type IconComponent = ComponentType<SVGProps<SVGSVGElement> & { size?: number }>;
  * é uma cabeça a menos alinhada com o resto da página.
  *
  * O conteúdo *abaixo* da cabeça continua livre para alinhar como fizer
- * sentido — e a maioria alinha à esquerda a partir de `sm`.
+ * sentido - e a maioria alinha à esquerda a partir de `sm`.
  */
 export function SectionHead({
   icon: Icon,
@@ -43,7 +43,7 @@ export function SectionHead({
       className={`flex flex-col gap-3 ${centered ? "items-center text-center" : ""} ${className}`}
     >
       {/* Centralizado, o ícone fica acima do título (coluna); à esquerda, ele
-          fica ao lado (linha) — é o que o layout da v1 desenha. */}
+          fica ao lado (linha) - é o que o layout da v1 desenha. */}
       <div className={`flex gap-3 ${centered ? "flex-col items-center" : "items-center"}`}>
         {Icon && (
           <span className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-sm bg-accent-soft text-accent">

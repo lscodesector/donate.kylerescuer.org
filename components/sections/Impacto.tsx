@@ -7,7 +7,7 @@ import { SectionHead } from "../ui/SectionHead";
  * A comparação: o que acontece sem apoio, o que acontece com ele.
  *
  * Duas colunas lado a lado no desktop e empilhadas no celular, em vez de uma
- * lista corrida de seis itens — o contraste é o argumento, e ele só existe se
+ * lista corrida de seis itens - o contraste é o argumento, e ele só existe se
  * os dois lados forem lidos como blocos opostos.
  *
  * O vermelho vem primeiro (é o estado atual) e o verde depois, na mesma cor do

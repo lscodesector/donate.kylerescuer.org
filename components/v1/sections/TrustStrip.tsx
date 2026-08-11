@@ -18,7 +18,7 @@ const ICONS: Record<string, IconComponent> = {
  *
  * Vem cedo de propósito: a objeção "posso confiar nisso?" aparece no mesmo
  * instante em que a pessoa vê um pedido de dinheiro. São itens escaneáveis,
- * sem parágrafo — cada um é verificável em outro ponto da própria página.
+ * sem parágrafo - cada um é verificável em outro ponto da própria página.
  */
 export function TrustStrip() {
   return (

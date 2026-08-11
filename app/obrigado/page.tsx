@@ -20,14 +20,14 @@ export const metadata: Metadata = {
  *
  * ── Quem chega aqui já pagou ──────────────────────────────────────────────
  * Esta página deixou de ser alcançável por clique. O checkout só manda para cá
- * depois de o gateway responder `paid: true` — pelo polling ou pela checagem na
+ * depois de o gateway responder `paid: true` - pelo polling ou pela checagem na
  * planilha ao voltar do app do banco (ver `components/checkout/CheckoutModal`).
  * Por isso o texto afirma o pagamento em vez de condicioná-lo: dizer "assim que
  * for confirmado" para quem já teve a confirmação plantava a dúvida de que algo
  * ainda faltava.
  *
  * O pedido de doação mensal vem aqui, e não antes, porque é o único momento em
- * que a pessoa já provou que confia — quem acabou de doar é muito mais
+ * que a pessoa já provou que confia - quem acabou de doar é muito mais
  * receptivo a virar recorrente do que quem ainda está decidindo.
  *
  * A recorrência não é automatizada nesta página: o botão leva ao WhatsApp, que
@@ -65,7 +65,7 @@ export default function ObrigadoPage() {
           </div>
         </div>
 
-        {/* O pedido da recorrência — o motivo desta tela existir. */}
+        {/* O pedido da recorrência - o motivo desta tela existir. */}
         <div className="flex flex-col gap-4 rounded-md border-2 border-donate bg-donate/[.06] p-5 sm:p-6">
           <div className="flex flex-col gap-2">
             <p className="text-[12px] font-extrabold uppercase tracking-[0.1em] text-donate">

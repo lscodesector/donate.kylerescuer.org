@@ -10,14 +10,14 @@ import { openCheckout } from "./checkout-bus";
  * É um `<a>` de verdade apontando para `/doar/<faixa>`, e não um `<button>`:
  * sem JavaScript o link leva para a página de checkout, que continua existindo
  * e funcionando. Com JavaScript, o `onClick` cancela a navegação e abre o
- * modal por cima da landing — a pessoa não sai do lugar.
+ * modal por cima da landing - a pessoa não sai do lugar.
  *
  * Os modificadores do navegador continuam valendo (Ctrl/Cmd/Shift/clique do
  * meio abrem em outra aba, como qualquer link): interceptar tudo faria um link
  * se comportar como algo que não é.
  *
  * Existe como componente próprio para que a seção de ração continue sendo
- * Server Component — só o botão vira cliente. A aparência vem toda de
+ * Server Component - só o botão vira cliente. A aparência vem toda de
  * `className`; aqui não há estilo próprio de propósito.
  */
 export function DonateTierButton({

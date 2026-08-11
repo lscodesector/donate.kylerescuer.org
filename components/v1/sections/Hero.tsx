@@ -12,14 +12,14 @@ import { VturbPlayer } from "../ui/VturbPlayer";
  * tela (`.screen-section` = 100svh menos a barra fixa).
  *
  * O vídeo é o argumento de venda da campanha, então ele é quem fica com a
- * altura que sobra — e o texto é que cede. Por isso a manchete e a linha de
+ * altura que sobra - e o texto é que cede. Por isso a manchete e a linha de
  * apoio são curtas, a barra de meta usa a variante `compact` e o CTA
  * secundário é um link, não um segundo botão.
  *
  * O tamanho do vídeo não é uma conta fixa: ele é o item flexível da coluna
  * (`.screen-section__flex`) e simplesmente fica com a altura que sobrar depois
  * do texto, da meta e dos botões. `aspect-ratio` converte essa altura em
- * largura, e `max-w-full` impede que ele passe da coluna no celular — onde
+ * largura, e `max-w-full` impede que ele passe da coluna no celular - onde
  * quem aperta é a largura, não a altura.
  *
  * A vantagem sobre a versão anterior (`min(100svh - 32rem, ...)`) é que aqui
@@ -42,7 +42,7 @@ export function Hero() {
 
           {/* Em tela baixa a linha de apoio sai: ela custa ~40px que fazem
               diferença no vídeo, e a manchete sozinha já entrega o essencial.
-              `@media` por altura, não por largura — o que aperta aqui é a
+              `@media` por altura, não por largura - o que aperta aqui é a
               altura da janela. O corte subiu para 820px junto com o resto do
               texto: o objetivo é o vídeo ficar com a altura, não o texto. */}
           <p className="hidden max-w-[56ch] text-[clamp(0.75rem,1.2vh,0.875rem)] leading-[1.45] text-ink-600 [@media(min-height:820px)]:block">

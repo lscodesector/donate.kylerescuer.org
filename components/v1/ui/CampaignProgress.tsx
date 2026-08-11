@@ -4,7 +4,7 @@ import { IconUsers } from "./Icons";
 /**
  * Barra de meta: arrecadado, meta, porcentagem e número de apoiadores.
  *
- * É o elemento de prova social mais forte da dobra — mostra que outras pessoas
+ * É o elemento de prova social mais forte da dobra - mostra que outras pessoas
  * já doaram e que falta pouco. Some por inteiro quando `campaign` é `null`,
  * porque barra de meta sem número real é pior do que barra nenhuma.
  *

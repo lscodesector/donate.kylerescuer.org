@@ -12,7 +12,7 @@ import { SectionHead } from "../ui/SectionHead";
  * A hierarquia dentro do card é valor → quantidade → impacto: o valor é o que
  * a pessoa está decidindo, então ele é o maior elemento. A estimativa vem com
  * "aproximadamente" e "cerca de" porque é uma referência de consumo, não uma
- * garantia — e a página não deve prometer o que não pode comprovar.
+ * garantia - e a página não deve prometer o que não pode comprovar.
  *
  * As faixas, preços e estimativas vêm de `rationTiers` em `content/landing.ts`.
  */
@@ -49,7 +49,7 @@ export function Racao() {
                   slot deitado sobrava faixa vazia dos dois lados; no quadrado
                   o saco ocupa a moldura inteira.
 
-                  `object-contain` é obrigatório aqui — com `object-cover` o
+                  `object-contain` é obrigatório aqui - com `object-cover` o
                   navegador preenche o quadrado cortando o saco pelo topo e
                   pela base, e a foto de 150kg (seis sacos lado a lado) perdia
                   metade da fileira. Como todos os arquivos já saem no mesmo
@@ -96,7 +96,7 @@ export function Racao() {
                   </p>
 
                   {/*
-                    O rótulo é só o peso — "Doar 5kg", "Doar 150kg". O preço
+                    O rótulo é só o peso - "Doar 5kg", "Doar 150kg". O preço
                     saiu daqui: ele já está no topo do cartão, em corpo maior,
                     e repetido dentro do botão criava a linha comprida que
                     obrigava o `truncate` a cortar justamente o valor. Peso é
@@ -118,7 +118,7 @@ export function Racao() {
           })}
         </div>
 
-        {/* Doação mensal — o único CTA da página que abre o modal em vez de
+        {/* Doação mensal - o único CTA da página que abre o modal em vez de
             rolar para cá.
 
             O botão "Escolher outro valor" que ficava ao lado saiu: ele mandava
@@ -127,7 +127,7 @@ export function Racao() {
             coisa. Sem ele, o bloco tem uma pergunta e uma resposta.
 
             O Pix que sai do modal cobra só o primeiro mês, e tanto o modal
-            quanto o checkout dizem isso — a cobrança automática ainda depende
+            quanto o checkout dizem isso - a cobrança automática ainda depende
             de um gateway. */}
         <Reveal
           id="mensal"

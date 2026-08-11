@@ -1,6 +1,6 @@
 /**
  * Toda a informação editável desta página vive aqui: valores, kg, impacto,
- * abrigos, contatos. Trocar uma campanha é trocar este arquivo — nenhum
+ * abrigos, contatos. Trocar uma campanha é trocar este arquivo - nenhum
  * componente precisa mudar.
  */
 
@@ -65,7 +65,7 @@ export function whatsappWith(message: string) {
 /**
  * Doação recorrente: hoje é combinada com a equipe pelo WhatsApp, porque a
  * página não tem checkout com recorrência. O botão aponta para o canal que a
- * organização realmente usa — não para uma funcionalidade que não existe.
+ * organização realmente usa - não para uma funcionalidade que não existe.
  */
 export const recurringHref = whatsappWith(
   "Olá! Quero ajudar a SOS Animal Help com uma doação recorrente, todo mês. Como faço?",
@@ -142,13 +142,13 @@ export const heroCopy = {
 };
 
 /**
- * ⚠️ NÚMEROS DE EXEMPLO — TROCAR ANTES DE PUBLICAR ⚠️
+ * ⚠️ NÚMEROS DE EXEMPLO - TROCAR ANTES DE PUBLICAR ⚠️
  *
  * Barra de meta da campanha. Estes valores são placeholders: publicar total
  * arrecadado falso numa página de doação engana quem doa. Ligue na fonte real
  * (gateway, planilha, API) antes de subir.
  *
- * Não tem número confiável ainda? Troque por `export const campaign = null` —
+ * Não tem número confiável ainda? Troque por `export const campaign = null` -
  * a barra some sozinha e o resto da dobra continua funcionando.
  */
 export const campaign: {
@@ -160,7 +160,7 @@ export const campaign: {
   raisedCents: 1_850_000,
   /* Meta da campanha: R$ 58.000, a mesma cifra que o vídeo fala e a
      mesma soma de `monthlyCosts` abaixo. A porcentagem da barra é calculada
-     de `raisedCents / goalCents` em `CampaignProgress` — mudar a meta aqui
+     de `raisedCents / goalCents` em `CampaignProgress` - mudar a meta aqui
      reajusta a barra sozinha, sem porcentagem escrita em componente. */
   goalCents: 5_800_000,
   supporters: 236,
@@ -168,7 +168,7 @@ export const campaign: {
 };
 
 /**
- * Vídeo do hero — ainda sem arquivo. `url` vazio mantém o card só como
+ * Vídeo do hero - ainda sem arquivo. `url` vazio mantém o card só como
  * espaço reservado (poster + selo de play); preenchendo `url`, o player
  * entra no lugar do poster.
  */
@@ -186,7 +186,7 @@ export const heroVideo: {
   aspect: string;
 } = {
   /**
-   * O mesmo VSL da v2 — as duas versões mostram o vídeo da campanha; o que
+   * O mesmo VSL da v2 - as duas versões mostram o vídeo da campanha; o que
    * muda entre elas é o resto da página. Trocar o vídeo exige trocar aqui
    * **e** em `content/landing.ts`: são dois arquivos de conteúdo separados de
    * propósito, para uma versão não alterar a outra.
@@ -215,15 +215,15 @@ export const heroVideo: {
   /**
    * Formato do vídeo, em `largura / altura`. O vídeo da campanha é quadrado
    * (1/1). Trocando para "9 / 16" ou "16 / 9" o slot inteiro se reajusta
-   * sozinho — a altura vem da janela e a largura sai daqui.
+   * sozinho - a altura vem da janela e a largura sai daqui.
    */
   aspect: "1 / 1",
 };
 
 /**
- * Tiers de ração — valores de referência, fáceis de ajustar. `popular`
+ * Tiers de ração - valores de referência, fáceis de ajustar. `popular`
  * marca o cartão em destaque ("mais escolhido"). `image` é a foto do saco de
- * ração daquele tier — `null` deixa o cartão com um slot reservado (sem
+ * ração daquele tier - `null` deixa o cartão com um slot reservado (sem
  * inventar imagem) até existir a foto real de cada produto.
  */
 export const rationTiers = [
@@ -287,7 +287,7 @@ export const rationTiers = [
  * ⚠️ CONFERIR ANTES DE PUBLICAR ⚠️
  *
  * Chave Pix da campanha. Errar aqui manda o dinheiro de quem doa para a conta
- * errada — é o único dado desta página que não dá para corrigir depois.
+ * errada - é o único dado desta página que não dá para corrigir depois.
  */
 export const pix = {
   key: org.cnpj,
@@ -296,7 +296,7 @@ export const pix = {
 };
 
 /**
- * Prova rápida de confiança — faixa escaneável logo depois da arrecadação.
+ * Prova rápida de confiança - faixa escaneável logo depois da arrecadação.
  * Só afirmações que a própria página sustenta: o CNPJ está no documento, o
  * WhatsApp e o Pix existem, e a quebra de custos está na transparência.
  */
@@ -335,7 +335,7 @@ export const impactCompare = {
 };
 
 /**
- * ⚠️ VALORES DE EXEMPLO — TROCAR PELOS CUSTOS REAIS ⚠️
+ * ⚠️ VALORES DE EXEMPLO - TROCAR PELOS CUSTOS REAIS ⚠️
  *
  * Quebra de custos mensais da rede. O total é somado a partir dos itens, então
  * ele nunca fica fora de sincronia com a lista. Idealmente bate com a meta da
@@ -346,7 +346,11 @@ export const monthlyCosts = {
   items: [
     { label: "Ração para os animais", cents: 2_300_000, dot: "bg-action" },
     { label: "Consultas e cirurgias", cents: 1_500_000, dot: "bg-warning" },
-    { label: "Estrutura e aluguel dos abrigos", cents: 1_000_000, dot: "bg-donate" },
+    {
+      label: "Estrutura e aluguel dos abrigos",
+      cents: 1_000_000,
+      dot: "bg-donate",
+    },
     { label: "Medicamentos", cents: 600_000, dot: "bg-progress" },
     { label: "Luz, água e manutenção", cents: 400_000, dot: "bg-ink-300" },
   ],
@@ -372,13 +376,13 @@ export const faq = [
   },
   {
     q: "Minha doação vai para um abrigo específico?",
-    a: "Não. A contribuição entra na rede de apoio aos abrigos parceiros, e a equipe direciona o recurso conforme a necessidade de cada um no mês — priorizando quem está mais apertado. Se você quiser destinar a doação a um projeto específico, fale com a equipe pelo WhatsApp antes de doar.",
+    a: "Não. A contribuição entra na rede de apoio aos abrigos parceiros, e a equipe direciona o recurso conforme a necessidade de cada um no mês - priorizando quem está mais apertado. Se você quiser destinar a doação a um projeto específico, fale com a equipe pelo WhatsApp antes de doar.",
   },
   {
     q: "Como sei que minha doação virou ração ou atendimento?",
     a: "A quebra dos custos mensais da rede está publicada nesta página, e a equipe responde pelo WhatsApp e por e-mail sobre a aplicação dos recursos. Para pedir detalhes de um repasse específico, é só entrar em contato pelos canais oficiais.",
     // TODO: quando houver um relatório periódico publicado (link, PDF ou
-    // página), citá-lo aqui e apontar o link — é o que fecha esta resposta.
+    // página), citá-lo aqui e apontar o link - é o que fecha esta resposta.
   },
   {
     q: "Posso doar um valor diferente das opções?",
@@ -386,7 +390,7 @@ export const faq = [
   },
   {
     q: "Posso ajudar todos os meses?",
-    a: "Sim. A doação recorrente é combinada diretamente com a equipe pelo WhatsApp — hoje ela não é automatizada por esta página, então o contato é o caminho para organizar a contribuição mensal.",
+    a: "Sim. A doação recorrente é combinada diretamente com a equipe pelo WhatsApp - hoje ela não é automatizada por esta página, então o contato é o caminho para organizar a contribuição mensal.",
   },
   {
     q: "Como posso falar com a equipe?",
@@ -395,13 +399,13 @@ export const faq = [
 ] as const;
 
 /**
- * Avaliação do Google — DESATIVADA porque não há dado confirmado.
+ * Avaliação do Google - DESATIVADA porque não há dado confirmado.
  *
  * Exibir nota e número de avaliações inventados numa página de doação é
  * enganar quem doa, então o card não é renderizado enquanto `enabled` for
  * `false`. Para ativar: confirme os números reais, preencha `rating` e
  * `reviewCount`, aponte `href` para o perfil no Google e vire `enabled` para
- * `true` — o card volta sozinho, sem mexer em componente.
+ * `true` - o card volta sozinho, sem mexer em componente.
  */
 export const googleReviews = {
   enabled: false,
@@ -414,7 +418,7 @@ export const googleReviews = {
  * Três histórias curtas sobre as fotos reais do acervo.
  *
  * O `alt` descreve a foto para quem usa leitor de tela; o título e o texto são
- * a narrativa visível. São coisas diferentes de propósito — legenda não é
+ * a narrativa visível. São coisas diferentes de propósito - legenda não é
  * texto alternativo.
  *
  * TODO: se a organização confirmar o nome e a história real de cada animal,

@@ -14,17 +14,17 @@ const DOMINIOS = [
  *
  * É o embed que o VTurb entrega, traduzido para JSX sem mudar o que ele faz.
  * Server Component: não há estado nem evento aqui, só marcação que sai pronta
- * no HTML — é o próprio `player.js` que assume a partir daí.
+ * no HTML - é o próprio `player.js` que assume a partir daí.
  *
  * ── As três peças do embed, e por que cada uma existe ─────────────────────
  * 1. `preload` e `prefetchDNS`: o player carrega dois scripts e um `.m3u8` de
  *    domínios que o navegador ainda não conhece. Sem as dicas, a resolução de
- *    DNS e o download só começam depois que o `player.js` roda — e num VSL o
+ *    DNS e o download só começam depois que o `player.js` roda - e num VSL o
  *    tempo até o primeiro quadro é o que decide se a pessoa fica. As chamadas
  *    viram `<link>` no `<head>`, mesmo declaradas aqui dentro.
  *
  * 2. O `_plt` inline (o instante em que a página começou a carregar) mora no
- *    layout raiz (`app/layout.tsx`), não aqui — `beforeInteractive` só é
+ *    layout raiz (`app/layout.tsx`), não aqui - `beforeInteractive` só é
  *    aceito lá. Ver o comentário no layout para o motivo completo.
  *
  * 3. `<vturb-smartplayer>`: o Web Component em si (ver `types/vturb.d.ts`).
@@ -35,18 +35,18 @@ const DOMINIOS = [
  * ── Por que `next/script`, e não um `<script async>` solto no JSX ─────────
  * Já foi um `<script async src={scriptSrc} />` puro, e dava dois problemas
  * juntos: (1) React avisava "scripts inside React components are never
- * executed when rendering on the client" — um `<script>` como elemento JSX
+ * executed when rendering on the client" - um `<script>` como elemento JSX
  * só executa quando sai pronto no HTML da primeira carga; numa navegação
  * client-side ele nunca roda; e (2) erro de hidratação, porque nada impedia o
  * `player.js` de terminar de carregar e registrar o Web Component **antes**
- * de o React acabar de hidratar essa árvore — quando isso acontece, o
+ * de o React acabar de hidratar essa árvore - quando isso acontece, o
  * navegador já reescreveu o conteúdo do `<vturb-smartplayer>` (troca a classe
  * do placeholder, injeta a miniatura, adiciona variáveis CSS) e o React
  * encontra um DOM diferente do que ele mesmo gerou no servidor.
  *
  * `next/script` com `strategy="afterInteractive"` resolve os dois: o
  * Next.js gerencia a inserção do `<script>` (funciona em navegação
- * client-side) e adia a execução para depois que a hidratação termina — o
+ * client-side) e adia a execução para depois que a hidratação termina - o
  * `player.js` só reescreve o conteúdo quando o React já entregou a árvore
  * para o navegador, então a mutação vira um evento comum de terceiro sobre um
  * DOM que o React não está mais comparando.
@@ -64,19 +64,19 @@ export function VturbPlayer({
 }: {
   /** `id` do elemento, no formato `vid-<id do player>`. */
   playerId: string;
-  /** `player.js` da conta — é ele que monta o player. */
+  /** `player.js` da conta - é ele que monta o player. */
   scriptSrc: string;
   /** Runtime compartilhado do SmartPlayer, carregado pelo `player.js`. */
   smartplayerSrc: string;
   /** Playlist HLS do vídeo. */
   streamSrc: string;
-  /** Altura em % da largura — o mesmo número do `padding-top` do embed. */
+  /** Altura em % da largura - o mesmo número do `padding-top` do embed. */
   ratio: number;
 }) {
   /*
    * `preload`/`prefetchDNS` do `react-dom`, e não `<link>` escrito no JSX: o
    * React de-duplica estas chamadas por URL antes de escrever o `<head>`.
-   * Com as tags soltas no JSX, o mesmo `preload` saía duas vezes no HTML —
+   * Com as tags soltas no JSX, o mesmo `preload` saía duas vezes no HTML -
    * inofensivo para o navegador, mas é lixo no `<head>` de uma página cujo
    * argumento é carregar rápido.
    */
@@ -89,7 +89,7 @@ export function VturbPlayer({
   // `forEach((href) => prefetchDNS(href))`, e não `forEach(prefetchDNS)`:
   // `forEach` chama o callback com `(item, índice, array)`, e passar
   // `prefetchDNS` direto fazia o índice do domínio virar o segundo argumento
-  // da função — que `prefetchDNS` só aceita um.
+  // da função - que `prefetchDNS` só aceita um.
   DOMINIOS.forEach((href) => prefetchDNS(href));
 
   return (

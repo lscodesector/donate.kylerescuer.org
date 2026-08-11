@@ -13,7 +13,7 @@ import { IconArrowRight, IconClose, IconHeart } from "./ui/Icons";
  * ── Por que apenas uma vez ────────────────────────────────────────────────
  * O padrão de mercado (o "backredirect") prende a pessoa em laço: cada
  * "voltar" empurra um novo estado no histórico e ela nunca consegue sair.
- * Numa página de doação isso trabalha contra o próprio objetivo — quem se
+ * Numa página de doação isso trabalha contra o próprio objetivo - quem se
  * sente preso associa o site a golpe, e esta página inteira foi construída
  * para dizer o contrário (CNPJ à mostra, custos publicados, documento da
  * Receita). Uma oferta que aparece uma vez e sai do caminho recupera quem
@@ -117,8 +117,8 @@ export function BackIntercept({
 
           <p className="text-[14px] leading-[1.55] text-ink-600">
             {checkout
-              ? "O código do Pix já está pronto nesta tela. Se você fechar agora, é só voltar e gerar de novo — mas leva menos de um minuto para concluir."
-              : "Se agora não dá, tudo bem. Mas se der, R$ 33,79 já viram 5 kg de ração — comida para cerca de 5 animais por 3 dias."}
+              ? "O código do Pix já está pronto nesta tela. Se você fechar agora, é só voltar e gerar de novo - mas leva menos de um minuto para concluir."
+              : "Se agora não dá, tudo bem. Mas se der, R$ 33,79 já viram 5 kg de ração - comida para cerca de 5 animais por 3 dias."}
           </p>
 
           <div className="flex flex-col gap-2">

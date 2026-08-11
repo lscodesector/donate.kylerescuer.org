@@ -7,7 +7,7 @@ import { Reveal } from "../ui/Reveal";
  *
  * Fica entre `Impacto` e `Racao` de propósito: `Impacto` acabou de dizer por
  * que doar, `Racao` vai perguntar quanto, e no meio falta responder o que
- * acontece depois do clique. Quem nunca doou nesta página trava aí — não por
+ * acontece depois do clique. Quem nunca doou nesta página trava aí - não por
  * desconfiar da causa, mas por não saber se vai cair num formulário longo, num
  * cadastro ou num boleto.
  *
@@ -57,7 +57,7 @@ export function ComoFunciona() {
                 className="flex items-start gap-3 rounded-md border border-ink-900/10 bg-surface p-4 sm:flex-col sm:items-center sm:gap-2.5 sm:text-center"
               >
                 {/* Ícone e número no mesmo elemento: o número é a ordem do
-                    passo e o ícone é o assunto dele — separados, viravam dois
+                    passo e o ícone é o assunto dele - separados, viravam dois
                     enfeites disputando a mesma linha. */}
                 <span className="relative flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-full bg-donate/10 text-donate">
                   <Icon size={24} />

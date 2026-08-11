@@ -188,7 +188,7 @@ export const IconWhatsApp = ({ size = 28, ...rest }: IconProps) => (
   </svg>
 );
 
-/** Barras — a quebra de custos da transparência. */
+/** Barras - a quebra de custos da transparência. */
 export const IconChart = (p: IconProps) => (
   <svg {...base(p)}>
     <path d="M3 21h18" />
@@ -198,7 +198,7 @@ export const IconChart = (p: IconProps) => (
   </svg>
 );
 
-/** Interrogação em círculo — cabeça da seção de dúvidas. */
+/** Interrogação em círculo - cabeça da seção de dúvidas. */
 export const IconQuestion = (p: IconProps) => (
   <svg {...base(p)}>
     <circle cx="12" cy="12" r="9.2" />

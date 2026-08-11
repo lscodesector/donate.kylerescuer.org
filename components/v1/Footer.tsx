@@ -53,7 +53,7 @@ export function Footer() {
 
             {/* Bloco de redes sociais removido: tinha um ícone só, o do
                 WhatsApp, e barra de redes com um item lê como barra quebrada.
-                Melhor nenhum ícone do que um isolado — o canal continua na
+                Melhor nenhum ícone do que um isolado - o canal continua na
                 seção de documentação, com o número escrito. */}
 
             <div className="flex flex-col gap-2 text-[14px] text-white/60">
@@ -73,7 +73,7 @@ export function Footer() {
               <address className="flex items-start gap-2 not-italic leading-[1.5]">
                 <IconPin size={16} className="mt-0.5 shrink-0" />
                 <span>
-                  {org.address.line1} — {org.address.line2}, {org.address.city}
+                  {org.address.line1} - {org.address.line2}, {org.address.city}
                 </span>
               </address>
             </div>
@@ -103,7 +103,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-white/10 pt-6 text-center text-[13px] leading-[1.6] text-white/50 md:text-left">
-          {/* Os links legais já estão na coluna "Legal" — repetir aqui só
+          {/* Os links legais já estão na coluna "Legal" - repetir aqui só
               duplicaria o mesmo destino duas vezes na mesma tela. */}
           <p>
             © {new Date().getFullYear()} {org.name}. Todos os direitos reservados.

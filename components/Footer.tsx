@@ -26,7 +26,7 @@ const COLUMNS = [
     links: [
       { label: "Doe ração", href: RACAO_HREF },
       /* "Doar via Pix" saiu: a seção `#pix` está desligada (ver
-         `showPixSection`) e a âncora não existe mais — o link levaria a
+         `showPixSection`) e a âncora não existe mais - o link levaria a
          lugar nenhum. O Pix continua sendo o pagamento, dentro do checkout. */
       /* Âncora, e não WhatsApp: a doação mensal agora tem checkout na própria
          página, e o botão que abre o modal está nesse bloco. */
@@ -34,7 +34,7 @@ const COLUMNS = [
       /* Aponta para o app da Lusa, e não mais para `#adotar`: a seção de
          adoção saiu da página e a âncora não existe. O rodapé é onde este
          caminho pode continuar existindo sem disputar com o pedido de doação
-         (o link sai em aba nova sozinho — ver `external` abaixo). */
+         (o link sai em aba nova sozinho - ver `external` abaixo). */
       { label: "Adotar um animal", href: adoption.appHref },
     ],
   },
@@ -69,7 +69,7 @@ const COLUMNS = [
  * Não eram duas colunas, eram cinco. A grade externa era
  * `[minmax(0,320px)_1fr]` e a interna abria em `lg:grid-cols-4`, então em
  * 1024px o `1fr` que sobrava era dividido por quatro: ~110px por coluna, com
- * "Política de Privacidade" quebrando em três linhas. Em `md` era pior — o
+ * "Política de Privacidade" quebrando em três linhas. Em `md` era pior - o
  * mesmo `1fr` valia ~336px e ainda segurava duas colunas.
  *
  * O segundo problema era de alinhamento. O bloco da marca centralizava até
@@ -80,7 +80,7 @@ const COLUMNS = [
  * ── Como fica ─────────────────────────────────────────────────────────────
  *   celular    tudo empilhado, **tudo alinhado à esquerda**
  *   sm  640px  os links abrem em 2 subcolunas
- *   md  768px  as duas colunas de verdade — marca | links
+ *   md  768px  as duas colunas de verdade - marca | links
  *
  * A divisão é meio a meio (`md:grid-cols-2`), o que dá ~456px por coluna no
  * container de 1040px: espaço de sobra para o texto da marca (42ch) e para os
@@ -88,7 +88,7 @@ const COLUMNS = [
  *
  * ── Por que nada centraliza mais ──────────────────────────────────────────
  * No celular, marca, texto, contato e copyright centralizavam e os quatro
- * grupos de links não — o rodapé tinha dois eixos ao mesmo tempo, e o olho
+ * grupos de links não - o rodapé tinha dois eixos ao mesmo tempo, e o olho
  * batia na quebra na metade dele. Agora existe uma margem esquerda só, do
  * logo até o copyright, em qualquer largura. É também o que casa com o resto
  * da página: as listas e as fichas já leem alinhadas à esquerda.
@@ -103,7 +103,7 @@ export function Footer() {
 
       <div className="container-narrow flex flex-col gap-12 pt-16">
         <div className="grid gap-12 text-left md:grid-cols-2 md:gap-16">
-          {/* Coluna 1 — marca, o que a organização é e como falar com ela. */}
+          {/* Coluna 1 - marca, o que a organização é e como falar com ela. */}
           <div className="flex flex-col items-start gap-6">
             <Image
               src="/logo/logo-footer.webp"
@@ -121,12 +121,12 @@ export function Footer() {
               O bloco "Redes sociais" saiu daqui.
 
               Ele tinha um ícone só, o do WhatsApp: uma barra de redes sociais
-              com um item lê como barra quebrada — a pessoa procura os outros e
+              com um item lê como barra quebrada - a pessoa procura os outros e
               não acha. Melhor não ter ícone nenhum do que ter um solitário.
 
               O canal não sumiu da página: o WhatsApp da equipe continua na
               seção de documentação e no FAQ, com o número escrito por extenso
-              — que é mais útil do que um ícone e é onde quem procura contato
+              - que é mais útil do que um ícone e é onde quem procura contato
               olha. Se um dia existirem Instagram e Facebook da organização, a
               barra de redes volta aqui com os três.
             */}
@@ -148,13 +148,13 @@ export function Footer() {
               <address className="flex items-start gap-2 not-italic leading-[1.5]">
                 <IconPin size={16} className="mt-0.5 shrink-0" />
                 <span>
-                  {org.address.line1} — {org.address.line2}, {org.address.city}
+                  {org.address.line1} - {org.address.line2}, {org.address.city}
                 </span>
               </address>
             </div>
           </div>
 
-          {/* Coluna 2 — os quatro grupos de links, em grade 2×2.
+          {/* Coluna 2 - os quatro grupos de links, em grade 2×2.
               `content-start` para os grupos encostarem no topo da célula: sem
               ele o grupo curto de uma linha fica flutuando no meio da altura
               que o grupo alto ao lado criou. */}
@@ -192,7 +192,7 @@ export function Footer() {
 
         {/* À esquerda em qualquer largura, como o resto do rodapé. */}
         <div className="border-t border-white/10 pt-6 text-left text-[13px] leading-[1.6] text-white/50">
-          {/* Os links legais já estão na coluna "Legal" — repetir aqui só
+          {/* Os links legais já estão na coluna "Legal" - repetir aqui só
               duplicaria o mesmo destino duas vezes na mesma tela. */}
           <p>
             © {new Date().getFullYear()} {org.name}. Todos os direitos reservados.

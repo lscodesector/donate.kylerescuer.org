@@ -6,7 +6,7 @@ import { Reveal } from "../ui/Reveal";
 
 /**
  * Fechamento. A pessoa já viu o vídeo, as histórias, os valores e a
- * documentação — aqui só falta o botão, sem nada disputando espaço com ele.
+ * documentação - aqui só falta o botão, sem nada disputando espaço com ele.
  */
 export function FinalCta() {
   return (

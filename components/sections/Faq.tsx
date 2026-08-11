@@ -8,7 +8,7 @@ import { SectionHead } from "../ui/SectionHead";
  * acessível por teclado de graça e sem custo de bundle.
  *
  * São cinco perguntas, e o corte está documentado em `faq`, no
- * `content/landing.ts` — não em quantas cabem na tela.
+ * `content/landing.ts` - não em quantas cabem na tela.
  *
  * ── Alinhamento no celular ────────────────────────────────────────────────
  * Pergunta e resposta ficavam centralizadas abaixo de `sm`, e havia um vão

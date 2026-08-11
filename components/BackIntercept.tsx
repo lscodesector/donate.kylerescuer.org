@@ -18,7 +18,7 @@ import { IconArrowRight, IconClose, IconHeart } from "./ui/Icons";
  * ── Por que apenas uma vez ────────────────────────────────────────────────
  * O padrão de mercado (o "backredirect") prende a pessoa em laço: cada
  * "voltar" empurra um novo estado no histórico e ela nunca consegue sair.
- * Numa página de doação isso trabalha contra o próprio objetivo — quem se
+ * Numa página de doação isso trabalha contra o próprio objetivo - quem se
  * sente preso associa o site a golpe, e esta página inteira foi construída
  * para dizer o contrário (CNPJ à mostra, custos publicados, documento da
  * Receita). Uma oferta que aparece uma vez e sai do caminho recupera quem
@@ -34,16 +34,16 @@ import { IconArrowRight, IconClose, IconHeart } from "./ui/Icons";
  * ── ⚠️ Isto é gatilho de SAÍDA, e só de saída ⚠️ ─────────────────────────
  * Já apareceu no lugar errado: clicar em "Quero doar ração" abria "Antes de
  * sair: os potes continuam vazios" em vez do checkout. O motivo era o
- * histórico ser disputado por dois donos — o checkout empurra uma entrada
+ * histórico ser disputado por dois donos - o checkout empurra uma entrada
  * própria ao abrir (para o "voltar" fechar o modal), e este componente lia
  * aquele `popstate` como tentativa de abandonar a página. Quem estava tentando
  * doar levava uma oferta para não ir embora.
  *
  * Duas travas resolvem, e as duas precisam continuar aqui:
  *
- *   1. `isCheckoutOpen()` — com o checkout aberto, este componente não faz
+ *   1. `isCheckoutOpen()` - com o checkout aberto, este componente não faz
  *      nada. O "voltar" pertence ao modal.
- *   2. `history.state?.sosCheckout` — o `popstate` que vem de fechar o
+ *   2. `history.state?.sosCheckout` - o `popstate` que vem de fechar o
  *      checkout é ignorado explicitamente, mesmo que o modal já tenha se
  *      desmontado quando o evento chega.
  *
@@ -54,7 +54,7 @@ import { IconArrowRight, IconClose, IconHeart } from "./ui/Icons";
 const CHAVE_SESSAO = "sos-retencao-vista";
 
 /**
- * A faixa oferecida na retenção — a menor da campanha, que é a que faz sentido
+ * A faixa oferecida na retenção - a menor da campanha, que é a que faz sentido
  * oferecer para quem já estava de saída. Vem de `rationTiers` em vez de estar
  * escrita aqui: preço em texto no popup envelhece sozinho e passa a mentir.
  */
@@ -89,7 +89,7 @@ export function BackIntercept({
 
     const onPopState = () => {
       if (liberado.current) return;
-      /* O checkout é dono do "voltar" enquanto estiver aberto — ver o bloco
+      /* O checkout é dono do "voltar" enquanto estiver aberto - ver o bloco
          "isto é gatilho de saída" no topo do arquivo. */
       if (isCheckoutOpen()) return;
       if (history.state?.sosCheckout) return;
@@ -157,8 +157,8 @@ export function BackIntercept({
               faixa mudar de preço. */}
           <p className="text-[14px] leading-[1.55] text-ink-600">
             {checkout
-              ? "O código do Pix já está pronto nesta tela. Se você fechar agora, é só voltar e gerar de novo — mas leva menos de um minuto para concluir."
-              : `Se agora não dá, tudo bem. Mas se der, ${formatBRL(TIER_RETENCAO.priceCents)} já viram ${TIER_RETENCAO.kg} kg de ração — comida para cerca de ${TIER_RETENCAO.animals} animais por ${TIER_RETENCAO.days} dias.`}
+              ? "O código do Pix já está pronto nesta tela. Se você fechar agora, é só voltar e gerar de novo - mas leva menos de um minuto para concluir."
+              : `Se agora não dá, tudo bem. Mas se der, ${formatBRL(TIER_RETENCAO.priceCents)} já viram ${TIER_RETENCAO.kg} kg de ração - comida para cerca de ${TIER_RETENCAO.animals} animais por ${TIER_RETENCAO.days} dias.`}
           </p>
 
           <div className="flex flex-col gap-2">
@@ -174,7 +174,7 @@ export function BackIntercept({
             ) : (
               /*
                * Leva para a seção de ração, como **todo** CTA de doação desta
-               * página — cabeçalho, hero, impacto, barra fixa e fechamento vão
+               * página - cabeçalho, hero, impacto, barra fixa e fechamento vão
                * todos para `RACAO_HREF`. Já esteve abrindo o checkout de 5 kg
                * direto daqui, e era a única porta que pulava a escolha da
                * faixa: a pessoa caía no pagamento de um valor que ela não
@@ -182,7 +182,7 @@ export function BackIntercept({
                * doação mensal, que não tem faixa de kg.
                *
                * O 5 kg segue no texto acima como exemplo do que o menor valor
-               * já resolve — mas quem decide o tamanho é ela, na grade.
+               * já resolve - mas quem decide o tamanho é ela, na grade.
                */
               <Link
                 href={RACAO_HREF}

@@ -7,7 +7,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
  *
  * O efeito precisa rodar **antes da pintura**: ele é quem zera o número para a
  * contagem começar do zero. Com `useEffect`, que roda depois, o navegador
- * chegava a pintar o valor final e só então voltava para zero — um piscar
+ * chegava a pintar o valor final e só então voltava para zero - um piscar
  * visível em todo card. E `useLayoutEffect` puro avisa no console durante o
  * SSR, onde não existe pintura para acontecer antes. Daí a troca pela largura
  * do ambiente, e não por uma flag.
@@ -22,7 +22,7 @@ const useIsomorphicLayoutEffect =
  * sem JavaScript o número aparece do mesmo jeito (o `<noscript>` do layout já
  * cuida do resto da página), e o que o Google lê é "400", não "0". Quem tem
  * JavaScript vê o zero só a partir do efeito de layout, antes da primeira
- * pintura — então na prática a contagem sempre começa do zero.
+ * pintura - então na prática a contagem sempre começa do zero.
  *
  * `prefix` e `suffix` ficam fora da conta de propósito: o "+" de "+400" e o
  * "t" de "+20t" são rótulo, não número, e animá-los daria "2t, 7t, 13t…".
@@ -71,7 +71,7 @@ export function CountUp({
       if (t < 1) frame = requestAnimationFrame(passo);
     };
 
-    // Dispara uma vez, quando o card entra na tela — e não na montagem: os
+    // Dispara uma vez, quando o card entra na tela - e não na montagem: os
     // cards da transparência estão bem abaixo da dobra, e a contagem toda
     // aconteceria antes de alguém chegar lá.
     const observer = new IntersectionObserver(

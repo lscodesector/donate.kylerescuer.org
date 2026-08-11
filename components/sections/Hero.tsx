@@ -10,7 +10,7 @@ import { VturbPlayer } from "../ui/VturbPlayer";
  * (`.screen-section` = 100svh menos a barra fixa).
  *
  * O vídeo é o argumento de venda da campanha, então ele é quem fica com a
- * altura que sobra — e o texto é que cede. Por isso a manchete e a linha de
+ * altura que sobra - e o texto é que cede. Por isso a manchete e a linha de
  * apoio são curtas e o CTA secundário é um link, não um segundo botão.
  *
  * ── O que já ocupou este espaço ───────────────────────────────────────────
@@ -18,14 +18,14 @@ import { VturbPlayer } from "../ui/VturbPlayer";
  * quatro números da rede em card. Os dois saíram: a dobra tem espaço para uma
  * ideia, e ela é o vídeo. Número aqui competia com ele por altura e ainda
  * dividia a atenção antes de existir qualquer pedido. Os números continuam na
- * página, em card, na seção de transparência — onde há espaço para eles serem
+ * página, em card, na seção de transparência - onde há espaço para eles serem
  * lidos de verdade.
  *
  * O tamanho do vídeo não é uma conta fixa. O slot dele é o item flexível da
  * coluna (`.screen-section__flex`) e fica com a altura que sobrar depois do
  * texto e dos botões; dentro dele, o player ocupa a largura toda e tira a
  * própria altura do `aspect-ratio`. Se essa altura não couber na sobra, o
- * `max-h-full` apara o excesso — o player fica mais baixo que o formato, nunca
+ * `max-h-full` apara o excesso - o player fica mais baixo que o formato, nunca
  * mais alto (ver o comentário longo lá embaixo).
  *
  * A vantagem sobre a versão anterior (`min(100svh - 32rem, ...)`) é que aqui
@@ -39,7 +39,7 @@ import { VturbPlayer } from "../ui/VturbPlayer";
  * Serve de teto para o vídeo em tela baixa (ver `maxWidth` no slot). É o único
  * número medido a olho desta dobra, e ele erra para o lado seguro: reservar
  * demais encolhe o vídeo alguns pixels, reservar de menos deixa o vídeo passar
- * por cima do botão de doar — que foi o bug que este valor existe para evitar.
+ * por cima do botão de doar - que foi o bug que este valor existe para evitar.
  *
  * Medido com o texto todo visível (celular alto, onde a reserva é maior): ~101px
  * de manchete + ~66px de linha de apoio + 42px de botão + ~60px de link e selo
@@ -52,7 +52,7 @@ export function Hero() {
   /*
    * Quantas vezes o vídeo é mais largo que alto. Com o VTurb no ar, sai do
    * `ratio` do player (altura em % da largura); sem ele, do `aspect` do poster.
-   * Um número só alimenta o formato do slot **e** o teto de largura — assim os
+   * Um número só alimenta o formato do slot **e** o teto de largura - assim os
    * dois não têm como sair de sincronia.
    */
   const [largura, altura] = heroVideo.aspect.split("/").map(Number);
@@ -68,7 +68,7 @@ export function Hero() {
         respiro em cima e embaixo, em partes iguais.
 
         Antes o slot do vídeo era `flex: 1 1 auto` e engolia toda a folga da
-        dobra sozinho — no celular isso abria ~130px de vazio entre o vídeo e o
+        dobra sozinho - no celular isso abria ~130px de vazio entre o vídeo e o
         botão de doar, e a pessoa lia a dobra como se o CTA não existisse.
       */}
       <div className="container-narrow relative flex h-full max-w-[620px] flex-col items-stretch justify-center gap-[clamp(0.625rem,1.4vh,1rem)] py-[clamp(0.75rem,1.8vh,1.25rem)]">
@@ -84,14 +84,14 @@ export function Hero() {
 
             O motivo é que a folga desta dobra não é a mesma em todo lugar.
             Num celular, depois do texto e dos botões sobram ~190px além do que
-            o vídeo precisa — dá para crescer à vontade. Num notebook de
+            o vídeo precisa - dá para crescer à vontade. Num notebook de
             1280×800 a folga já é zero: a largura é grande (o que infla o `vw`)
             mas a altura não acompanha, e cada pixel de fonte ali sai do vídeo.
             Pesar `vh` faz o título crescer onde sobra altura e se conter onde
             não sobra.
 
             Resultado medido: +22% no celular, +5~7% no notebook, +14% em tela
-            grande — com o vídeo continuando quadrado (proporção 1.00 a 1.08)
+            grande - com o vídeo continuando quadrado (proporção 1.00 a 1.08)
             em todas elas. Piso 24px, teto 48px.
           */}
           <h1 className="text-[clamp(1.5rem,0.875rem+0.95vw+1.45vh,3rem)] font-extrabold leading-[1.12] text-ink-900">
@@ -101,11 +101,11 @@ export function Hero() {
 
           {/* Em tela baixa a linha de apoio sai: ela custa ~40px que fazem
               diferença no vídeo, e a manchete sozinha já entrega o essencial.
-              `@media` por altura, não por largura — o que aperta aqui é a
+              `@media` por altura, não por largura - o que aperta aqui é a
               altura da janela. O corte subiu para 820px junto com o resto do
               texto: o objetivo é o vídeo ficar com a altura, não o texto. */}
           {/* Escala só por `vh`: a largura desta linha já é limitada pelo
-              `52ch`, então `vw` aqui não mudaria nada de útil — só a altura da
+              `52ch`, então `vw` aqui não mudaria nada de útil - só a altura da
               janela decide quanto ela pode crescer. Piso 14px, teto 18px. */}
           <p className="mx-auto hidden max-w-[52ch] text-[clamp(0.875rem,0.4rem+1.05vh,1.125rem)] leading-[1.5] text-ink-600 [@media(min-height:820px)]:block">
             {heroCopy.subheadline}
@@ -139,7 +139,7 @@ export function Hero() {
 
           No celular o vídeo sai da coluna de texto: o `-mx-5` está no slot (e
           não na caixa) justamente para o teto de largura poder encolher a caixa
-          mantendo-a centralizada — com a margem negativa na caixa, ela encolhia
+          mantendo-a centralizada - com a margem negativa na caixa, ela encolhia
           para a esquerda.
         */}
         <div className="-mx-5 flex min-h-0 shrink items-center justify-center sm:mx-0">

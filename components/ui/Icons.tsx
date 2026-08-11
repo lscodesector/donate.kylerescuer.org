@@ -160,7 +160,7 @@ export const IconPaw = ({ size = 20, ...rest }: IconProps) => (
   </svg>
 );
 
-/** Setas em ciclo — a doação que se repete todo mês. */
+/** Setas em ciclo - a doação que se repete todo mês. */
 export const IconRepeat = (p: IconProps) => (
   <svg {...base(p)}>
     <path d="M4 9a5 5 0 0 1 5-5h9" />
@@ -198,7 +198,7 @@ export const IconWhatsApp = ({ size = 28, ...rest }: IconProps) => (
   </svg>
 );
 
-/** Barras — a quebra de custos da transparência. */
+/** Barras - a quebra de custos da transparência. */
 export const IconChart = (p: IconProps) => (
   <svg {...base(p)}>
     <path d="M3 21h18" />
@@ -208,7 +208,7 @@ export const IconChart = (p: IconProps) => (
   </svg>
 );
 
-/** Interrogação em círculo — cabeça da seção de dúvidas. */
+/** Interrogação em círculo - cabeça da seção de dúvidas. */
 export const IconQuestion = (p: IconProps) => (
   <svg {...base(p)}>
     <circle cx="12" cy="12" r="9.2" />
