@@ -1,6 +1,6 @@
 import Image from "next/image";
-import Link from "next/link";
-import { checkoutHref, copy, formatBRL, rationTiers } from "@/content/landing";
+import { copy, formatBRL, rationTiers } from "@/content/landing";
+import { DonateTierButton } from "../checkout/DonateTierButton";
 import { MonthlyDonateButton } from "../MonthlyDonateButton";
 import { IconBowl, IconHeart, IconRepeat } from "../ui/Icons";
 import { Reveal } from "../ui/Reveal";
@@ -43,14 +43,26 @@ export function Racao() {
                   </span>
                 )}
 
-                <div className="relative aspect-[16/10] w-full overflow-hidden rounded-t-md bg-surface-alt">
+                {/*
+                  Quadrado e branco, e não `16/10` sobre `surface-alt`: as
+                  fotos são embalagens em pé, recortadas em fundo branco. Num
+                  slot deitado sobrava faixa vazia dos dois lados; no quadrado
+                  o saco ocupa a moldura inteira.
+
+                  `object-contain` é obrigatório aqui — com `object-cover` o
+                  navegador preenche o quadrado cortando o saco pelo topo e
+                  pela base, e a foto de 150kg (seis sacos lado a lado) perdia
+                  metade da fileira. Como todos os arquivos já saem no mesmo
+                  900×900 (ver `rationTiers`), `contain` não deixa sobra.
+                */}
+                <div className="relative aspect-square w-full overflow-hidden rounded-t-md bg-white">
                   {tier.image ? (
                     <Image
                       src={tier.image.src}
                       alt={tier.image.alt}
                       fill
-                      sizes="(min-width: 640px) 290px, 45vw"
-                      className="object-cover"
+                      sizes="(min-width: 640px) 300px, 45vw"
+                      className="object-contain"
                     />
                   ) : (
                     <div className="flex h-full w-full flex-col items-center justify-center gap-1 border-2 border-dashed border-ink-900/15 text-ink-300">
@@ -83,14 +95,23 @@ export function Racao() {
                     <strong className="font-semibold text-ink-900">{tier.days} dias</strong>.
                   </p>
 
-                  {/* Checkout interno: a pessoa segue no site até o Pix. */}
-                  <Link
-                    href={checkoutHref(tier.id)}
-                    className="mt-auto inline-flex w-full min-h-[48px] items-center justify-center gap-1.5 rounded-sm bg-donate px-2 text-[13px] font-extrabold uppercase tracking-[0.02em] text-donate-ink transition-colors hover:bg-donate-hover"
+                  {/*
+                    O rótulo é só o peso — "Doar 5kg", "Doar 150kg". O preço
+                    saiu daqui: ele já está no topo do cartão, em corpo maior,
+                    e repetido dentro do botão criava a linha comprida que
+                    obrigava o `truncate` a cortar justamente o valor. Peso é
+                    também o que diferencia um cartão do outro na grade.
+
+                    Abre o checkout em modal, sem sair da página; o `href` para
+                    `/doar/<faixa>` continua ali como caminho sem JavaScript.
+                  */}
+                  <DonateTierButton
+                    tier={tier}
+                    className="mt-auto inline-flex w-full min-h-[48px] items-center justify-center gap-1.5 rounded-sm bg-donate px-2 text-[14px] font-extrabold uppercase tracking-[0.02em] text-donate-ink transition-colors hover:bg-donate-hover"
                   >
                     <IconHeart size={15} />
-                    <span className="truncate">Doar {price}</span>
-                  </Link>
+                    Doar {tier.kg}kg
+                  </DonateTierButton>
                 </div>
               </Reveal>
             );

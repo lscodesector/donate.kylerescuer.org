@@ -2,6 +2,11 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { RACAO_HREF, formatBRL, rationTiers } from "@/content/landing";
+import {
+  consumeBackInterceptSuppression,
+  isCheckoutOpen,
+} from "./checkout/checkout-bus";
 import { IconArrowRight, IconClose, IconHeart } from "./ui/Icons";
 
 /**
@@ -25,9 +30,35 @@ import { IconArrowRight, IconClose, IconHeart } from "./ui/Icons";
  *
  * Quer mesmo o laço infinito? Troque `liberado.current = true` por um
  * `pushState` novo dentro do `onPopState`.
+ *
+ * ── ⚠️ Isto é gatilho de SAÍDA, e só de saída ⚠️ ─────────────────────────
+ * Já apareceu no lugar errado: clicar em "Quero doar ração" abria "Antes de
+ * sair: os potes continuam vazios" em vez do checkout. O motivo era o
+ * histórico ser disputado por dois donos — o checkout empurra uma entrada
+ * própria ao abrir (para o "voltar" fechar o modal), e este componente lia
+ * aquele `popstate` como tentativa de abandonar a página. Quem estava tentando
+ * doar levava uma oferta para não ir embora.
+ *
+ * Duas travas resolvem, e as duas precisam continuar aqui:
+ *
+ *   1. `isCheckoutOpen()` — com o checkout aberto, este componente não faz
+ *      nada. O "voltar" pertence ao modal.
+ *   2. `history.state?.sosCheckout` — o `popstate` que vem de fechar o
+ *      checkout é ignorado explicitamente, mesmo que o modal já tenha se
+ *      desmontado quando o evento chega.
+ *
+ * A regra em uma frase: **CTA de doação abre checkout; este popup só aparece
+ * quando a pessoa está de fato saindo, e nunca por cima do pagamento.**
  */
 
 const CHAVE_SESSAO = "sos-retencao-vista";
+
+/**
+ * A faixa oferecida na retenção — a menor da campanha, que é a que faz sentido
+ * oferecer para quem já estava de saída. Vem de `rationTiers` em vez de estar
+ * escrita aqui: preço em texto no popup envelhece sozinho e passa a mentir.
+ */
+const TIER_RETENCAO = rationTiers[0];
 
 export function BackIntercept({
   variant = "landing",
@@ -58,6 +89,12 @@ export function BackIntercept({
 
     const onPopState = () => {
       if (liberado.current) return;
+      /* O checkout é dono do "voltar" enquanto estiver aberto — ver o bloco
+         "isto é gatilho de saída" no topo do arquivo. */
+      if (isCheckoutOpen()) return;
+      if (history.state?.sosCheckout) return;
+      /* O "voltar" que o próprio checkout disparou ao ser fechado no X. */
+      if (consumeBackInterceptSuppression()) return;
       liberado.current = true;
       sessionStorage.setItem(CHAVE_SESSAO, "1");
       setAberto(true);
@@ -115,30 +152,46 @@ export function BackIntercept({
               : "Antes de sair: os potes continuam vazios"}
           </h2>
 
+          {/* Preço e impacto saem de `rationTiers`, nunca escritos aqui: um
+              número em texto no popup continuaria dizendo R$ 33,79 depois de a
+              faixa mudar de preço. */}
           <p className="text-[14px] leading-[1.55] text-ink-600">
             {checkout
               ? "O código do Pix já está pronto nesta tela. Se você fechar agora, é só voltar e gerar de novo — mas leva menos de um minuto para concluir."
-              : "Se agora não dá, tudo bem. Mas se der, R$ 33,79 já viram 5 kg de ração — comida para cerca de 5 animais por 3 dias."}
+              : `Se agora não dá, tudo bem. Mas se der, ${formatBRL(TIER_RETENCAO.priceCents)} já viram ${TIER_RETENCAO.kg} kg de ração — comida para cerca de ${TIER_RETENCAO.animals} animais por ${TIER_RETENCAO.days} dias.`}
           </p>
 
           <div className="flex flex-col gap-2">
-            <Link
-              href={checkout ? "#" : "/doar/5kg"}
-              onClick={fechar}
-              className="inline-flex min-h-[50px] items-center justify-center gap-2 rounded-full bg-donate px-6 text-[14px] font-extrabold uppercase tracking-[0.03em] text-donate-ink transition-colors hover:bg-donate-hover"
-            >
-              <IconHeart size={17} />
-              {checkout ? "Continuar meu Pix" : "Doar R$ 33,79"}
-            </Link>
-
-            {!checkout && (
-              <Link
-                href="/#racao"
+            {checkout ? (
+              <button
+                type="button"
                 onClick={fechar}
-                className="inline-flex min-h-[44px] items-center justify-center gap-1.5 text-[13px] font-extrabold text-ink-600 transition-colors hover:text-action"
+                className="inline-flex min-h-[50px] items-center justify-center gap-2 rounded-full bg-donate px-6 text-[14px] font-extrabold uppercase tracking-[0.03em] text-donate-ink transition-colors hover:bg-donate-hover"
               >
-                Ver todos os valores
-                <IconArrowRight size={15} />
+                <IconHeart size={17} />
+                Continuar meu Pix
+              </button>
+            ) : (
+              /*
+               * Leva para a seção de ração, como **todo** CTA de doação desta
+               * página — cabeçalho, hero, impacto, barra fixa e fechamento vão
+               * todos para `RACAO_HREF`. Já esteve abrindo o checkout de 5 kg
+               * direto daqui, e era a única porta que pulava a escolha da
+               * faixa: a pessoa caía no pagamento de um valor que ela não
+               * tinha escolhido. A única exceção da página continua sendo a
+               * doação mensal, que não tem faixa de kg.
+               *
+               * O 5 kg segue no texto acima como exemplo do que o menor valor
+               * já resolve — mas quem decide o tamanho é ela, na grade.
+               */
+              <Link
+                href={RACAO_HREF}
+                onClick={fechar}
+                className="inline-flex min-h-[50px] items-center justify-center gap-2 rounded-full bg-donate px-6 text-[14px] font-extrabold uppercase tracking-[0.03em] text-donate-ink transition-colors hover:bg-donate-hover"
+              >
+                <IconHeart size={17} />
+                Doar ração
+                <IconArrowRight size={16} />
               </Link>
             )}
           </div>

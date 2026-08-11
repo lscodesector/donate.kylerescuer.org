@@ -82,7 +82,10 @@ export function Impacto() {
             href={RACAO_HREF}
             className="inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-full bg-donate px-6 text-[15px] font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow-[0_10px_30px_-8px_rgba(27,138,75,.5)] transition-colors hover:bg-donate-hover sm:w-auto sm:self-start sm:px-8"
           >
-            Escolher quantos quilos doar
+            {/* "Escolher quantos quilos doar" era longo demais para um CTA:
+                quebrava em duas linhas no celular e descrevia o passo em vez
+                de nomear a ação. */}
+            Doar ração
             <IconArrowRight size={18} />
           </a>
         </Reveal>

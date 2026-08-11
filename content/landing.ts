@@ -14,6 +14,22 @@
  */
 export const RACAO_HREF = "#racao";
 
+/**
+ * A seção "Pix direto" está **desligada**.
+ *
+ * Ela oferecia a chave Pix solta no meio da página, no valor que a pessoa
+ * quisesse. Com o checkout em modal, isso virou um caminho concorrente: quem
+ * chegava ali saía do fluxo que mostra a ração, o valor e o impacto, e ia
+ * digitar um valor no app do banco sem nada disso na frente. Pix agora é o
+ * meio de pagamento **dentro** do checkout, não uma seção que disputa com ele.
+ *
+ * O componente (`components/sections/Pix.tsx`) e a copy (`copy.pix`) continuam
+ * onde estavam de propósito: virar isto para `true` devolve a seção inteira,
+ * sem precisar reescrever nada. Enquanto estiver `false`, a âncora `#pix` não
+ * existe — por isso o link "Doar via Pix" saiu do rodapé.
+ */
+export const showPixSection = false;
+
 /** Âncora do bloco de doação mensal, dentro da seção de ração. */
 export const MENSAL_HREF = "#mensal";
 
@@ -165,6 +181,36 @@ export const copy = {
     title: "Quer garantir a ração todo mês?",
     text: "Doação avulsa resolve a semana. Doação mensal é o que permite planejar: sabendo com quanto contar, os abrigos compram ração em quantidade e nenhum animal fica esperando o próximo mutirão.",
     cta: "Quero ajudar todo mês",
+  },
+  /**
+   * O bloco de três passos que abre o caminho até o checkout.
+   *
+   * Existe para responder, antes do pedido, a pergunta que trava quem nunca
+   * doou nesta página: "o que exatamente acontece quando eu clico?". São três
+   * passos porque o fluxo tem três — escolher, pagar, a ração chegar — e um
+   * quarto seria invenção.
+   */
+  comoFunciona: {
+    eyebrow: "Como funciona",
+    title: "Três passos, menos de um minuto",
+    seal: "Doação 100% segura",
+    steps: [
+      {
+        icon: "bowl",
+        title: "Você escolhe um saco de ração",
+        text: "Escolha o tamanho do saco que você quer doar. Cada faixa mostra quantos animais alimenta e por quantos dias.",
+      },
+      {
+        icon: "pix",
+        title: "Faz o pagamento via Pix",
+        text: "O código é gerado na hora, sem sair desta página. Pagamento rápido, seguro e direto para o CNPJ da organização.",
+      },
+      {
+        icon: "heart",
+        title: "A ração vira comida no pote",
+        text: "A compra vira ração entregue nos abrigos, para quem já está com os animais na mão.",
+      },
+    ],
   },
   pix: {
     eyebrow: "Pix direto",
@@ -585,9 +631,24 @@ export const adoption = {
 
 /**
  * Tiers de ração — valores de referência, fáceis de ajustar. `popular`
- * marca o cartão em destaque ("mais escolhido"). `image` é a foto do saco de
- * ração daquele tier — `null` deixa o cartão com um slot reservado (sem
- * inventar imagem) até existir a foto real de cada produto.
+ * marca o cartão em destaque ("mais escolhido").
+ *
+ * `image` é a foto do saco daquele tier, em `/public/racao/`. Os arquivos são
+ * gerados a partir dos PNG originais de `/public/fotos-sos/` — sempre as
+ * embalagens **verdes**, nunca as vermelhas — e todos saem no mesmo quadrado
+ * de 900×900 com fundo branco e uma folga de 50px. Terem a mesma proporção é o
+ * que faz os seis cartões ficarem iguais na grade; por isso o cartão desenha a
+ * foto com `object-contain`, e não `object-cover`, que cortaria o saco.
+ *
+ * Regerar (a partir da raiz do projeto), se as fotos originais mudarem:
+ *
+ *   sharp(origem).trim({threshold:12})
+ *     .resize(800, 800, { fit: 'contain', background: '#fff' })
+ *     .extend({ top:50, bottom:50, left:50, right:50, background: '#fff' })
+ *     .webp({ quality: 84 })
+ *
+ * O tipo continua aceitando `null`: tier novo entra sem foto e o cartão mostra
+ * o slot reservado, em vez de repetir a imagem de outra faixa.
  */
 export const rationTiers = [
   {
@@ -597,7 +658,10 @@ export const rationTiers = [
     animals: 5,
     days: 3,
     popular: false,
-    image: null as { src: string; alt: string } | null,
+    image: {
+      src: "/racao/racao-5kg.png",
+      alt: "Saco de 5 kg de ração premium para cães",
+    } as { src: string; alt: string } | null,
   },
   {
     id: "10kg",
@@ -606,7 +670,10 @@ export const rationTiers = [
     animals: 7,
     days: 5,
     popular: false,
-    image: null as { src: string; alt: string } | null,
+    image: {
+      src: "/racao/racao-10kg.png",
+      alt: "Saco de 10 kg de ração premium para cães",
+    } as { src: string; alt: string } | null,
   },
   {
     id: "15kg",
@@ -615,7 +682,10 @@ export const rationTiers = [
     animals: 9,
     days: 6,
     popular: true,
-    image: null as { src: string; alt: string } | null,
+    image: {
+      src: "/racao/racao-15kg.png",
+      alt: "Saco de 15 kg de ração premium para cães",
+    } as { src: string; alt: string } | null,
   },
   {
     id: "30kg",
@@ -624,7 +694,10 @@ export const rationTiers = [
     animals: 15,
     days: 8,
     popular: false,
-    image: null as { src: string; alt: string } | null,
+    image: {
+      src: "/racao/racao-30kg.png",
+      alt: "Dois sacos de 15 kg de ração premium, somando 30 kg",
+    } as { src: string; alt: string } | null,
   },
   {
     id: "75kg",
@@ -633,7 +706,10 @@ export const rationTiers = [
     animals: 28,
     days: 12,
     popular: false,
-    image: null as { src: string; alt: string } | null,
+    image: {
+      src: "/racao/racao-75kg.png",
+      alt: "Três sacos de 25 kg de ração premium, somando 75 kg",
+    } as { src: string; alt: string } | null,
   },
   {
     id: "150kg",
@@ -642,9 +718,56 @@ export const rationTiers = [
     animals: 45,
     days: 18,
     popular: false,
-    image: null as { src: string; alt: string } | null,
+    image: {
+      src: "/racao/racao-150kg.png",
+      alt: "Seis sacos de 25 kg de ração premium, somando 150 kg",
+    } as { src: string; alt: string } | null,
   },
 ] as const;
+
+export type RationTier = (typeof rationTiers)[number];
+
+/**
+ * Taxa de processamento que o checkout oferece cobrir.
+ *
+ * ⚠️ **É configuração, não número no componente.** O checkout lê o valor daqui
+ * e recalcula a cada faixa — nada de "+ R$ 4,99" escrito na tela. Mudar a
+ * conta é mudar estas três linhas.
+ *
+ * Hoje é **R$ 4,99 fixo**, igual em todas as faixas e na doação mensal: é o
+ * valor acordado com a operação. `percent` fica em zero — ele existe porque um
+ * gateway costuma cobrar percentual + fixo, e o dia em que a conta virar
+ * "1,2% + R$ 0,99" é só preencher os dois campos.
+ *
+ * Já foi 5% do valor, o que dava R$ 1,69 no saco de 5 kg e R$ 37,15 no de
+ * 150 kg — taxa que crescia com a doação sem que o custo real crescesse junto.
+ *
+ * Com `enabled: false` a opção some do checkout e o total volta a ser só o
+ * valor da ração.
+ *
+ * `defaultChecked` deixa a caixa marcada ao abrir a etapa de dados. Vem
+ * marcada como no checkout de referência da rede, e a contrapartida está na
+ * tela: o valor aparece em destaque, o motivo é explicado e o total logo
+ * abaixo já vem somado — quem não quiser, desmarca em um clique. O que gera
+ * contestação não é a taxa, é a pessoa descobrir depois.
+ */
+export const checkoutFee = {
+  enabled: true,
+  /** Percentual sobre o valor doado. Zero: a taxa de hoje é só a fixa. */
+  percent: 0,
+  /** Valor fixo somado depois do percentual, em centavos — R$ 4,99. */
+  fixedCents: 499,
+  defaultChecked: true,
+};
+
+/** Quanto a taxa custa para um valor de doação. `0` quando desligada. */
+export function feeCentsFor(amountCents: number) {
+  if (!checkoutFee.enabled) return 0;
+  return (
+    Math.round(amountCents * (checkoutFee.percent / 100)) +
+    checkoutFee.fixedCents
+  );
+}
 
 /**
  * ⚠️ CONFERIR ANTES DE PUBLICAR ⚠️
@@ -702,7 +825,18 @@ export const impactCompare = {
  *
  * Quebra de custos mensais da rede, em reais. `isMock` marca que os números
  * ainda são de exemplo: enquanto ele for `true`, a seção está publicando uma
- * necessidade mensal de R$ 60.000 que ninguém sustenta com planilha.
+ * necessidade mensal de R$ 58.000 que ninguém sustenta com planilha.
+ *
+ * ── Por que 58 mil ────────────────────────────────────────────────────────
+ * É a meta que o vídeo da campanha fala em voz alta. Era R$ 60.000 aqui, e
+ * publicar 58 no vídeo e 60 na página é a incoerência que o visitante nota.
+ * Este é o **único** lugar da v2 onde a cifra aparece: a barra de meta em
+ * reais foi retirada do hero e da barra fixa (ver `impactNumbers` e
+ * `StickyDonateBar`), então não há um segundo número para sincronizar. Se a
+ * barra de meta voltar um dia, ela lê daqui — nunca de um valor escrito no
+ * componente. A v1, que ainda tem a barra, tem a mesma cifra em
+ * `content/v1/landing.ts` (`campaign.goalCents`), com a porcentagem calculada
+ * de `arrecadado / meta`.
  *
  * O total é somado a partir dos itens (`monthlyCostsTotal`), então a linha
  * final nunca fica fora de sincronia com a lista.
@@ -710,7 +844,7 @@ export const impactCompare = {
  * Esta lista já esteve fora da v2, trocada por uma divisão em porcentagem — o
  * argumento era que total em reais envelhece e precisa de manutenção, enquanto
  * proporção é estável. Voltou por decisão de campanha: o valor em reais é o que
- * dá tamanho ao problema ("faltam R$ 60 mil por mês"), e é o que a v1 usava. O
+ * dá tamanho ao problema ("faltam R$ 58 mil por mês"), e é o que a v1 usava. O
  * preço é este comentário: **número em reais só continua verdadeiro se alguém
  * revisar.** A versão em porcentagem está em `components/v1` do histórico
  * (`git log -S allocation`) se um dia valer a pena voltar.
@@ -718,8 +852,10 @@ export const impactCompare = {
 export const monthlyCosts = {
   isMock: true,
   items: [
-    { label: "Ração para os animais", cents: 2_400_000, dot: "bg-action" },
-    { label: "Consultas e cirurgias", cents: 1_600_000, dot: "bg-warning" },
+    /* A soma destes cinco é a meta da campanha: R$ 58.000. Mexeu em um item,
+       confira o total — é ele que a página publica. */
+    { label: "Ração para os animais", cents: 2_300_000, dot: "bg-action" },
+    { label: "Consultas e cirurgias", cents: 1_500_000, dot: "bg-warning" },
     { label: "Estrutura e aluguel dos abrigos", cents: 1_000_000, dot: "bg-donate" },
     { label: "Medicamentos", cents: 600_000, dot: "bg-progress" },
     { label: "Luz, água e manutenção", cents: 400_000, dot: "bg-ink-300" },
@@ -739,40 +875,43 @@ export const cnpjDocument = {
   subtitle: "Documento oficial da Receita Federal",
 };
 
+/**
+ * As dúvidas — **cinco, e só cinco**.
+ *
+ * A lista tinha oito e foi cortada por decisão de campanha: numa página de
+ * conversão, FAQ longo vira parede de texto que ninguém abre, e cada pergunta
+ * a mais empurra o fechamento para baixo. Ficaram as cinco que respondem uma
+ * objeção real antes do pagamento — para onde vai, é seguro, como é o mensal,
+ * posso doar outro valor, onde acompanho.
+ *
+ * O que saiu continua respondido em outro lugar da página, e é por isso que
+ * saiu sem prejuízo: o registro da organização e o cartão CNPJ estão na seção
+ * de documentação; a escolha do abrigo e o comprovante de entrega, no WhatsApp
+ * da equipe; a adoção, no link do rodapé; os canais de contato, no rodapé e na
+ * documentação.
+ *
+ * ⚠️ Se for acrescentar uma pergunta, tire outra. Cinco é o limite acordado.
+ */
 export const faq = [
   {
-    q: "A SOS Animal Help é uma organização registrada?",
-    a: "Sim. O CNPJ 63.153.881/0001-09 é público e pode ser conferido no site da Receita Federal. O cartão CNPJ emitido pela Receita fica disponível nesta própria página, na seção de documentação.",
+    q: "Pra onde vai a ração?",
+    a: "Para os abrigos listados nesta página, em diferentes estados do Brasil. A ração não fica com a gente: ela é comprada e entregue direto para quem já está com os animais na mão. A equipe direciona cada entrega conforme a necessidade do mês, priorizando o abrigo mais apertado.",
   },
   {
-    q: "Quais abrigos recebem a ração?",
-    a: "Cinco abrigos em diferentes estados do Brasil. Quatro deles estão listados nesta página com cidade, estado e o Instagram do próprio abrigo — dá para abrir o perfil e conferir o trabalho antes de doar.",
-  },
-  {
-    q: "Posso escolher para qual abrigo vai a minha ração?",
-    a: "Por aqui, não. A doação entra na rede e a equipe direciona a ração conforme a necessidade de cada abrigo no mês, priorizando quem está mais apertado. Se você quiser destinar a um abrigo específico, fale com a equipe pelo WhatsApp antes de doar.",
-  },
-  {
-    q: "Como sei que a ração realmente chegou?",
-    a: "As entregas são registradas e publicadas nos perfis dos abrigos e da SOS Animal Help. Para pedir o comprovante de uma entrega específica, é só falar com a equipe pelo WhatsApp ou por e-mail.",
-  },
-  {
-    q: "Posso doar um valor diferente das faixas de ração?",
-    a: "Pode. As faixas de kg existem para você enxergar o impacto, mas qualquer valor ajuda: use o Pix com a chave desta página, no valor que quiser.",
+    q: "A doação é segura?",
+    a: "É. A SOS Animal Help tem CNPJ 63.153.881/0001-09, público e conferível no site da Receita Federal — o cartão CNPJ está nesta própria página. O pagamento é feito por Pix direto para a conta da organização, e é o nome dela que aparece na tela do seu banco antes de você confirmar.",
   },
   {
     q: "Como funciona a doação mensal?",
     a: "Na seção de ração há o botão “Quero ajudar todo mês”: você escolhe o valor e recebe o Pix na hora. Esse primeiro Pix cobre o primeiro mês — a cobrança ainda não é automática, então a equipe combina os meses seguintes com você pelo WhatsApp.",
   },
   {
-    q: "Posso adotar um dos animais?",
-    /* Sem "na seção Adote um deles": essa seção saiu da página (ver
-       `app/v2/page.tsx`). O caminho agora é o app, e o link está no rodapé. */
-    a: "Pode. Os animais dos abrigos que apoiamos ficam publicados no app da Lusa, com as informações de cada um — idade, peso e em que abrigo estão. O link “Adotar um animal”, no rodapé desta página, abre a lista direto no app.",
+    q: "Posso doar um valor diferente das faixas de ração?",
+    a: "Pode. As faixas de kg existem para você enxergar o impacto, mas qualquer valor ajuda: fale com a equipe pelo WhatsApp (85) 99763-4409 e ela gera o Pix no valor que você quiser.",
   },
   {
-    q: "Como posso falar com a equipe?",
-    a: "Pelo WhatsApp (85) 99763-4409 ou pelo e-mail support@sosanimalhelp.org. Os dois canais servem para dúvidas, prestação de contas e parcerias.",
+    q: "Onde acompanho os abrigos?",
+    a: "Cada abrigo tem o Instagram aberto, com o dia a dia e o registro das entregas — os perfis estão nos cards da seção “Os abrigos que recebem a ração” e também no rodapé. Para pedir o comprovante de uma entrega específica, é só falar com a equipe pelo WhatsApp ou por e-mail.",
   },
 ] as const;
 

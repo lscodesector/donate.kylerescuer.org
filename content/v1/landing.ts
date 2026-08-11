@@ -158,7 +158,11 @@ export const campaign: {
   isMock: boolean;
 } | null = {
   raisedCents: 1_850_000,
-  goalCents: 6_000_000,
+  /* Meta da campanha: R$ 58.000, a mesma cifra que o vídeo fala e a
+     mesma soma de `monthlyCosts` abaixo. A porcentagem da barra é calculada
+     de `raisedCents / goalCents` em `CampaignProgress` — mudar a meta aqui
+     reajusta a barra sozinha, sem porcentagem escrita em componente. */
+  goalCents: 5_800_000,
   supporters: 236,
   isMock: true,
 };
@@ -340,8 +344,8 @@ export const impactCompare = {
 export const monthlyCosts = {
   isMock: true,
   items: [
-    { label: "Ração para os animais", cents: 2_400_000, dot: "bg-action" },
-    { label: "Consultas e cirurgias", cents: 1_600_000, dot: "bg-warning" },
+    { label: "Ração para os animais", cents: 2_300_000, dot: "bg-action" },
+    { label: "Consultas e cirurgias", cents: 1_500_000, dot: "bg-warning" },
     { label: "Estrutura e aluguel dos abrigos", cents: 1_000_000, dot: "bg-donate" },
     { label: "Medicamentos", cents: 600_000, dot: "bg-progress" },
     { label: "Luz, água e manutenção", cents: 400_000, dot: "bg-ink-300" },

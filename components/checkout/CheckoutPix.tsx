@@ -39,18 +39,25 @@ type Props = {
 };
 
 /**
- * Checkout do Pix.
+ * Checkout do Pix **em página** — o caminho de quem está sem JavaScript.
+ *
+ * Com JavaScript ligado, nenhum CTA chega aqui: o clique é interceptado e o
+ * checkout abre em modal por cima da landing (ver
+ * `components/checkout/CheckoutModal.tsx`). Esta página continua sendo o
+ * destino do `href` dos mesmos botões, então ela é o que resta quando o script
+ * não carrega — e por isso não pode ser apagada.
  *
  * O QR e o copia-e-cola são REAIS: vêm da chave da organização e podem ser
- * pagos de verdade. O que é encenado é só o tempo de "gerando o código" —
- * o payload já veio pronto do servidor, e a espera existe para a tela ter o
+ * pagos de verdade. O que é encenado é só o tempo de "gerando o código" — o
+ * payload já veio pronto do servidor, e a espera existe para a tela ter o
  * ritmo de um checkout de gateway.
  *
  * ⚠️ O QUE ESTA PÁGINA NÃO FAZ: confirmar pagamento. Não há PSP nem webhook,
- * então o botão "Já fiz o pagamento" é uma declaração de quem doou, não uma
- * verificação. Para valer como confirmação de verdade, é preciso um provedor
- * (Mercado Pago, Asaas, Gerencianet…) e um webhook que marque a doação como
- * paga antes de liberar a tela de obrigado.
+ * então ela termina aguardando, sem tela de obrigado. O botão "Já fiz o
+ * pagamento" que existia aqui foi removido: era declaração de quem doou, não
+ * verificação. Para valer como confirmação de verdade é preciso um provedor
+ * (Mercado Pago, Asaas, PushinPay…) e um webhook que marque a doação como paga
+ * antes de liberar o sucesso.
  */
 export function CheckoutPix({
   tier,
@@ -109,15 +116,17 @@ export function CheckoutPix({
 
           {/* Resumo do que está sendo doado. */}
           <div className="flex items-center gap-4">
+            {/* Fundo branco e `object-contain`, como nos cartões: a foto é uma
+                embalagem recortada, e `cover` cortaria o saco. */}
             {tier && (
-              <div className="relative h-[92px] w-[92px] shrink-0 overflow-hidden rounded-sm bg-surface-alt sm:h-[110px] sm:w-[110px]">
+              <div className="relative h-[92px] w-[92px] shrink-0 overflow-hidden rounded-sm border border-ink-900/10 bg-white sm:h-[110px] sm:w-[110px]">
                 {tier.image ? (
                   <Image
                     src={tier.image.src}
                     alt={tier.image.alt}
                     fill
                     sizes="110px"
-                    className="object-cover"
+                    className="object-contain p-1"
                   />
                 ) : (
                   <div className="flex h-full w-full flex-col items-center justify-center gap-1 border-2 border-dashed border-ink-900/15 text-ink-300">
@@ -211,17 +220,28 @@ export function CheckoutPix({
                 </div>
 
                 {/*
-                  Declaração de quem doou, não confirmação de pagamento: sem
-                  provedor de pagamento, a página não tem como saber se o Pix
-                  caiu. O texto do botão diz exatamente isso.
+                  ── O botão "Já fiz o pagamento" foi removido ──────────────
+                  Ele levava direto para `/obrigado`, e era uma declaração de
+                  quem doou, não uma confirmação: sem provedor de pagamento a
+                  página não tem como saber se o Pix caiu. Qualquer pessoa
+                  chegava à tela de "obrigado" sem pagar nada — inclusive quem
+                  fechou o app do banco no meio.
+
+                  A tela de sucesso só pode aparecer quando o backend disser
+                  que aquele Pix foi pago. Enquanto não houver PSP com webhook,
+                  o fluxo termina aqui, aguardando. Ver o bloco de pendência em
+                  `components/checkout/CheckoutModal.tsx`.
                 */}
-                <Link
-                  href="/obrigado"
-                  className="inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-full border-2 border-ink-900/12 px-6 text-[14px] font-extrabold text-ink-900 transition-colors hover:border-ink-900/30"
+                <p
+                  aria-live="polite"
+                  className="flex items-center justify-center gap-2 text-center text-[13px] font-semibold text-ink-600"
                 >
-                  <IconCheck size={17} />
-                  Já fiz o pagamento
-                </Link>
+                  <span className="relative flex h-[8px] w-[8px] shrink-0">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-donate opacity-60" />
+                    <span className="relative inline-flex h-[8px] w-[8px] rounded-full bg-donate" />
+                  </span>
+                  Aguardando a confirmação do seu pagamento…
+                </p>
               </div>
             )}
           </div>

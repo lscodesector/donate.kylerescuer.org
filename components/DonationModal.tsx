@@ -1,8 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { checkoutValorHref, donationAmounts, formatBRL } from "@/content/landing";
+import { donationAmounts, formatBRL } from "@/content/landing";
+import { openCheckout } from "./checkout/checkout-bus";
 import { IconArrowRight, IconClose, IconRepeat, IconShield } from "./ui/Icons";
 
 /**
@@ -30,7 +30,6 @@ export function openDonationModal() {
  * Sem aba nenhuma para escolher, porque não há segunda opção.
  */
 export function DonationModal() {
-  const router = useRouter();
   const [aberto, setAberto] = useState(false);
   const [selecionado, setSelecionado] = useState<number | null>(null);
   const [valorLivre, setValorLivre] = useState("");
@@ -66,10 +65,28 @@ export function DonationModal() {
   const cents = centsLivre > 0 ? centsLivre : selecionado;
   const podeSeguir = cents !== null && cents > 0;
 
+  /*
+   * Fecha este modal e abre o checkout no lugar dele — sem trocar de página.
+   *
+   * Antes era `router.push('/doar/valor?cents=…')`: escolher o valor mensal
+   * tirava a pessoa da landing, e voltar significava recarregar tudo e perder
+   * o lugar. Agora os dois caminhos de doação, faixa de ração e valor mensal,
+   * terminam no mesmo modal de checkout, com as mesmas etapas.
+   *
+   * A rota `/doar/valor` continua existindo para quem está sem JavaScript.
+   */
   const seguir = () => {
     if (!podeSeguir) return;
     fechar();
-    router.push(checkoutValorHref(cents, true));
+    openCheckout({
+      kind: "mensal",
+      amountCents: cents,
+      title: "Doação mensal",
+      impact:
+        "Este Pix cobre o primeiro mês. A equipe combina os próximos com você pelo WhatsApp.",
+      image: null,
+      txid: "DOACAOMENSAL",
+    });
   };
 
   return (

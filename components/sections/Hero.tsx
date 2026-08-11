@@ -14,7 +14,7 @@ import { VturbPlayer } from "../ui/VturbPlayer";
  * apoio são curtas e o CTA secundário é um link, não um segundo botão.
  *
  * ── O que já ocupou este espaço ───────────────────────────────────────────
- * Primeiro uma barra de meta em reais ("R$ 18.500 de R$ 60.000"), depois os
+ * Primeiro uma barra de meta em reais ("R$ 18.500 de R$ 58.000"), depois os
  * quatro números da rede em card. Os dois saíram: a dobra tem espaço para uma
  * ideia, e ela é o vídeo. Número aqui competia com ele por altura e ainda
  * dividia a atenção antes de existir qualquer pedido. Os números continuam na

@@ -32,9 +32,9 @@ export function StickyDonateBar() {
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-ink-900/10 bg-surface/97 shadow-[0_-4px_20px_rgba(20,17,15,.1)] backdrop-blur anim-fade-up">
-      {/* `pr-[76px]` abre espaço para o botão do WhatsApp, que flutua no canto
-          inferior direito e cairia em cima do botão de doar sem esta folga. */}
-      <div className="container-narrow flex max-w-[860px] flex-col gap-2 py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] sm:flex-row sm:items-center sm:gap-4 sm:pr-[84px]">
+      {/* A folga à direita saiu junto com o botão flutuante do WhatsApp, que
+          era quem cairia em cima do botão de doar. */}
+      <div className="container-narrow flex max-w-[860px] flex-col gap-2 py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] sm:flex-row sm:items-center sm:gap-4">
         {campaign && pct !== null && (
           <div className="flex min-w-0 flex-1 flex-col gap-1">
             <div className="flex flex-wrap items-baseline gap-x-2">

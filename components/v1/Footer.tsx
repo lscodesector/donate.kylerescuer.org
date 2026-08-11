@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { copy, org, recurringHref, whatsappHref } from "@/content/v1/landing";
-import { IconMail, IconPin, IconShield, IconWhatsApp } from "./ui/Icons";
+import { copy, org, recurringHref } from "@/content/v1/landing";
+import { IconMail, IconPin, IconShield } from "./ui/Icons";
 
 const COLUMNS = [
   {
@@ -33,7 +33,7 @@ export function Footer() {
   return (
     /* `pb` generoso: a barra fixa de doação e o botão do WhatsApp ficam
        ancorados no rodapé da janela e cobririam as últimas linhas daqui. */
-    <footer id="contato" className="bg-graphite pb-[150px] text-white md:pb-[120px]">
+    <footer id="contato" className="bg-graphite pb-[112px] text-white md:pb-[96px]">
       <div aria-hidden="true" className="h-[3px] w-full bg-action" />
 
       <div className="container-narrow flex flex-col gap-12 pt-16">
@@ -51,17 +51,10 @@ export function Footer() {
               {copy.footerAbout}
             </p>
 
-            <nav aria-label="Redes sociais" className="flex flex-wrap gap-3">
-              <a
-                href={whatsappHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="WhatsApp"
-                className="flex h-[44px] w-[44px] items-center justify-center rounded-sm border border-white/[.12] bg-white/[.04] text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-              >
-                <IconWhatsApp size={19} />
-              </a>
-            </nav>
+            {/* Bloco de redes sociais removido: tinha um ícone só, o do
+                WhatsApp, e barra de redes com um item lê como barra quebrada.
+                Melhor nenhum ícone do que um isolado — o canal continua na
+                seção de documentação, com o número escrito. */}
 
             <div className="flex flex-col gap-2 text-[14px] text-white/60">
               <p className="flex items-center gap-2">

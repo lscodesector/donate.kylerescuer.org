@@ -7,9 +7,8 @@ import {
   copy,
   org,
   shelters,
-  whatsappHref,
 } from "@/content/landing";
-import { IconMail, IconPin, IconShield, IconWhatsApp } from "./ui/Icons";
+import { IconMail, IconPin, IconShield } from "./ui/Icons";
 
 /**
  * Os quatro grupos de links, na ordem em que entram na grade 2×2 da direita:
@@ -26,7 +25,9 @@ const COLUMNS = [
     label: "Ajude",
     links: [
       { label: "Doe ração", href: RACAO_HREF },
-      { label: "Doar via Pix", href: "#pix" },
+      /* "Doar via Pix" saiu: a seção `#pix` está desligada (ver
+         `showPixSection`) e a âncora não existe mais — o link levaria a
+         lugar nenhum. O Pix continua sendo o pagamento, dentro do checkout. */
       /* Âncora, e não WhatsApp: a doação mensal agora tem checkout na própria
          página, e o botão que abre o modal está nesse bloco. */
       { label: "Doar todo mês", href: MENSAL_HREF },
@@ -77,25 +78,33 @@ const COLUMNS = [
  * terceiro ponto de virada. Agora tudo troca em `sm`, de uma vez só.
  *
  * ── Como fica ─────────────────────────────────────────────────────────────
- *   celular    tudo empilhado e centralizado
- *   sm  640px  tudo alinhado à esquerda; os links abrem em 2 subcolunas
+ *   celular    tudo empilhado, **tudo alinhado à esquerda**
+ *   sm  640px  os links abrem em 2 subcolunas
  *   md  768px  as duas colunas de verdade — marca | links
  *
  * A divisão é meio a meio (`md:grid-cols-2`), o que dá ~456px por coluna no
  * container de 1040px: espaço de sobra para o texto da marca (42ch) e para os
  * links caberem numa linha cada.
+ *
+ * ── Por que nada centraliza mais ──────────────────────────────────────────
+ * No celular, marca, texto, contato e copyright centralizavam e os quatro
+ * grupos de links não — o rodapé tinha dois eixos ao mesmo tempo, e o olho
+ * batia na quebra na metade dele. Agora existe uma margem esquerda só, do
+ * logo até o copyright, em qualquer largura. É também o que casa com o resto
+ * da página: as listas e as fichas já leem alinhadas à esquerda.
  */
 export function Footer() {
   return (
-    /* `pb` generoso: a barra fixa de doação e o botão do WhatsApp ficam
-       ancorados no rodapé da janela e cobririam as últimas linhas daqui. */
-    <footer id="contato" className="bg-graphite pb-[150px] text-white md:pb-[120px]">
+    /* `pb` reservado para a barra fixa de doação, que fica ancorada no rodapé
+       da janela e cobriria as últimas linhas daqui. Encolheu quando o botão
+       flutuante do WhatsApp saiu da página: a folga era para os dois. */
+    <footer id="contato" className="bg-graphite pb-[112px] text-white md:pb-[96px]">
       <div aria-hidden="true" className="h-[3px] w-full bg-action" />
 
       <div className="container-narrow flex flex-col gap-12 pt-16">
-        <div className="grid gap-12 text-center sm:text-left md:grid-cols-2 md:gap-16">
+        <div className="grid gap-12 text-left md:grid-cols-2 md:gap-16">
           {/* Coluna 1 — marca, o que a organização é e como falar com ela. */}
-          <div className="flex flex-col items-center gap-6 sm:items-start">
+          <div className="flex flex-col items-start gap-6">
             <Image
               src="/logo/logo-footer.webp"
               alt={org.name}
@@ -108,22 +117,21 @@ export function Footer() {
               {copy.footerAbout}
             </p>
 
-            <nav aria-label="Redes sociais" className="flex flex-wrap justify-center gap-3 sm:justify-start">
-              <a
-                href={whatsappHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="WhatsApp"
-                className="flex h-[44px] w-[44px] items-center justify-center rounded-sm border border-white/[.12] bg-white/[.04] text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-              >
-                <IconWhatsApp size={19} />
-              </a>
-            </nav>
+            {/*
+              O bloco "Redes sociais" saiu daqui.
 
-            {/* `items-center sm:items-start` no bloco inteiro, e não
-                `text-center` linha a linha: cada linha aqui é ícone + texto,
-                e o que precisa centralizar é o par, não o texto dentro dele. */}
-            <div className="flex flex-col items-center gap-2 text-[14px] text-white/60 sm:items-start">
+              Ele tinha um ícone só, o do WhatsApp: uma barra de redes sociais
+              com um item lê como barra quebrada — a pessoa procura os outros e
+              não acha. Melhor não ter ícone nenhum do que ter um solitário.
+
+              O canal não sumiu da página: o WhatsApp da equipe continua na
+              seção de documentação e no FAQ, com o número escrito por extenso
+              — que é mais útil do que um ícone e é onde quem procura contato
+              olha. Se um dia existirem Instagram e Facebook da organização, a
+              barra de redes volta aqui com os três.
+            */}
+
+            <div className="flex flex-col items-start gap-2 text-[14px] text-white/60">
               <p className="flex items-center gap-2">
                 <IconShield size={16} className="shrink-0" />
                 <span className="tabular-nums">CNPJ {org.cnpj}</span>
@@ -182,10 +190,8 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Vira em `sm`, junto com todo o resto — antes virava em `md` e ficava
-            centralizado sozinho enquanto as colunas acima já estavam à
-            esquerda. */}
-        <div className="border-t border-white/10 pt-6 text-center text-[13px] leading-[1.6] text-white/50 sm:text-left">
+        {/* À esquerda em qualquer largura, como o resto do rodapé. */}
+        <div className="border-t border-white/10 pt-6 text-left text-[13px] leading-[1.6] text-white/50">
           {/* Os links legais já estão na coluna "Legal" — repetir aqui só
               duplicaria o mesmo destino duas vezes na mesma tela. */}
           <p>

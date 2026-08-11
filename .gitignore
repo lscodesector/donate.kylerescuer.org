@@ -12,7 +12,7 @@
 
 # testing
 /coverage
-
+/wordpress
 # next.js
 /.next/
 /out/

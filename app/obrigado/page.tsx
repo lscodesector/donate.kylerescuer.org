@@ -18,6 +18,14 @@ export const metadata: Metadata = {
 /**
  * Tela de agradecimento.
  *
+ * ── Quem chega aqui já pagou ──────────────────────────────────────────────
+ * Esta página deixou de ser alcançável por clique. O checkout só manda para cá
+ * depois de o gateway responder `paid: true` — pelo polling ou pela checagem na
+ * planilha ao voltar do app do banco (ver `components/checkout/CheckoutModal`).
+ * Por isso o texto afirma o pagamento em vez de condicioná-lo: dizer "assim que
+ * for confirmado" para quem já teve a confirmação plantava a dúvida de que algo
+ * ainda faltava.
+ *
  * O pedido de doação mensal vem aqui, e não antes, porque é o único momento em
  * que a pessoa já provou que confia — quem acabou de doar é muito mais
  * receptivo a virar recorrente do que quem ainda está decidindo.
@@ -40,8 +48,8 @@ export default function ObrigadoPage() {
               Obrigado. Sua doação vira ração.
             </h1>
             <p className="mx-auto max-w-[46ch] text-[15px] leading-[1.6] text-ink-600">
-              Assim que o Pix for confirmado, o valor entra na compra do próximo lote de ração
-              e é direcionado ao abrigo da rede que estiver mais apertado no mês.
+              Seu Pix foi confirmado. O valor entra na compra do próximo lote de ração e é
+              direcionado ao abrigo da rede que estiver mais apertado no mês.
             </p>
           </div>
 

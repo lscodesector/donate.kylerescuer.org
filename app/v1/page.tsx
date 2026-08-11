@@ -1,6 +1,5 @@
 import { BackIntercept } from "@/components/v1/BackIntercept";
 import { DonationModal } from "@/components/v1/DonationModal";
-import { FloatingActions } from "@/components/v1/FloatingActions";
 import { Footer } from "@/components/v1/Footer";
 import { Header } from "@/components/v1/Header";
 import { StickyDonateBar } from "@/components/v1/StickyDonateBar";
@@ -76,7 +75,6 @@ export default function DonationPage() {
         <FinalCta />
       </main>
       <Footer />
-      <FloatingActions />
       <StickyDonateBar />
       <DonationModal />
       <BackIntercept />

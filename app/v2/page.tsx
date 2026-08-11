@@ -1,10 +1,11 @@
 import { BackIntercept } from "@/components/BackIntercept";
 import { DonationModal } from "@/components/DonationModal";
-import { FloatingActions } from "@/components/FloatingActions";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { StickyDonateBar } from "@/components/StickyDonateBar";
+import { CheckoutModal } from "@/components/checkout/CheckoutModal";
 import { Abrigos } from "@/components/sections/Abrigos";
+import { ComoFunciona } from "@/components/sections/ComoFunciona";
 import { Documentacao } from "@/components/sections/Documentacao";
 import { Faq } from "@/components/sections/Faq";
 import { FinalCta } from "@/components/sections/FinalCta";
@@ -14,6 +15,7 @@ import { Pix } from "@/components/sections/Pix";
 import { Racao } from "@/components/sections/Racao";
 import { Transparencia } from "@/components/sections/Transparencia";
 import { TrustStrip } from "@/components/sections/TrustStrip";
+import { showPixSection } from "@/content/landing";
 import type { Metadata } from "next";
 
 /**
@@ -34,12 +36,19 @@ import type { Metadata } from "next";
  *  2. TrustStrip    prova rápida de confiança, antes que a objeção apareça
  *  3. Abrigos       quem recebe a ração, com nome e perfil conferível
  *  4. Impacto       o que muda quando a ração chega
- *  5. Racao         o pedido concreto (faixas de kg) + doação mensal
- *  6. Pix           o caminho de menor atrito
+ *  5. ComoFunciona  os três passos, para o clique não ser um salto no escuro
+ *  6. Racao         o pedido concreto (faixas de kg) + doação mensal
  *  7. Transparencia a conta mensal da rede e os números de impacto
  *  8. Documentacao  documento e canais oficiais
  *  9. Faq           as últimas dúvidas
  * 10. FinalCta      fechamento
+ *
+ * ── A seção "Pix direto" está desligada ───────────────────────────────────
+ * `Pix` ficava entre `Racao` e `Transparencia` e oferecia a chave solta, no
+ * valor que a pessoa quisesse — um segundo caminho de doação competindo com o
+ * checkout, e sem a ração, o valor e o impacto na frente. Agora o Pix é o meio
+ * de pagamento **dentro** do modal de checkout. A seção continua importada e o
+ * componente intacto: quem manda é `showPixSection` em `content/landing.ts`.
  *
  * ── A seção de adoção saiu daqui ──────────────────────────────────────────
  * `Adocao` (os cães publicados no app da Lusa) era o item 4 e foi retirada:
@@ -69,17 +78,21 @@ export default function DonationPage() {
         <TrustStrip />
         <Abrigos />
         <Impacto />
+        <ComoFunciona />
         <Racao />
-        <Pix />
+        {showPixSection && <Pix />}
         <Transparencia />
         <Documentacao />
         <Faq />
         <FinalCta />
       </main>
       <Footer />
-      <FloatingActions />
+      {/* O botão flutuante do WhatsApp saiu daqui. Ele passava por baixo da
+          barra fixa e do rodapé, e a barra ainda reservava uma faixa de 84px
+          só para não colidir com ele — espaço que agora é do botão de doar. */}
       <StickyDonateBar />
       <DonationModal />
+      <CheckoutModal />
       <BackIntercept />
     </>
   );

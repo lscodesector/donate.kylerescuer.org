@@ -6,6 +6,18 @@ import { SectionHead } from "../ui/SectionHead";
 /**
  * As dúvidas, em `<details>`/`<summary>` nativos: acordeão sem JavaScript,
  * acessível por teclado de graça e sem custo de bundle.
+ *
+ * São cinco perguntas, e o corte está documentado em `faq`, no
+ * `content/landing.ts` — não em quantas cabem na tela.
+ *
+ * ── Alinhamento no celular ────────────────────────────────────────────────
+ * Pergunta e resposta ficavam centralizadas abaixo de `sm`, e havia um vão
+ * fantasma (`w-[17px]`) do lado esquerdo do `<summary>` só para compensar a
+ * largura da seta e o texto cair no centro exato. Texto centralizado numa
+ * lista de perguntas é o que mais custa a ler no celular: cada linha começa
+ * num ponto diferente, e a resposta, com três ou quatro linhas, vira um
+ * losango. Agora as duas alinham à esquerda em qualquer largura, o vão
+ * fantasma saiu e a seta é o único elemento à direita.
  */
 export function Faq() {
   return (
@@ -19,18 +31,16 @@ export function Faq() {
               key={item.q}
               className="group rounded-md border border-ink-900/10 bg-surface open:shadow"
             >
-              <summary className="flex min-h-[52px] cursor-pointer list-none items-center justify-between gap-3 p-4 text-[15px] font-extrabold text-ink-900">
-                {/* Vão do tamanho exato da seta, só no celular: sem ele a
-                    pergunta "centralizada" fica deslocada meia seta para a
-                    esquerda, porque a seta ocupa espaço só de um lado. */}
-                <span aria-hidden="true" className="w-[17px] shrink-0 sm:hidden" />
-                <span className="flex-1 text-center sm:text-left">{item.q}</span>
+              <summary className="flex min-h-[56px] cursor-pointer list-none items-center justify-between gap-3 px-4 py-3.5 text-left text-[15px] font-extrabold leading-[1.35] text-ink-900">
+                <span className="flex-1">{item.q}</span>
                 <IconChevron
-                  size={17}
-                  className="shrink-0 text-ink-600 transition-transform group-open:rotate-180"
+                  size={18}
+                  className="mt-0.5 shrink-0 self-start text-ink-600 transition-transform group-open:rotate-180"
                 />
               </summary>
-              <p className="px-4 pb-4 text-center text-[14px] leading-[1.6] text-ink-600 sm:text-left">
+              {/* `pt-0` com o respiro vindo do `pb` do `<summary>`: sem isso a
+                  resposta abria colada na pergunta no celular. */}
+              <p className="px-4 pb-4 text-left text-[14px] leading-[1.6] text-ink-600">
                 {item.a}
               </p>
             </details>
