@@ -12,10 +12,12 @@ export const CHECKOUT_EVENT = "sos:abrir-checkout";
 /** O que o checkout mostra no topo - o item que está sendo doado. */
 export type CheckoutItem = {
   /**
-   * `racao` é uma faixa de kg; `mensal` é o valor escolhido no modal de
-   * doação recorrente. A diferença muda só o texto: o Pix é o mesmo.
+   * `racao` é uma faixa de kg; `causa` é um valor livre para uma das frentes
+   * do menu "escolha onde ajudar" (tratamento, estrutura, mais urgente); e
+   * `mensal` é qualquer um dos dois se repetindo todo mês. A diferença muda só
+   * o texto: o Pix é o mesmo.
    */
-  kind: "racao" | "mensal";
+  kind: "racao" | "causa" | "mensal";
   /** Valor da doação em centavos, **sem** a taxa. */
   amountCents: number;
   /** Rótulo curto do item: "5 kg de ração", "Doação mensal". */

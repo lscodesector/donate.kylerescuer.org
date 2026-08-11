@@ -1,5 +1,5 @@
-import { copy, faq } from "@/content/landing";
-import { IconChevron } from "../ui/Icons";
+import { copy, faq, whatsappHref } from "@/content/landing";
+import { IconChevron, IconWhatsApp } from "../ui/Icons";
 import { Reveal } from "../ui/Reveal";
 import { SectionHead } from "../ui/SectionHead";
 
@@ -23,7 +23,11 @@ export function Faq() {
   return (
     <section id="duvidas" className="py-[clamp(2.5rem,6vh,4.5rem)]">
       <div className="container-narrow flex max-w-[660px] flex-col gap-5">
-        <SectionHead eyebrow={copy.faq.eyebrow} title={copy.faq.title} />
+        <SectionHead
+          eyebrow={copy.faq.eyebrow}
+          title={copy.faq.title}
+          lead={copy.faq.lead}
+        />
 
         <Reveal className="flex flex-col gap-2">
           {faq.map((item) => (
@@ -45,6 +49,23 @@ export function Faq() {
               </p>
             </details>
           ))}
+        </Reveal>
+
+        {/* Quem chega ao fim da lista sem achar a resposta não fica num beco
+            sem saída. É o único link para fora desta seção, e ele vai para o
+            mesmo WhatsApp que a última pergunta cita - o botão flutuante saiu
+            da página, então este é o caminho de contato no meio dela. */}
+        <Reveal delay={1} className="flex flex-col items-center gap-3 pt-2 text-center">
+          <p className="text-[15px] text-ink-600">{copy.faq.help}</p>
+          <a
+            href={whatsappHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-[52px] items-center gap-2 rounded-full bg-[#25D366] px-8 text-[15px] font-extrabold text-white shadow transition-[filter] hover:brightness-95"
+          >
+            <IconWhatsApp size={21} />
+            {copy.faq.ctaWhatsapp}
+          </a>
         </Reveal>
       </div>
     </section>

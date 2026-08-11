@@ -5,14 +5,15 @@ import { Reveal } from "../ui/Reveal";
 /**
  * Os três passos, logo antes do pedido.
  *
- * Fica entre `Impacto` e `Racao` de propósito: `Impacto` acabou de dizer por
- * que doar, `Racao` vai perguntar quanto, e no meio falta responder o que
- * acontece depois do clique. Quem nunca doou nesta página trava aí - não por
- * desconfiar da causa, mas por não saber se vai cair num formulário longo, num
- * cadastro ou num boleto.
+ * Fica entre `Abrigos` e `DoarRacao` de propósito: os abrigos acabaram de
+ * mostrar quem recebe, o pedido vem logo abaixo, e no meio falta responder o
+ * que acontece depois do clique. Quem nunca doou nesta página trava aí - não
+ * por desconfiar da causa, mas por não saber se vai cair num formulário longo,
+ * num cadastro ou num boleto.
  *
- * Sem CTA próprio: o botão está logo abaixo, na seção seguinte. Um terceiro
- * botão aqui só dividiria o clique com ele.
+ * Sem CTA próprio: o botão está logo abaixo, na seção seguinte - que agora é a
+ * única da página com botão de doar ração. Um segundo aqui só dividiria o
+ * clique com ele.
  *
  * ── Layout ────────────────────────────────────────────────────────────────
  * No celular os passos empilham em linhas de ícone + texto (o número fica no

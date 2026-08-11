@@ -1,13 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  MENSAL_HREF,
-  RACAO_HREF,
-  adoption,
-  copy,
-  org,
-  shelters,
-} from "@/content/landing";
+import { RACAO_HREF, adoption, copy, org, shelters } from "@/content/landing";
+import { MonthlyDonateButton } from "./MonthlyDonateButton";
 import { IconMail, IconPin, IconShield } from "./ui/Icons";
 
 /**
@@ -28,9 +22,17 @@ const COLUMNS = [
       /* "Doar via Pix" saiu: a seção `#pix` está desligada (ver
          `showPixSection`) e a âncora não existe mais - o link levaria a
          lugar nenhum. O Pix continua sendo o pagamento, dentro do checkout. */
-      /* Âncora, e não WhatsApp: a doação mensal agora tem checkout na própria
-         página, e o botão que abre o modal está nesse bloco. */
-      { label: "Doar todo mês", href: MENSAL_HREF },
+      /*
+       * "Doar todo mês" é o único item destas listas que **não** é link.
+       *
+       * Ele apontava para `#mensal`, o bloco de doação recorrente que ficava
+       * no fim da seção de ração; esse bloco saiu quando a seção virou uma só,
+       * com um botão apenas. Deixar a âncora seria um link para lugar nenhum,
+       * e trocá-la por `#racao` prometeria "todo mês" e entregaria a grade de
+       * kg avulsa. Então aqui ele abre o modal de valor já em mensal - o mesmo
+       * destino do destaque no menu de frentes.
+       */
+      { label: "Doar todo mês", action: "mensal" as const },
       /* Aponta para o app da Lusa, e não mais para `#adotar`: a seção de
          adoção saiu da página e a âncora não existe. O rodapé é onde este
          caminho pode continuar existindo sem disputar com o pedido de doação
@@ -166,6 +168,21 @@ export function Footer() {
                 </p>
                 <ul className="flex flex-col gap-2">
                   {column.links.map((link) => {
+                    const estilo =
+                      "block py-1 text-left text-[15px] leading-[1.4] text-white/65 transition-colors hover:text-white";
+
+                    /* O item que abre modal em vez de navegar - hoje só o
+                       "Doar todo mês" (ver o comentário em `COLUMNS`). */
+                    if ("action" in link) {
+                      return (
+                        <li key={link.label}>
+                          <MonthlyDonateButton className={estilo}>
+                            {link.label}
+                          </MonthlyDonateButton>
+                        </li>
+                      );
+                    }
+
                     /* Os abrigos apontam para o Instagram de cada um, que é
                        outro site: eles precisam abrir em aba nova e com `rel`,
                        ao contrário das âncoras internas. */
@@ -177,7 +194,7 @@ export function Footer() {
                           {...(external
                             ? { target: "_blank", rel: "noopener noreferrer" }
                             : {})}
-                          className="block py-1 text-[15px] leading-[1.4] text-white/65 transition-colors hover:text-white"
+                          className={estilo}
                         >
                           {link.label}
                         </Link>

@@ -39,6 +39,7 @@ export function PhotoSlideshow({
   label,
   controls = false,
   interval = 2600,
+  priority = false,
   className = "",
 }: {
   photos: Photo[];
@@ -50,10 +51,28 @@ export function PhotoSlideshow({
   controls?: boolean;
   /** Tempo de cada foto no ar, em ms - a troca em si leva 0,4s por cima disso. */
   interval?: number;
+  /**
+   * Prioriza **só a primeira** foto no carregamento. Ligado no slide da
+   * primeira dobra, que é o maior elemento da tela inicial e por isso o
+   * candidato natural a LCP; nos cards de abrigo fica desligado, senão
+   * quatro slides disputariam a banda da abertura entre si.
+   */
+  priority?: boolean;
   /** Classes do quadro - é aqui que entram a proporção e a largura. */
   className?: string;
 }) {
-  const [i, setI] = useState(0);
+  /*
+   * A foto no ar **e** a que estava antes dela, num estado só.
+   *
+   * As duas são necessárias juntas porque a troca é um fade em camadas, e não
+   * um crossfade: quem estava no ar continua opaca, embaixo, até a nova
+   * terminar de entrar por cima (ver o bloco das imagens, lá embaixo). Num
+   * estado só porque elas mudam sempre no mesmo instante - separadas, um
+   * `setState` dentro do updater do outro é o tipo de coisa que o React chama
+   * duas vezes em modo estrito e desalinha.
+   */
+  const [slide, setSlide] = useState({ atual: 0, anterior: 0 });
+  const i = slide.atual;
   const [naTela, setNaTela] = useState(false);
   const [parado, setParado] = useState(false);
   const [assumido, setAssumido] = useState(false);
@@ -85,7 +104,14 @@ export function PhotoSlideshow({
 
   useEffect(() => {
     if (!naTela || parado || assumido) return;
-    const t = setInterval(() => setI((v) => (v + 1) % photos.length), interval);
+    const t = setInterval(
+      () =>
+        setSlide(({ atual }) => ({
+          anterior: atual,
+          atual: (atual + 1) % photos.length,
+        })),
+      interval,
+    );
     return () => clearInterval(t);
   }, [naTela, parado, assumido, interval, photos.length]);
 
@@ -95,11 +121,18 @@ export function PhotoSlideshow({
 
   const ir = (destino: number) => {
     setAssumido(true);
-    setI((destino + photos.length) % photos.length);
+    setSlide(({ atual }) => ({
+      anterior: atual,
+      atual: (destino + photos.length) % photos.length,
+    }));
   };
 
+  /* `z-30`: as fotos agora empilham em `z-10`/`z-20` para a troca não piscar
+     (ver o bloco das imagens), e sem uma camada própria as setas e os
+     pontinhos ficariam **atrás** delas - vir depois no HTML não basta contra
+     um irmão com `z-index`. */
   const seta =
-    "flex h-[34px] w-[34px] items-center justify-center rounded-full bg-surface/90 text-ink-900 shadow backdrop-blur transition-colors hover:bg-surface";
+    "z-30 flex h-[34px] w-[34px] items-center justify-center rounded-full bg-surface/90 text-ink-900 shadow backdrop-blur transition-colors hover:bg-surface";
 
   const ponto = (ativo: boolean) =>
     `h-1.5 rounded-full bg-white transition-all ${ativo ? "w-4 opacity-100" : "w-1.5 opacity-55"}`;
@@ -116,21 +149,48 @@ export function PhotoSlideshow({
       onFocus={() => setParado(true)}
       onBlur={() => setParado(false)}
     >
-      {photos.slice(0, montadas).map((foto, indice) => (
-        <Image
-          key={foto.src}
-          src={foto.src}
-          alt={foto.alt}
-          fill
-          sizes={sizes}
-          /* `pointer-events-none` nas de baixo: empilhadas, elas roubariam o
-             clique das setas se ficassem no caminho. */
-          className={`object-cover transition-opacity duration-400 ${
-            indice === i ? "opacity-100" : "pointer-events-none opacity-0"
-          }`}
-          aria-hidden={indice === i ? undefined : true}
-        />
-      ))}
+      {/*
+        ── A troca é um fade EM CAMADAS, não um crossfade ──────────────────
+        A versão anterior apagava a foto que saía enquanto acendia a que
+        entrava, as duas ao mesmo tempo. No meio do caminho as duas estavam a
+        50%, e duas camadas de 50% não tapam o que está atrás delas: sobrava
+        um quarto do fundo claro do quadro à mostra, e a troca **piscava
+        branco**. Não era um defeito de carregamento - era a soma das duas
+        opacidades, e acontecia toda vez, com a foto já baixada.
+
+        Aqui a foto que sai **não apaga**: ela continua opaca, uma camada
+        abaixo (`z-10`), enquanto a nova entra por cima dela (`z-20`) de 0 a
+        100. Como sempre existe uma camada opaca embaixo, o fundo do quadro
+        nunca aparece - e a foto anterior só é apagada duas trocas depois,
+        quando já está coberta por outras duas e ninguém a vê sumir.
+
+        De quebra isso conserta o caso da foto que ainda não terminou de
+        baixar: em vez do quadro vazio, quem espera vê a foto anterior até a
+        nova pintar.
+      */}
+      {photos.slice(0, montadas).map((foto, indice) => {
+        const atual = indice === i;
+        const saindo = indice === slide.anterior && !atual;
+
+        return (
+          <Image
+            key={foto.src}
+            src={foto.src}
+            alt={foto.alt}
+            fill
+            priority={priority && indice === 0}
+            sizes={sizes}
+            /* `pointer-events-none` em tudo que não é a foto no ar: empilhadas,
+               elas roubariam o clique das setas se ficassem no caminho. */
+            className={`object-cover transition-opacity duration-400 ${
+              atual ? "z-20 opacity-100" : "pointer-events-none"
+            } ${saindo ? "z-10 opacity-100" : ""} ${
+              !atual && !saindo ? "opacity-0" : ""
+            }`}
+            aria-hidden={atual ? undefined : true}
+          />
+        );
+      })}
 
       {passa && controls && (
         <>
@@ -162,7 +222,7 @@ export function PhotoSlideshow({
              recebe clique, porque no card quem responde ao toque é o botão que
              cobre tudo e abre a ficha. */
           aria-hidden={controls ? undefined : true}
-          className="absolute inset-x-0 bottom-0 flex items-end justify-center gap-1.5 bg-linear-to-t from-night/45 to-transparent pb-2 pt-6"
+          className="absolute inset-x-0 bottom-0 z-30 flex items-end justify-center gap-1.5 bg-linear-to-t from-night/45 to-transparent pb-2 pt-6"
         >
           {photos.map((foto, indice) =>
             controls ? (

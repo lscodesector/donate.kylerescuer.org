@@ -5,12 +5,23 @@
  */
 
 /**
- * Âncora da seção de ração.
+ * Âncora do bloco de doação de ração.
  *
- * É o destino de **todo** CTA de doação da página - cabeçalho, hero, impacto,
- * barra fixa e fechamento. A decisão é deliberada: a doação desta página é
- * ração, e ração se escolhe por faixa de kg, não por um valor digitado num
- * modal. A única exceção é o botão de doação mensal (ver `MonthlyDonateButton`).
+ * Continua sendo `#racao` - o mesmo id de antes -, mas o que mora lá mudou: a
+ * grade com as seis faixas de kg saiu da página e virou **modal**. No lugar
+ * dela ficou um bloco com um CTA só ("Doar ração"), e é ele que abre a grade.
+ *
+ * O motivo é que esta página deixou de ser uma landing de campanha e virou o
+ * site institucional da organização: quem chega quer saber quem somos, quem
+ * recebe a ajuda e se dá para confiar. Uma vitrine de preços no meio disso
+ * empurrava o institucional para baixo e transformava a página inteira num
+ * checkout. Com a grade no modal, a decisão de doar continua a um clique de
+ * qualquer ponto da página, mas não ocupa mais a página.
+ *
+ * A âncora foi mantida de propósito: cabeçalho, hero, impacto, barra fixa,
+ * fechamento, rodapé e o checkout sem JavaScript já apontavam para cá, e todos
+ * continuam chegando no lugar certo. Os CTAs que são clientes (cabeçalho e
+ * barra fixa) abrem o modal direto, sem passar pela rolagem.
  */
 export const RACAO_HREF = "#racao";
 
@@ -30,8 +41,15 @@ export const RACAO_HREF = "#racao";
  */
 export const showPixSection = false;
 
-/** Âncora do bloco de doação mensal, dentro da seção de ração. */
-export const MENSAL_HREF = "#mensal";
+/*
+ * A âncora `MENSAL_HREF` (`#mensal`) saiu daqui.
+ *
+ * Ela apontava para o bloco de doação recorrente que ficava no fim da seção de
+ * ração, e esse bloco saiu quando a seção virou uma só, com um botão apenas
+ * (ver `DoarRacao`). A recorrência agora acontece em modal, e quem a abre são
+ * botões, não âncoras: o destaque do menu de frentes (`CausasModal`), o bloco
+ * dentro do modal de ração e o item "Doar todo mês" do rodapé.
+ */
 
 /** Endereço do checkout interno de uma faixa de ração. */
 export function checkoutHref(tierId: string) {
@@ -62,6 +80,84 @@ export const donationAmounts = [
   { cents: 15000, popular: false },
   { cents: 25000, popular: false },
 ] as const;
+
+/**
+ * Os mesmos valores para quem escolhe doar **uma vez só**.
+ *
+ * A escada é mais alta que a da mensal pelo motivo oposto ao dela: aqui o
+ * valor não se repete, então o que a doação resolve é o que couber naquele
+ * único Pix. R$ 30 por mês sustentam um abrigo; R$ 30 uma vez são um saco
+ * pequeno de ração.
+ */
+export const donationAmountsUnica = [
+  { cents: 3000, popular: false },
+  { cents: 5000, popular: false },
+  { cents: 10000, popular: true },
+  { cents: 20000, popular: false },
+  { cents: 35000, popular: false },
+  { cents: 50000, popular: false },
+] as const;
+
+/**
+ * ╔══════════════════════════════════════════════════════════════════════╗
+ * ║  AS FRENTES - "escolha onde ajudar"                                   ║
+ * ╚══════════════════════════════════════════════════════════════════════╝
+ *
+ * O menu que o botão flutuante abre. São as quatro frentes que a rede
+ * sustenta, e elas existem porque "doar" sozinho é uma decisão vaga: escolher
+ * *onde* a doação entra é o que transforma um valor num destino.
+ *
+ * ⚠️ **A ordem importa e não é alfabética.** A ração vem primeiro porque é a
+ * frente com preço fechado (faixas de kg) e a que a página inteira explica; a
+ * última é a que não pede escolha nenhuma de quem doa, e por isso fecha a
+ * lista em vez de abri-la.
+ *
+ * `id` decide o caminho do clique (ver `CausasModal`):
+ *
+ *   `racao`  → o modal com as faixas de kg, que já existia
+ *   demais   → o modal de valor, com a frequência (mensal ou única) na frente
+ *
+ * `txid` vai no BR Code do Pix estático (rotas `/doar/*`, sem JavaScript) e é
+ * o que separa uma frente da outra no extrato. Só letras e números, sem
+ * acento: o padrão do Pix não aceita mais que isso.
+ */
+export const causes = [
+  {
+    id: "racao",
+    icon: "bowl",
+    title: "Ração dos abrigos",
+    text: "Alimentar os mais de 400 animais que já estão acolhidos.",
+    txid: "CAUSARACAO",
+  },
+  {
+    id: "veterinario",
+    icon: "pulse",
+    title: "Tratamento veterinário",
+    text: "Consulta, medicação e castração dos animais dos abrigos.",
+    txid: "CAUSAVET",
+  },
+  {
+    id: "estrutura",
+    icon: "home",
+    title: "Estrutura dos abrigos",
+    text: "Manter canil coberto, água, energia e o terreno de pé.",
+    txid: "CAUSAESTRUTURA",
+  },
+  {
+    id: "urgente",
+    icon: "alert",
+    title: "Onde for mais urgente",
+    text: "A equipe direciona para o abrigo que estiver mais apertado no mês.",
+    txid: "CAUSAURGENTE",
+  },
+] as const;
+
+export type Cause = (typeof causes)[number];
+
+/** A frente de `id`, ou `null` - usado pelos modais para se intitular. */
+export function causeById(id: string | null | undefined): Cause | null {
+  return causes.find((c) => c.id === id) ?? null;
+}
 
 export const org = {
   name: "SOS Animal Help",
@@ -145,6 +241,42 @@ export const impactNumbers = [
 
 /** Copy das seções, para o texto não ficar espalhado pelos componentes. */
 export const copy = {
+  /**
+   * O menu de frentes (`CausasModal`) e o botão flutuante que o abre.
+   *
+   * `mensalTitle`/`mensalText` são o convite que fecha o menu: a doação que se
+   * repete é o objetivo principal da operação, e ela não é uma quinta frente -
+   * é outra pergunta ("com que frequência?"), por isso aparece separada das
+   * quatro e não dentro da lista.
+   */
+  causas: {
+    title: "Escolha onde ajudar",
+    lead: "Sua doação vai direto para a frente que você escolher.",
+    floatingCta: "Doe agora",
+    mensalTitle: "Prefere ajudar todo mês?",
+    mensalText:
+      "É a doação que sustenta a rede: sabendo com quanto contar, os abrigos compram em quantidade e não esperam a próxima campanha.",
+    mensalCta: "Quero doar todo mês",
+  },
+  /**
+   * "Nossa missão" - o bloco institucional que abre a página depois da dobra.
+   *
+   * O texto é o do site institucional da organização (`mission` e `about` do
+   * `animal-help.json` da v3), palavra por palavra: a frase de missão, o que a
+   * SOS Animal Help faz e o tamanho da rede. Ele responde a pergunta que uma
+   * página institucional precisa responder antes de qualquer pedido - "quem é
+   * essa organização?" -, e é por isso que vem antes de tudo.
+   */
+  missao: {
+    eyebrow: "Nossa missão",
+    statement:
+      "Existimos para fazer a ajuda real chegar antes que seja tarde demais.",
+    paragraphs: [
+      "A SOS Animal Help conecta apoio, recursos e cuidado urgente a abrigos que acolhem cães e gatos abandonados, feridos e em situação crítica, para que cada animal tenha uma chance real de sobreviver.",
+      "São 5 abrigos em diferentes estados do Brasil, e mais de 400 vidas que dependem da gente para continuar vivas. Mantemos nossa documentação disponível para que cada doador contribua com mais confiança, segurança e transparência.",
+    ],
+    cta: "Conheça nossos abrigos!",
+  },
   abrigos: {
     eyebrow: "Quem recebe",
     title: "Os abrigos que recebem a ração",
@@ -172,10 +304,37 @@ export const copy = {
     title: "Adote um deles",
     lead: "Alguns dos cães que estão nesses abrigos, publicados no app da Lusa. Dá para conhecer cada um e levar um para casa - enquanto isso não acontece, é a ração que os mantém de pé.",
   },
+  /**
+   * O bloco de doação da página institucional: um CTA, e só.
+   *
+   * `title` e `lead` são a mesma promessa que a grade de faixas fazia; o que
+   * mudou é que a grade agora abre no modal (`RacaoModal`), no clique do
+   * botão. O texto do modal continua em `copy.racao`.
+   */
+  doar: {
+    eyebrow: "Como ajudar",
+    title: "Um saco de ração é o que separa a semana tranquila do pote vazio",
+    lead: "A ração não fica com a gente: ela é comprada e entregue direto nos abrigos que já estão com os animais na mão. Escolha quantos quilos quer mandar - a gente mostra quantos animais aquilo alimenta e por quantos dias.",
+    cta: "Doar ração",
+    seal: "Doação segura · Pix na hora · CNPJ verificável",
+  },
+  /** Cabeça da grade de faixas - hoje dentro do modal de doação de ração. */
   racao: {
     eyebrow: "Doe ração",
     title: "Escolha quantos quilos você quer entregar",
     lead: "Cada faixa é um saco de ração que sai daqui e chega no abrigo. Você escolhe o tamanho; a gente mostra quantos animais aquilo alimenta e por quantos dias.",
+  },
+  /**
+   * "Parceiros que fazem a diferença" - a fileira de logos que desliza.
+   *
+   * Os itens ainda são os marcadores `COLOCAR LOGOS AQUI` que vieram do site
+   * institucional: enquanto os arquivos não chegam, o lugar deles fica
+   * reservado à vista, e não escondido. Ver `partners`, logo abaixo.
+   */
+  parceiros: {
+    eyebrow: "Quem caminha com a gente",
+    title: "Parceiros que fazem a diferença",
+    lead: "Com a ajuda de empresas parceiras conseguimos manter a operação de pé e levar suprimento para quem está na ponta.",
   },
   mensal: {
     title: "Quer garantir a ração todo mês?",
@@ -239,8 +398,13 @@ export const copy = {
     lead: "Transparência também significa facilitar o acesso às informações da organização.",
   },
   faq: {
-    eyebrow: "Dúvidas comuns",
-    title: "Dúvidas antes de doar?",
+    eyebrow: "Dúvidas frequentes",
+    title: "Perguntas e respostas",
+    lead: "Tire suas dúvidas sobre a SOS Animal Help e sobre as nossas doações.",
+    /* Quem chega ao fim da lista sem achar a resposta não fica com um beco sem
+       saída: o botão de WhatsApp fecha a seção, como no site institucional. */
+    help: "Não achou o que procurava?",
+    ctaWhatsapp: "Falar no WhatsApp",
   },
   final: {
     title: "O próximo pote cheio pode começar com você.",
@@ -257,27 +421,96 @@ export const copy = {
  * Copy da primeira dobra.
  *
  * `headline` e `headlineAccent` são lidos como **uma frase só** - o componente
- * junta os dois com um espaço e pinta o segundo de vermelho. Escreva pensando
- * nisso: "Mais de 400 animais precisam comer todo santo dia."
+ * junta os dois com um espaço e pinta o segundo de vermelho.
  *
- * A versão anterior era "Cinco abrigos, mais de 400 animais. A ração precisa
- * chegar todo mês." Duas frases sem verbo na primeira, começando pela estrutura
- * da organização (quantos abrigos ela tem) em vez de por quem está com fome. E
- * "precisa chegar" não diz quem faz chegar. Agora a frase tem sujeito, verbo e
- * urgência, e os cinco abrigos desceram para a linha de apoio - que é onde
- * cabe explicar a operação.
+ * A frase é a do site institucional ("Mais de 400 vidas dependem de nós para
+ * continuar vivas"), e não mais a da campanha de ração ("Mais de 400 animais
+ * precisam comer todo santo dia"). A diferença é de gênero de página: a de
+ * campanha abria com o pedido, esta abre com quem a organização é e por quem
+ * ela responde. O pedido continua na dobra, no botão - só não é mais a
+ * primeira coisa que se lê.
  */
 export const heroCopy = {
-  headline: "Mais de 400 animais precisam comer",
-  headlineAccent: "todo santo dia.",
-  // Curta de propósito: é a primeira dobra e ela precisa fechar em uma tela.
-  // Cada linha a mais aqui é altura que sai do vídeo, que é o que converte.
-  subheadline:
-    "A SOS Animal Help leva ração para cinco abrigos em diferentes estados do Brasil. Você escolhe quantos quilos quer mandar.",
+  headline: "Mais de 400 vidas dependem de nós",
+  headlineAccent: "para continuar vivas.",
+  /*
+   * A linha de apoio saiu da dobra. Ela dizia "A SOS Animal Help apoia 5
+   * abrigos em diferentes estados do Brasil, acolhendo cães e gatos
+   * abandonados, feridos e em situação crítica" - a mesma informação que o
+   * primeiro parágrafo de `copy.missao` dá logo abaixo, com mais espaço para
+   * ser lida. Na dobra ela custava três linhas de altura que agora são da
+   * foto, que é o que a primeira tela tem de melhor para mostrar.
+   */
   ctaPrimary: "Quero doar ração",
-  ctaSecondary: "Conheça os abrigos",
-  seal: "Doação segura · Organização com CNPJ verificado",
+  ctaSecondary: "Conheça nossos abrigos",
+  seal: "Organização com CNPJ verificado · Documentação aberta",
 };
+
+/**
+ * As fotos que passam no lugar do vídeo, na primeira dobra.
+ *
+ * ── Por que fotos, e não o VSL ────────────────────────────────────────────
+ * O player do VTurb saiu da dobra junto com a virada para institucional: um
+ * vídeo de vendas é o argumento de uma campanha, e ele tomava a tela inteira
+ * antes de a pessoa saber quem estava pedindo. O embed continua configurado em
+ * `heroVideo` e o componente (`components/ui/VturbPlayer.tsx`) continua no
+ * projeto - devolver o vídeo é trocar o slot de volta no `Hero`.
+ *
+ * ── Por que estas ─────────────────────────────────────────────────────────
+ * São as fotos **felizes** do acervo: gente com bicho no colo, cachorro
+ * recebendo carinho, voluntário no meio do canil. Nenhuma foto de animal
+ * ferido ou de bicho magro entra aqui, e isso é decisão de página: choque
+ * funciona em anúncio, e é justamente o que uma página institucional não pode
+ * ser. Quem quiser ver o tamanho do problema encontra os números logo abaixo.
+ *
+ * A ordem é a que passa no slide. A primeira é a única que baixa de imediato
+ * (ver `PhotoSlideshow`), então ela é a que apresenta a organização.
+ */
+export const heroPhotos = [
+  {
+    src: "/sos-animal/voluntarias-filhote-resgatado.webp",
+    alt: "Duas voluntárias da SOS Animal Help com um filhote resgatado no colo",
+  },
+  {
+    src: "/sos-animal/protetora-cao-carinho.webp",
+    alt: "Protetora recebendo o carinho de um cão resgatado na área externa do abrigo",
+  },
+  {
+    src: "/sos-animal/voluntario-tres-caes.webp",
+    alt: "Protetor sentado no chão com três cães resgatados ao seu redor",
+  },
+  {
+    src: "/sos-animal/canil-voluntario-caes.webp",
+    alt: "Voluntário agachado no canil, com dois cães no colo e outros ao redor das casinhas de concreto",
+  },
+  {
+    src: "/sos-animal/protetora-caes-acolhimento.webp",
+    alt: "Protetora agachada, cercada por cães resgatados que se aproximam dela",
+  },
+  {
+    src: "/sos-animal/voluntario-cao-colo.webp",
+    alt: "Protetor da SOS Animal Help com um cão resgatado apoiado no ombro",
+  },
+];
+
+/**
+ * Parceiros - patrocínio, parceria e apoio na mesma fileira.
+ *
+ * Os itens vêm do site institucional com o marcador `COLOCAR LOGOS AQUI` no
+ * lugar do nome, e assim ficam: **nome vazio não vira logo inventado**. Para
+ * publicar um parceiro de verdade, troque `name` pelo nome dele, aponte `url`
+ * para o site (opcional) e `logo` para o arquivo em `/public/parceiros/` - o
+ * componente troca o chip pontilhado pelo logo sozinho.
+ */
+export const partners = [
+  { name: "COLOCAR LOGOS AQUI", url: "", logo: null },
+  { name: "COLOCAR LOGOS AQUI", url: "", logo: null },
+  { name: "COLOCAR LOGOS AQUI", url: "", logo: null },
+  { name: "COLOCAR LOGOS AQUI", url: "", logo: null },
+  { name: "COLOCAR LOGOS AQUI", url: "", logo: null },
+  { name: "COLOCAR LOGOS AQUI", url: "", logo: null },
+  { name: "COLOCAR LOGOS AQUI", url: "", logo: null },
+] as { name: string; url: string; logo: { src: string; alt: string } | null }[];
 
 /**
  * Vídeo do hero, em três estados, nesta ordem de precedência:
@@ -933,40 +1166,41 @@ export const cnpjDocument = {
 /**
  * As dúvidas - **cinco, e só cinco**.
  *
- * A lista tinha oito e foi cortada por decisão de campanha: numa página de
- * conversão, FAQ longo vira parede de texto que ninguém abre, e cada pergunta
- * a mais empurra o fechamento para baixo. Ficaram as cinco que respondem uma
- * objeção real antes do pagamento - para onde vai, é seguro, como é o mensal,
- * posso doar outro valor, onde acompanho.
+ * São as cinco perguntas do site institucional, com as mesmas respostas: se a
+ * organização é registrada, quantos abrigos ela apoia, se ela acolhe os
+ * animais diretamente, para onde vai a doação e como falar com a equipe. Elas
+ * substituíram as cinco da campanha de ração (pra onde vai a ração, a doação é
+ * segura, como funciona o mensal, posso doar outro valor, onde acompanho), que
+ * respondiam objeção de checkout e não pergunta de quem está conhecendo a
+ * organização - que é o que esta página passou a ser.
  *
- * O que saiu continua respondido em outro lugar da página, e é por isso que
- * saiu sem prejuízo: o registro da organização e o cartão CNPJ estão na seção
- * de documentação; a escolha do abrigo e o comprovante de entrega, no WhatsApp
- * da equipe; a adoção, no link do rodapé; os canais de contato, no rodapé e na
- * documentação.
+ * O que saiu continua respondido em outro lugar: a segurança do pagamento e o
+ * cartão CNPJ estão na seção de documentação; a doação mensal, no próprio
+ * bloco de doação e no modal; o valor livre e o acompanhamento das entregas,
+ * no WhatsApp da equipe, que fecha esta mesma seção.
  *
  * ⚠️ Se for acrescentar uma pergunta, tire outra. Cinco é o limite acordado.
  */
 export const faq = [
   {
-    q: "Pra onde vai a ração?",
-    a: "Para os abrigos listados nesta página, em diferentes estados do Brasil. A ração não fica com a gente: ela é comprada e entregue direto para quem já está com os animais na mão. A equipe direciona cada entrega conforme a necessidade do mês, priorizando o abrigo mais apertado.",
+    q: "A SOS Animal Help é uma organização registrada?",
+    a: "Sim. Nosso CNPJ é 63.153.881/0001-09, público e verificável por qualquer pessoa no site da Receita Federal. Mantemos a documentação disponível para que cada doador contribua com mais confiança e segurança.",
   },
   {
-    q: "A doação é segura?",
-    a: "É. A SOS Animal Help tem CNPJ 63.153.881/0001-09, público e conferível no site da Receita Federal - o cartão CNPJ está nesta própria página. O pagamento é feito por Pix direto para a conta da organização, e é o nome dela que aparece na tela do seu banco antes de você confirmar.",
+    q: "Quantos abrigos vocês apoiam?",
+    a: "Cinco, em diferentes estados do Brasil, que juntos acolhem mais de 400 cães e gatos abandonados, feridos e em situação crítica.",
   },
   {
-    q: "Como funciona a doação mensal?",
-    a: "Na seção de ração há o botão “Quero ajudar todo mês”: você escolhe o valor e recebe o Pix na hora. Esse primeiro Pix cobre o primeiro mês - a cobrança ainda não é automática, então a equipe combina os meses seguintes com você pelo WhatsApp.",
+    q: "Vocês acolhem os animais diretamente?",
+    a: "Não. Quem acolhe são os abrigos. O que a SOS Animal Help faz é conectar apoio, recursos e cuidado urgente a eles, para que cada animal tenha uma chance real de sobreviver.",
   },
   {
-    q: "Posso doar um valor diferente das faixas de ração?",
-    a: "Pode. As faixas de kg existem para você enxergar o impacto, mas qualquer valor ajuda: fale com a equipe pelo WhatsApp (85) 99763-4409 e ela gera o Pix no valor que você quiser.",
+    q: "Para onde vai a minha doação?",
+    a: "Para os abrigos que apoiamos, na forma de ração, tratamento veterinário e estrutura. A ideia é que a ajuda chegue antes que seja tarde demais.",
   },
   {
-    q: "Onde acompanho os abrigos?",
-    a: "Cada abrigo tem o Instagram aberto, com o dia a dia e o registro das entregas - os perfis estão nos cards da seção “Os abrigos que recebem a ração” e também no rodapé. Para pedir o comprovante de uma entrega específica, é só falar com a equipe pelo WhatsApp ou por e-mail.",
+    q: "Como falo com a equipe?",
+    a: "Pelo WhatsApp, no (85) 99763-4409. Serve para tirar dúvidas, acompanhar as ações ou entender melhor como a sua doação ajuda.",
   },
 ] as const;
 

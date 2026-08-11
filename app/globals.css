@@ -398,6 +398,31 @@
   animation: sos-pulse-ring 2.4s ease-out infinite;
 }
 
+/*
+ * Fileira de parceiros que desliza sozinha, em loop sem emenda.
+ *
+ * A lista aparece duas vezes no DOM e o trilho anda exatamente `-50%` da
+ * própria largura: no fim da animação a cópia está no ponto de partida do
+ * original, e o corte não se vê. É por isso que o `-50%` não é ajustável -
+ * ele depende de a lista estar duplicada, e só disso.
+ */
+@keyframes sos-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  animation: sos-marquee var(--marquee-duration, 30s) linear infinite;
+}
+
+/* Passa o mouse ou entra com Tab num item real (a cópia é `inert`, nunca
+   recebe foco): a fileira para, para dar tempo de ler ou clicar. */
+.marquee-row:hover .marquee-track,
+.marquee-row:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+
 /* Revelação suave ao entrar na viewport - sem biblioteca, só CSS. */
 .reveal {
   opacity: 0;

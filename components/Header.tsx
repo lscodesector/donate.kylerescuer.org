@@ -4,19 +4,26 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { RACAO_HREF, org } from "@/content/landing";
+import { openCausasModal } from "./CausasModal";
+import { DonateMenuButton } from "./DonateMenuButton";
 import { IconClose, IconHeart, IconMenu } from "./ui/Icons";
 
 /*
+ * O menu do institucional: o mesmo percurso da página, na mesma ordem em que
+ * as seções aparecem. "Nossa missão" e "Parceiros" entraram junto com as
+ * seções novas; "Doe ração" continua apontando para a âncora `#racao`, que
+ * hoje é o bloco com o CTA (a grade de kg vive no modal).
+ *
  * "Adotar" saiu daqui junto com a seção `Adocao` da v2 - a âncora `#adotar`
- * não existe mais na página. Não virou link para o app da Lusa de propósito:
- * um item de menu que leva para fora logo na primeira dobra é vazamento numa
- * página que existe para receber doação. O caminho da adoção ficou no rodapé
- * e no FAQ, que é onde quem procura por ele vai olhar.
+ * não existe mais na página. O caminho da adoção ficou no rodapé e no app da
+ * Lusa, que é onde quem procura por ele vai olhar.
  */
 const NAV = [
+  { href: "#missao", label: "Nossa missão" },
   { href: "#abrigos", label: "Abrigos" },
   { href: RACAO_HREF, label: "Doe ração" },
   { href: "#transparencia", label: "Transparência" },
+  { href: "#parceiros", label: "Parceiros" },
   { href: "#duvidas", label: "Dúvidas" },
 ];
 
@@ -84,18 +91,16 @@ export function Header() {
             />
           </Link>
 
-          {/* Rola para a seção de ração - nunca abre modal. É o mesmo destino
-              do CTA do hero, do impacto, da barra fixa e do fechamento. */}
-          <a
-            href={RACAO_HREF}
-            className="inline-flex h-[44px] shrink-0 items-center justify-center justify-self-end gap-2 whitespace-nowrap rounded-full bg-donate px-4 text-[14px] font-extrabold text-donate-ink shadow transition-colors hover:bg-donate-hover sm:px-6"
-          >
+          {/* Abre o menu de frentes ("escolha onde ajudar"), e não a grade de
+              ração: o rótulo aqui é "Quero doar", sem destino. Sem
+              JavaScript, o link continua descendo até o bloco de doação. */}
+          <DonateMenuButton className="inline-flex h-[44px] shrink-0 items-center justify-center justify-self-end gap-2 whitespace-nowrap rounded-full bg-donate px-4 text-[14px] font-extrabold text-donate-ink shadow transition-colors hover:bg-donate-hover sm:px-6">
             <IconHeart size={16} />
             {/* No celular o rótulo encurta em vez de sumir: botão só com o
                 coração não diz o que faz, e este é o CTA fixo da página. */}
             <span className="sm:hidden">Doar</span>
             <span className="hidden sm:inline">Quero doar</span>
-          </a>
+          </DonateMenuButton>
         </div>
       </header>
 
@@ -129,13 +134,23 @@ export function Header() {
             </ul>
 
             <div className="mt-8 flex flex-col gap-6">
+              {/* Fecha o menu e abre as frentes por cima da página. Aqui o
+                  `DonateMenuButton` não serve: ele não tem como também fechar
+                  o menu, e o menu aberto por trás de um modal é a camada a
+                  mais que ninguém pediu. */}
               <a
                 href={RACAO_HREF}
-                onClick={() => setMenuOpen(false)}
+                onClick={(e) => {
+                  setMenuOpen(false);
+                  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0)
+                    return;
+                  e.preventDefault();
+                  openCausasModal();
+                }}
                 className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-full bg-donate px-8 text-[15px] font-extrabold text-donate-ink shadow"
               >
                 <IconHeart size={18} />
-                Quero doar ração
+                Quero doar
               </a>
 
               {/* Sem link de WhatsApp aqui: o botão flutuante já cobre o

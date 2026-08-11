@@ -1,17 +1,20 @@
+import { CausasModal } from "@/components/CausasModal";
 import { DonationModal } from "@/components/DonationModal";
+import { FloatingDonate } from "@/components/FloatingDonate";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
-import { StickyDonateBar } from "@/components/StickyDonateBar";
+import { RacaoModal } from "@/components/RacaoModal";
 import { CheckoutModal } from "@/components/checkout/CheckoutModal";
 import { Abrigos } from "@/components/sections/Abrigos";
 import { ComoFunciona } from "@/components/sections/ComoFunciona";
 import { Documentacao } from "@/components/sections/Documentacao";
+import { DoarRacao } from "@/components/sections/DoarRacao";
 import { Faq } from "@/components/sections/Faq";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { Hero } from "@/components/sections/Hero";
-import { Impacto } from "@/components/sections/Impacto";
+import { Missao } from "@/components/sections/Missao";
+import { Parceiros } from "@/components/sections/Parceiros";
 import { Pix } from "@/components/sections/Pix";
-import { Racao } from "@/components/sections/Racao";
 import { Transparencia } from "@/components/sections/Transparencia";
 import { TrustStrip } from "@/components/sections/TrustStrip";
 import { showPixSection } from "@/content/landing";
@@ -19,41 +22,54 @@ import type { Metadata } from "next";
 
 /**
  * ╔══════════════════════════════════════════════════════════════════════╗
- * ║  VERSÃO 2 DA LANDING - a versão viva, e agora a própria raiz          ║
+ * ║  SITE INSTITUCIONAL DA SOS ANIMAL HELP                                ║
  * ╚══════════════════════════════════════════════════════════════════════╝
  *
- * Esta página **é** a v2. Antes ela morava em `app/v2/page.tsx` e a raiz
- * apenas redirecionava para lá; num site estático (`output: "export"`, ver
- * `next.config.ts`) não existe servidor para responder o 307, então a landing
- * mudou de lugar em vez de ganhar um redirecionamento em JavaScript - que
- * custaria uma tela em branco e uma ida ao servidor para todo mundo que
- * chegasse por `/`.
+ * Esta página nasceu como landing de campanha de ração (a "v2") e virou o site
+ * institucional da organização. A diferença não é de tema, é de pergunta: a
+ * landing existia para converter um clique em doação e abria com o vídeo de
+ * vendas; o institucional existe para apresentar quem é a organização, quem
+ * recebe a ajuda e por que dá para confiar - e o pedido de doação continua na
+ * página inteira, mas como consequência, não como abertura.
  *
+ * O que mudou de estrutura, e por quê:
+ *
+ *  • **Hero** - o VSL do VTurb deu lugar ao slide de fotos felizes, e a dobra
+ *    perdeu a altura travada em uma tela que existia só para o player caber.
+ *  • **Missao** (nova) - o "nossa missão" do site institucional, o cartão de
+ *    propósito que responde "quem é essa organização?" antes de qualquer
+ *    pedido.
+ *  • **DoarRacao** substitui `Racao` **e** `Impacto` - a grade com as seis
+ *    faixas de kg saiu da página e virou modal (`RacaoModal`), e o contraste
+ *    "o que muda quando a ração chega" foi absorvido pela mesma seção. O
+ *    argumento e o pedido agora são um bloco só, com um botão no fim em vez de
+ *    três espalhados. O componente antigo (`components/sections/Racao.tsx`)
+ *    continua no projeto, sem uso, e a grade dentro do modal é a mesma.
+ *  • **Parceiros** (nova) - a fileira de logos que desliza, com os marcadores
+ *    "COLOCAR LOGOS AQUI" até os arquivos chegarem.
+ *  • **Faq** - as cinco perguntas viraram as do site institucional, e a seção
+ *    ganhou a saída para o WhatsApp no fim.
+ *
+ * A v1 é cópia congelada em `components/v1/` e não recebe nada disso.
  * `/v2` continua respondendo, como apelido desta página, para os links já
  * espalhados por aí (ver `app/v2/page.tsx`).
  *
- * Toda alteração de campanha acontece aqui e em `components/` +
- * `content/landing.ts` - a v1 é cópia congelada em `components/v1/` e não
- * recebe nada disso.
+ * A ordem das seções, e o que cada uma responde:
  *
- * A jornada, na ordem em que a decisão de doar acontece:
- *
- * entender o problema → ver quem recebe → perceber a urgência →
- * escolher quanto doar → confirmar que é confiável → doar.
- *
- *  1. Hero          promessa, vídeo e os números da rede
+ *  1. Hero          quem somos, em uma frase e em fotos
  *  2. TrustStrip    prova rápida de confiança, antes que a objeção apareça
- *  3. Abrigos       quem recebe a ração, com nome e perfil conferível
- *  4. Impacto       o que muda quando a ração chega
+ *  3. Missao        por que existimos - a missão e a operação
+ *  4. Abrigos       quem recebe a ajuda, com nome e perfil conferível
  *  5. ComoFunciona  os três passos, para o clique não ser um salto no escuro
- *  6. Racao         o pedido concreto (faixas de kg) + doação mensal
+ *  6. DoarRacao     o argumento (o contraste) e o pedido, num botão só
  *  7. Transparencia a conta mensal da rede e os números de impacto
- *  8. Documentacao  documento e canais oficiais
- *  9. Faq           as últimas dúvidas
- * 10. FinalCta      fechamento
+ *  8. Parceiros     as empresas que sustentam a operação
+ *  9. Documentacao  documento e canais oficiais
+ * 10. Faq           as perguntas do institucional + WhatsApp
+ * 11. FinalCta      fechamento
  *
  * ── A seção "Pix direto" está desligada ───────────────────────────────────
- * `Pix` ficava entre `Racao` e `Transparencia` e oferecia a chave solta, no
+ * `Pix` ficava entre a ração e a transparência e oferecia a chave solta, no
  * valor que a pessoa quisesse - um segundo caminho de doação competindo com o
  * checkout, e sem a ração, o valor e o impacto na frente. Agora o Pix é o meio
  * de pagamento **dentro** do modal de checkout. A seção continua importada e o
@@ -86,21 +102,40 @@ export default function DonationPage() {
       <main>
         <Hero />
         <TrustStrip />
+        <Missao />
         <Abrigos />
-        <Impacto />
         <ComoFunciona />
-        <Racao />
+        <DoarRacao />
         {showPixSection && <Pix />}
         <Transparencia />
+        <Parceiros />
         <Documentacao />
         <Faq />
         <FinalCta />
       </main>
       <Footer />
-      {/* O botão flutuante do WhatsApp saiu daqui. Ele passava por baixo da
-          barra fixa e do rodapé, e a barra ainda reservava uma faixa de 84px
-          só para não colidir com ele - espaço que agora é do botão de doar. */}
-      <StickyDonateBar />
+
+      {/* O atalho permanente para doar, a partir da segunda dobra. Era uma
+          barra colada na base (`StickyDonateBar`, retirada); virou botão
+          flutuante no canto, que entrega o mesmo atalho sem cobrar uma faixa
+          de altura em todas as telas. */}
+      <FloatingDonate />
+
+      {/*
+        Os quatro modais, na ordem em que se empilham e em que a decisão
+        acontece:
+
+          CausasModal  (z-55)  onde ajudar - as quatro frentes
+          RacaoModal   (z-60)  quantos kg, quando a frente é ração
+          DonationModal(z-60)  quanto e com que frequência, nas outras frentes
+          CheckoutModal(z-70)  dados e Pix
+
+        Cada um se fecha sozinho quando o seguinte abre: dois modais
+        empilhados, cada um com a sua trava de rolagem, é o caminho curto para
+        a página voltar ao topo sozinha.
+      */}
+      <CausasModal />
+      <RacaoModal />
       <DonationModal />
       <CheckoutModal />
     </>

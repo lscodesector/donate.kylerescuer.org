@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { openDonationModal } from "./DonationModal";
+import { openDonationModal, type DonationIntent } from "./DonationModal";
 
 /**
  * Botão que abre o modal de doação mensal.
@@ -19,12 +19,19 @@ import { openDonationModal } from "./DonationModal";
 export function MonthlyDonateButton({
   className,
   children,
+  /** A frente que a doação recorrente vai financiar. Sem ela, é a rede toda. */
+  causeId,
 }: {
   className?: string;
   children: ReactNode;
+  causeId?: DonationIntent["causeId"];
 }) {
   return (
-    <button type="button" onClick={() => openDonationModal()} className={className}>
+    <button
+      type="button"
+      onClick={() => openDonationModal({ causeId, freq: "mensal" })}
+      className={className}
+    >
       {children}
     </button>
   );
