@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
+import { withBasePath } from "@/lib/base-path";
 import "./globals.css";
 
 const inter = Inter({
@@ -24,6 +25,13 @@ export const metadata: Metadata = {
    *
    * `NEXT_PUBLIC_SITE_URL` continua mandando, para buildar uma prévia em outro
    * endereço sem tocar neste arquivo.
+   *
+   * ⚠️ Fica só a origem (`https://dominio`, sem caminho): uma URL relativa que
+   * começa com `/` **substitui** o caminho da base inteiro quando resolvida -
+   * `new URL("/x", "https://a.com/v2")` dá `https://a.com/x`, não
+   * `https://a.com/v2/x`. Por isso o `/v2` não entra aqui - ele entra em cada
+   * caminho relativo abaixo, via `withBasePath`, que é o único jeito de as
+   * duas partes somarem certo.
    */
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://doe.caioprotetor.org",
@@ -38,7 +46,7 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     images: [
       {
-        url: "/caio/historia/caio-1.webp",
+        url: withBasePath("/caio/historia/caio-1.webp"),
         width: 883,
         height: 947,
         alt: "Caio Protetor com um cão resgatado no colo",
@@ -49,7 +57,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/caio/historia/caio-1.webp"],
+    images: [withBasePath("/caio/historia/caio-1.webp")],
   },
 };
 

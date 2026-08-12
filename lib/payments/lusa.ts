@@ -32,6 +32,8 @@
  * já não está rodando - mas o webhook do gateway já escreveu na planilha.
  */
 
+import { withBasePath } from "@/lib/base-path";
+
 /**
  * Resposta da criação da cobrança.
  *
@@ -121,8 +123,14 @@ export const payments = {
    * Para onde ir depois do pagamento confirmado. Em produção o WordPress manda
    * para `https://sosanimalhelp.org/obrigado`; aqui a página de obrigado é
    * interna, e é ela que recebe.
+   *
+   * `withBasePath`, e não `"/obrigado"` puro: quem lê este valor é
+   * `window.location.href` em `CheckoutModal`, uma troca de página pelo
+   * navegador que não passa pelo Next - sem o prefixo, publicado em
+   * `doe.caioprotetor.org/v2` a pessoa que acabou de pagar cairia em
+   * `doe.caioprotetor.org/obrigado`, que é o WordPress, não esta página.
    */
-  successUrl: "/obrigado",
+  successUrl: withBasePath("/obrigado"),
 
   /** `data-loader-min-ms`: piso da tela "gerando", para ela ser lida. */
   loaderMinMs: 3500,

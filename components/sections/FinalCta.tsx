@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { Img as Image } from "@/components/ui/Img";
 import { DOAR_HREF, copy } from "@/content/landing";
 import { IconHeart, IconShield } from "../ui/Icons";
 import { Reveal } from "../ui/Reveal";
@@ -12,7 +12,7 @@ export function FinalCta() {
     <section className="relative overflow-hidden py-[clamp(3rem,7vh,5rem)]">
       <div className="absolute inset-0">
         <Image
-          src="/sos-animal/voluntario-cao-colo.webp"
+          src="/caio/historia/caio-6.webp"
           alt=""
           fill
           sizes="100vw"

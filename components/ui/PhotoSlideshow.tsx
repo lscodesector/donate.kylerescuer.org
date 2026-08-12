@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { Img as Image } from "@/components/ui/Img";
 import { useEffect, useRef, useState } from "react";
 import { IconArrowLeft, IconArrowRight } from "./Icons";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { Img as Image } from "@/components/ui/Img";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { checkoutFee, feeCentsFor, formatBRL } from "@/content/landing";
 import { isValidPhoneBR, maskPhoneBR } from "@/lib/format";

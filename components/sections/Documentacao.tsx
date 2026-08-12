@@ -1,5 +1,6 @@
-import Image from "next/image";
+import { Img as Image } from "@/components/ui/Img";
 import { cnpjDocument, copy, googleReviews, org, whatsappHref } from "@/content/landing";
+import { withBasePath } from "@/lib/base-path";
 import { IconFile, IconMail, IconPin, IconStar, IconWhatsApp } from "../ui/Icons";
 import { Reveal } from "../ui/Reveal";
 import { SectionHead } from "../ui/SectionHead";
@@ -49,7 +50,7 @@ export function Documentacao() {
           </div>
 
           <a
-            href={cnpjDocument.src}
+            href={withBasePath(cnpjDocument.src)}
             target="_blank"
             rel="noopener noreferrer"
             className="flex min-h-[48px] items-center justify-center gap-2 border-t border-ink-900/10 px-4 text-[13px] font-extrabold text-accent transition-colors hover:bg-surface-alt sm:justify-start"

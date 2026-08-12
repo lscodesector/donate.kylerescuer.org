@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { copy, depoimentos } from "@/content/landing";
+import { withBasePath } from "@/lib/base-path";
 import { CardsCarousel } from "../ui/CardsCarousel";
 import { IconPlay } from "../ui/Icons";
 import { SectionHead } from "../ui/SectionHead";
@@ -78,8 +79,8 @@ export function Depoimentos() {
                     pessoa da página no meio da leitura.
                   */}
                   <video
-                    src={item.src}
-                    poster={item.poster}
+                    src={withBasePath(item.src)}
+                    poster={withBasePath(item.poster)}
                     preload="none"
                     playsInline
                     controls={iniciado}

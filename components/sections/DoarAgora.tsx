@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { Img as Image } from "@/components/ui/Img";
 import { copy, impactCompare } from "@/content/landing";
 import { DonateMenuButton } from "../DonateMenuButton";
 import { IconCheck, IconClose, IconHeart, IconShield } from "../ui/Icons";

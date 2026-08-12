@@ -18,6 +18,7 @@ import { Pix } from "@/components/sections/Pix";
 import { Transparencia } from "@/components/sections/Transparencia";
 import { TrustStrip } from "@/components/sections/TrustStrip";
 import { showPixSection } from "@/content/landing";
+import { withBasePath } from "@/lib/base-path";
 import type { Metadata } from "next";
 
 /**
@@ -69,7 +70,10 @@ import type { Metadata } from "next";
  * Estão no histórico do git se um dia voltarem a fazer sentido.
  */
 export const metadata: Metadata = {
-  alternates: { canonical: "/" },
+  /* `withBasePath`, não `"/"` puro - ver o comentário sobre resolução de URL
+     relativa em `app/layout.tsx`. Sem ele, publicado em `/v2`, o canonical
+     apontaria para a raiz do domínio - que é outro site. */
+  alternates: { canonical: withBasePath("/") },
 };
 
 export default function DonationPage() {
