@@ -40,6 +40,7 @@ export function PhotoSlideshow({
   controls = false,
   interval = 2600,
   priority = false,
+  focus = "center",
   className = "",
 }: {
   photos: Photo[];
@@ -58,6 +59,13 @@ export function PhotoSlideshow({
    * quatro slides disputariam a banda da abertura entre si.
    */
   priority?: boolean;
+  /**
+   * Onde o `object-cover` ancora o recorte quando a foto é mais alta ou mais
+   * larga que o quadro. `"top"` é para fotos de retrato onde o rosto fica no
+   * terço de cima - as fichas de abrigo usam isto, porque o quadro delas é
+   * mais baixo que a foto original e o recorte central cortava rosto.
+   */
+  focus?: "center" | "top";
   /** Classes do quadro - é aqui que entram a proporção e a largura. */
   className?: string;
 }) {
@@ -127,6 +135,39 @@ export function PhotoSlideshow({
     }));
   };
 
+  /*
+   * Arrastar com o dedo ou o mouse - só as setas e os pontinhos respondiam a
+   * clique, e num carrossel de fotos arrastar é o gesto que todo mundo tenta
+   * primeiro, antes mesmo de procurar uma seta.
+   *
+   * Só a posição em X do toque que começou o arrasto: sem estado (não é
+   * `useState`) porque nada na tela precisa mudar enquanto o dedo se move -
+   * só ao soltar, quando o arrasto vira uma troca de foto ou não vira nada.
+   *
+   * Ponteiro (`Pointer Events`), não `touch`/`mouse` separados: cobre os três
+   * dispositivos (dedo, mouse, caneta) com um único par de manipuladores.
+   */
+  const arrasto = useRef<number | null>(null);
+
+  const aoPressionar = (e: React.PointerEvent) => {
+    if (!passa) return;
+    arrasto.current = e.clientX;
+    setParado(true);
+  };
+
+  const aoSoltar = (e: React.PointerEvent) => {
+    const inicio = arrasto.current;
+    arrasto.current = null;
+    setParado(false);
+    if (inicio === null) return;
+
+    // 40px: gesto claro de arrasto, sem confundir com o tremor de um toque
+    // parado ou o clique numa seta (que não move o ponteiro quase nada).
+    const delta = e.clientX - inicio;
+    if (delta > 40) ir(i - 1);
+    else if (delta < -40) ir(i + 1);
+  };
+
   /* `z-30`: as fotos agora empilham em `z-10`/`z-20` para a troca não piscar
      (ver o bloco das imagens), e sem uma camada própria as setas e os
      pontinhos ficariam **atrás** delas - vir depois no HTML não basta contra
@@ -140,7 +181,7 @@ export function PhotoSlideshow({
   return (
     <div
       ref={quadro}
-      className={`relative overflow-hidden bg-surface-alt ${className}`}
+      className={`relative touch-pan-y select-none overflow-hidden bg-surface-alt ${className}`}
       /* `focus`/`blur` com captura (`onFocus` no React já sobe do filho) cobrem
          quem chega nas setas pelo Tab - sem isso a foto trocaria debaixo do
          botão que a pessoa acabou de focar. */
@@ -148,6 +189,18 @@ export function PhotoSlideshow({
       onMouseLeave={() => setParado(false)}
       onFocus={() => setParado(true)}
       onBlur={() => setParado(false)}
+      /*
+       * `touch-pan-y` (acima) deixa o dedo continuar rolando a página na
+       * vertical - só o eixo horizontal vira gesto do slide. Sem isso, o
+       * primeiro `touchmove` horizontal também tentaria rolar a página e os
+       * dois gestos brigariam pelo mesmo toque.
+       */
+      onPointerDown={aoPressionar}
+      onPointerUp={aoSoltar}
+      onPointerCancel={() => {
+        arrasto.current = null;
+        setParado(false);
+      }}
     >
       {/*
         ── A troca é um fade EM CAMADAS, não um crossfade ──────────────────
@@ -180,13 +233,21 @@ export function PhotoSlideshow({
             fill
             priority={priority && indice === 0}
             sizes={sizes}
+            /*
+             * Sem isto, o navegador reconhece o arrasto como o gesto nativo de
+             * "arrastar a imagem" (o mesmo que solta uma imagem ghost ao
+             * arrastar para outra aba) - e ele **cancela** a sequência de
+             * ponteiro no meio do caminho (`pointercancel`, nunca
+             * `pointerup`), então `aoSoltar` nunca roda e o slide não troca.
+             */
+            draggable={false}
             /* `pointer-events-none` em tudo que não é a foto no ar: empilhadas,
                elas roubariam o clique das setas se ficassem no caminho. */
             className={`object-cover transition-opacity duration-400 ${
-              atual ? "z-20 opacity-100" : "pointer-events-none"
-            } ${saindo ? "z-10 opacity-100" : ""} ${
-              !atual && !saindo ? "opacity-0" : ""
-            }`}
+              focus === "top" ? "object-top" : ""
+            } ${atual ? "z-20 opacity-100" : "pointer-events-none"} ${
+              saindo ? "z-10 opacity-100" : ""
+            } ${!atual && !saindo ? "opacity-0" : ""}`}
             aria-hidden={atual ? undefined : true}
           />
         );

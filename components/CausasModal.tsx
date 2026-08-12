@@ -110,9 +110,13 @@ export function CausasModal() {
   /* As quatro frentes seguem pelo mesmo caminho. Já houve uma exceção aqui - a
      ração ia para uma grade de faixas de kg, porque tinha preço fechado -, mas
      esta campanha não vende saco de ração: ela pede um valor, e o destino é o
-     que a pessoa acabou de escolher. */
+     que a pessoa acabou de escolher.
+
+     Sem `freq`: quem acabou de escolher *onde* ajudar ainda não decidiu *de
+     quanto em quanto tempo* - o modal de valor abre no padrão dele (única), e
+     a mensal continua ali, a um toque. */
   const escolher = (cause: Cause) => {
-    openDonationModal({ causeId: cause.id, freq: "mensal" });
+    openDonationModal({ causeId: cause.id });
   };
 
   return (

@@ -90,17 +90,15 @@ export function Pix() {
 
         <ol className="flex flex-col gap-3">
           {texts.pix.steps.map((step, i) => (
-            /* No celular a bolinha do passo vai para cima do texto e tudo
-               centraliza; a partir de `sm` volta a ser número à esquerda e
-               frase ao lado. */
-            <li
-              key={step}
-              className="flex flex-col items-center gap-1.5 text-center sm:flex-row sm:items-start sm:gap-3 sm:text-left"
-            >
+            /* Número à esquerda, frase ao lado, em qualquer largura - igual
+               aos passos do Pix dentro do checkout. Já foi centralizado e
+               empilhado no celular (bolinha em cima, texto embaixo), e ficava
+               parecendo três blocos soltos em vez de uma lista de passos. */
+            <li key={step} className="flex items-start gap-3 text-left">
               <span className="flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-full bg-white/20 text-[13px] font-extrabold text-white">
                 {i + 1}
               </span>
-              <p className="text-[14px] leading-[1.5] text-white/90 sm:pt-0.5 sm:text-[15px]">
+              <p className="pt-0.5 text-[14px] leading-[1.5] text-white/90 sm:text-[15px]">
                 {step}
               </p>
             </li>

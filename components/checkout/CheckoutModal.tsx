@@ -501,7 +501,14 @@ export function CheckoutModal() {
 
   return (
     <div
-      className="fixed inset-0 z-[70] flex items-end justify-center bg-night/70 anim-fade-in sm:items-center sm:p-4"
+      /*
+       * `p-3`, e não só `sm:p-4`: sem folga nenhuma no celular o cartão virava
+       * uma folha colada nas quatro bordas da tela, sem nada do fundo à mostra
+       * - lia como uma página nova, não como um modal por cima da página. A
+       * margem, por menor que seja, é o que faz a pessoa continuar sentindo
+       * que a landing está ali atrás, e não que ela saiu para outro lugar.
+       */
+      className="fixed inset-0 z-[70] flex items-center justify-center bg-night/70 p-3 anim-fade-in sm:p-4"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) fechar();
       }}
@@ -516,8 +523,13 @@ export function CheckoutModal() {
          * `90dvh` e não `90vh`: no celular a `vh` ignora a barra do navegador,
          * e o rodapé com o CTA principal ficava atrás dela - que é justamente
          * o botão que precisa estar sempre visível.
+         *
+         * `rounded-lg` nas quatro bordas em qualquer largura - já foi só nas
+         * de cima no celular (`rounded-t-lg`), do tempo em que o cartão ia até
+         * a base da tela sem margem. Com margem nos quatro lados, cantos
+         * quadrados embaixo ficariam sobrando.
          */
-        className="anim-fade-up flex max-h-[90dvh] w-full max-w-[520px] flex-col overflow-hidden rounded-t-lg bg-surface shadow-xl sm:rounded-lg"
+        className="anim-fade-up flex max-h-[90dvh] w-full max-w-[520px] flex-col overflow-hidden rounded-lg bg-surface shadow-xl"
       >
         {/* ── Cabeçalho ─────────────────────────────────────────────── */}
         <header className="flex shrink-0 items-center gap-2 border-b border-ink-900/10 px-3 py-2.5 sm:px-4">

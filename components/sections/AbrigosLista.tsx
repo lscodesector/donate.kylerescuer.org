@@ -89,6 +89,7 @@ export function AbrigosLista({
             <PhotoSlideshow
               photos={shelter.photos}
               label={shelter.name}
+              focus="top"
               sizes="(min-width: 640px) 210px, 92vw"
               className="aspect-[4/3] w-full shrink-0 sm:aspect-auto sm:w-[210px] sm:self-stretch"
             />
@@ -254,6 +255,7 @@ function FichaAbrigo({
             photos={shelter.photos}
             label={shelter.name}
             controls
+            focus="top"
             interval={4000}
             sizes="(min-width: 640px) 520px, 100vw"
             className="aspect-[7/6] w-full"

@@ -22,7 +22,7 @@ export const DONATION_MODAL_EVENT = "sos:abrir-doacao";
 export type DonationIntent = {
   /** `id` de uma frente (`causes`). Sem ele, a doação é para a rede toda. */
   causeId?: string;
-  /** Com que frequência a tela abre. Mensal é o padrão - ver abaixo. */
+  /** Com que frequência a tela abre. Única é o padrão - ver abaixo. */
   freq?: Freq;
 };
 
@@ -44,12 +44,12 @@ type Freq = "mensal" | "unica";
  * exceção é a ração, que tem preço fechado por kg e por isso vai para a grade
  * de faixas (`RacaoModal`) em vez de vir para cá.
  *
- * ── A mensal vem selecionada ──────────────────────────────────────────────
- * Doação recorrente é o objetivo principal da operação: é o que permite ao
- * abrigo comprar em quantidade em vez de esperar a próxima campanha. Por isso
- * ela é o padrão e leva o selo de recomendada - mas com a doação única a um
- * toque de distância, na mesma tela, e não escondida atrás de um link. Quem só
- * pode ajudar uma vez não deve ter que procurar como.
+ * ── A única vem selecionada ───────────────────────────────────────────────
+ * Quem clica em "onde ajudar" ainda não decidiu se quer se comprometer com um
+ * valor todo mês - forçar essa escolha antes mesmo de ver quanto custa é pedir
+ * demais logo de cara. A doação única abre primeiro, sem fricção nenhuma; a
+ * mensal continua a um toque de distância, na mesma tela, com o selo de
+ * recomendada - quem já sabia que queria ajudar todo mês não perde nada.
  *
  * A escada de valores muda junto com a frequência (`donationAmounts` contra
  * `donationAmountsUnica`): R$ 30 por mês e R$ 30 uma vez não resolvem a mesma
@@ -65,7 +65,7 @@ type Freq = "mensal" | "unica";
  */
 export function DonationModal() {
   const [intent, setIntent] = useState<DonationIntent | null>(null);
-  const [freq, setFreq] = useState<Freq>("mensal");
+  const [freq, setFreq] = useState<Freq>("unica");
   const [selecionado, setSelecionado] = useState<number | null>(null);
   const [valorLivre, setValorLivre] = useState("");
   const fecharRef = useRef<HTMLButtonElement>(null);
@@ -85,7 +85,7 @@ export function DonationModal() {
       gatilhoRef.current =
         document.activeElement instanceof HTMLElement ? document.activeElement : null;
       setIntent(detalhe);
-      setFreq(detalhe.freq ?? "mensal");
+      setFreq(detalhe.freq ?? "unica");
       setSelecionado(null);
       setValorLivre("");
     };

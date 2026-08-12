@@ -1,8 +1,8 @@
 import { CausasModal } from "@/components/CausasModal";
 import { DonationModal } from "@/components/DonationModal";
-import { FloatingDonate } from "@/components/FloatingDonate";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { StickyDonateBar } from "@/components/StickyDonateBar";
 import { CheckoutModal } from "@/components/checkout/CheckoutModal";
 import { Abrigos } from "@/components/sections/Abrigos";
 import { Atualizacoes } from "@/components/sections/Atualizacoes";
@@ -98,7 +98,7 @@ export default function DonationPage() {
       <Footer />
 
       {/* O atalho permanente para doar, a partir da segunda dobra. */}
-      <FloatingDonate />
+      <StickyDonateBar />
 
       {/*
         Os três modais, na ordem em que se empilham e em que a decisão acontece:

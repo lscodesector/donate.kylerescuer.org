@@ -1,5 +1,4 @@
 import { copy, historiaPhotos } from "@/content/landing";
-import { IconArrowRight } from "../ui/Icons";
 import { PhotoSlideshow } from "../ui/PhotoSlideshow";
 import { Reveal } from "../ui/Reveal";
 
@@ -8,8 +7,9 @@ import { Reveal } from "../ui/Reveal";
  *
  * É a pergunta que uma campanha pessoal responde antes de qualquer pedido:
  * quem está pedindo, e por quê. A ordem dentro do cartão é rótulo → frase →
- * fotos → história → citação → desfecho → botão. O botão fecha mandando para os
- * abrigos, que são a prova do que acabou de ser afirmado.
+ * fotos → história → citação → desfecho. Sem botão no fim: o CTA verde já
+ * está na dobra acima e no botão flutuante, e "Conheça os abrigos" competia
+ * com os dois por um clique que este cartão não precisa pedir.
  *
  * ── Por que as fotos vêm antes do texto ───────────────────────────────────
  * Porque a história é dele, e ver o rosto de quem pede muda o que se lê depois.
@@ -77,17 +77,6 @@ export function Missao() {
               </p>
             ))}
           </div>
-
-          {/* Contorno, e não preenchido: o botão verde de doar já aparece na
-              dobra acima e no botão flutuante, e um segundo botão cheio aqui
-              disputaria um clique que não é o desta seção. */}
-          <a
-            href="#abrigos"
-            className="mt-1 inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-full border-2 border-accent px-6 text-[15px] font-extrabold text-accent transition-colors hover:bg-accent-soft sm:w-auto"
-          >
-            {missao.cta}
-            <IconArrowRight size={16} />
-          </a>
         </Reveal>
       </div>
     </section>

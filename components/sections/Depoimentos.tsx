@@ -57,12 +57,16 @@ export function Depoimentos() {
           lead={copy.depoimentos.lead}
         />
 
-        {/* As margens negativas fazem a fileira sangrar até a borda da tela: o
-            card seguinte aparece cortado e diz que há mais, em vez de a fileira
-            terminar certinha na margem e parecer completa. */}
+        {/*
+          As margens negativas fazem a fileira sangrar até a borda da tela; o
+          padding generoso (bem maior que o resto da página) é o que sobra pro
+          card ficar centralizado com uma tira do vizinho à mostra dos dois
+          lados, em vez de grudado na margem esquerda - que era só o card
+          seguinte espiando à direita, sem par no lado de cá.
+        */}
         <CardsCarousel
           label={copy.depoimentos.title}
-          className="no-scrollbar -mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 md:-mx-8 md:px-8"
+          className="no-scrollbar -mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-12 pb-2 sm:px-16 md:-mx-8"
         >
           {depoimentos.map((item) => {
             const iniciado = iniciados.includes(item.id);
@@ -70,7 +74,7 @@ export function Depoimentos() {
             return (
               <li
                 key={item.id}
-                className="flex w-[260px] shrink-0 snap-start flex-col overflow-hidden rounded-md border border-ink-900/10 bg-surface shadow sm:w-[300px]"
+                className="flex w-[260px] shrink-0 snap-center flex-col overflow-hidden rounded-md border border-ink-900/10 bg-surface shadow sm:w-[300px]"
               >
                 <div className="relative aspect-[9/16] bg-ink-900">
                   {/*

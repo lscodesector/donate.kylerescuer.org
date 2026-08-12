@@ -273,7 +273,6 @@ export const copy = {
       "Mesmo diante de tanta dificuldade, eu não consigo virar as costas. Se a gente não ajudar agora, muitos desses animais continuarão sofrendo sem socorro, sem alimento e sem ninguém por eles.",
       "Abandonar esses animais não é uma opção...",
     ],
-    cta: "Conheça os abrigos que o Caio ajuda",
   },
   abrigos: {
     eyebrow: "Quem recebe",
@@ -292,7 +291,7 @@ export const copy = {
     title: "Cada doação é a diferença entre um animal ter ou não ter uma chance",
     lead: "O Caio não consegue fazer isso sozinho. O que entra aqui vira ração, remédio, veterinário e aluguel pago - nos cinco abrigos que ele acompanha.",
     cta: "Quero ajudar agora",
-    seal: "Doação segura · Pix na hora · CNPJ verificável",
+    seal: "Doação segura · Pix na hora · CNPJ verificado",
   },
   /** Cabeça da grade de valores, dentro do modal de doação. */
   valores: {
@@ -373,7 +372,7 @@ export const copy = {
     text: "São mais de 400 vidas em cinco abrigos que dependem de gente que decidiu não virar as costas. Cada doação, por menor que seja, é a diferença entre um animal ter ou não ter uma chance.",
     ctaPrimary: "Quero ajudar agora",
     ctaSecondary: "Tenho uma dúvida antes de doar",
-    seal: "Doação segura · CNPJ verificável · Atendimento direto no WhatsApp",
+    seal: "Doação segura · CNPJ verificado · Atendimento direto no WhatsApp",
   },
   footerAbout:
     "Resgatando vidas em SP, ES, MG e BA com o apoio da SOS Animal Help e de pessoas como você. São 400+ animais que dependem de cada doação.",
@@ -847,7 +846,7 @@ export const pix = {
 export const trustStrip = {
   title: "Da sua doação até o abrigo, sem escala.",
   items: [
-    { icon: "shield", label: "CNPJ verificável" },
+    { icon: "shield", label: "CNPJ verificado" },
     { icon: "home", label: "5 abrigos identificados" },
     { icon: "bowl", label: "Ração, remédio e veterinário" },
     { icon: "pix", label: "Doação via Pix" },
