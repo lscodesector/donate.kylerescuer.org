@@ -3,10 +3,11 @@
  * ║  GATEWAY DE PAGAMENTO - Lusa Payments / InfoPago (Pix)                ║
  * ╚══════════════════════════════════════════════════════════════════════╝
  *
- * Este é o mesmo gateway que a página em produção (`doe.sosanimalhelp.org`,
- * WordPress + Elementor) já usa. O contrato abaixo foi extraído de lá campo a
- * campo para que as duas páginas caiam na mesma conciliação - mesmo endpoint,
- * mesmo formato de `txid`, mesmo `lead_id`, mesmos eventos de tracking.
+ * Este é o mesmo gateway que a página em produção da campanha
+ * (`doe.caioprotetor.org`, WordPress + Elementor) já usa. O contrato abaixo foi
+ * extraído de lá campo a campo para que as duas páginas caiam na mesma
+ * conciliação - mesmo endpoint, mesmo formato de `txid`, mesmo `lead_id`,
+ * mesmos eventos de tracking.
  *
  * ── Por que o navegador chama direto ──────────────────────────────────────
  * Sem proxy no Next. O endpoint responde `access-control-allow-origin: *` no
@@ -96,10 +97,16 @@ export type ChargeResponse = {
  * produção. Mudou lá, muda aqui.
  */
 export const payments = {
-  /** `data-api-url`. O sufixo do caminho identifica a campanha no gateway. */
+  /**
+   * `data-api-url`. O sufixo do caminho identifica a campanha no gateway.
+   *
+   * ⚠️ É `sos-animal-help`, **sem** o `-racao` do fim: aquele era o da campanha
+   * de ração, e este é o que a página do Caio (`doe.caioprotetor.org`) usa hoje.
+   * Trocar o sufixo troca a conta que recebe.
+   */
   chargeUrl:
     process.env.NEXT_PUBLIC_PIX_API_URL ??
-    "https://lusapayments.com/api/onz/infopago/sos-animal-help-racao/charge",
+    "https://lusapayments.com/api/onz/infopago/sos-animal-help/charge",
 
   /**
    * `data-sheet-status-url`. Apps Script que responde
@@ -129,8 +136,12 @@ export const payments = {
   /** Validade do código, em segundos - 24h, como em produção. */
   expirationSeconds: 86_400,
 
-  /** Marcador que entra no `txid`, depois do `lead_id`. */
-  txidMarker: "SOSANIMA",
+  /**
+   * Marcador que entra no `txid`, depois do `lead_id`. É o que separa esta
+   * campanha das outras na conciliação - `CPCAIOPR` é o mesmo que a página em
+   * WordPress do Caio manda hoje, então as duas caem no mesmo relatório.
+   */
+  txidMarker: "CPCAIOPR",
 } as const;
 
 /** `<createUrl>/status` - o endpoint de status é derivado do de criação. */

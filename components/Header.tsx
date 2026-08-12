@@ -3,27 +3,28 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { RACAO_HREF, org } from "@/content/landing";
+import { DOAR_HREF, org } from "@/content/landing";
 import { openCausasModal } from "./CausasModal";
 import { DonateMenuButton } from "./DonateMenuButton";
 import { IconClose, IconHeart, IconMenu } from "./ui/Icons";
 
 /*
- * O menu do institucional: o mesmo percurso da página, na mesma ordem em que
- * as seções aparecem. "Nossa missão" e "Parceiros" entraram junto com as
- * seções novas; "Doe ração" continua apontando para a âncora `#racao`, que
- * hoje é o bloco com o CTA (a grade de kg vive no modal).
+ * O menu da campanha: o mesmo percurso da página, na mesma ordem em que as
+ * seções aparecem. São os sete destinos do menu lateral de
+ * `doe.caioprotetor.org`, apontando para as âncoras desta página.
  *
- * "Adotar" saiu daqui junto com a seção `Adocao` da v2 - a âncora `#adotar`
- * não existe mais na página. O caminho da adoção ficou no rodapé e no app da
- * Lusa, que é onde quem procura por ele vai olhar.
+ * ⚠️ Todo item aqui precisa existir como `id` de seção em `app/page.tsx`. Item
+ * de menu que rola para lugar nenhum é o defeito que ninguém testa e todo mundo
+ * encontra - foi o que aconteceu com "Parceiros" e "Adotar", que continuaram
+ * nesta lista depois de as seções saírem.
  */
 const NAV = [
-  { href: "#missao", label: "Nossa missão" },
+  { href: "#missao", label: "A história" },
   { href: "#abrigos", label: "Abrigos" },
-  { href: RACAO_HREF, label: "Doe ração" },
+  { href: DOAR_HREF, label: "Doar agora" },
   { href: "#transparencia", label: "Transparência" },
-  { href: "#parceiros", label: "Parceiros" },
+  { href: "#atualizacoes", label: "Atualizações" },
+  { href: "#depoimentos", label: "Depoimentos" },
   { href: "#duvidas", label: "Dúvidas" },
 ];
 
@@ -82,17 +83,17 @@ export function Header() {
                 próprio desenho, e repetir os dois deixava a barra apertada. Sem
                 o texto, ela pode crescer e ocupar o centro sozinha. */}
             <Image
-              src="/logo/logo-transparente.png"
+              src="/caio/logo-caio.png"
               alt={org.name}
-              width={1254}
-              height={1254}
+              width={500}
+              height={500}
               priority
               className="h-[68px] w-[68px] shrink-0 object-contain"
             />
           </Link>
 
-          {/* Abre o menu de frentes ("escolha onde ajudar"), e não a grade de
-              ração: o rótulo aqui é "Quero doar", sem destino. Sem
+          {/* Abre o menu de frentes ("escolha onde ajudar"): o rótulo aqui é
+              "Quero doar", sem destino, e é o menu que dá um a ele. Sem
               JavaScript, o link continua descendo até o bloco de doação. */}
           <DonateMenuButton className="inline-flex h-[44px] shrink-0 items-center justify-center justify-self-end gap-2 whitespace-nowrap rounded-full bg-donate px-4 text-[14px] font-extrabold text-donate-ink shadow transition-colors hover:bg-donate-hover sm:px-6">
             <IconHeart size={16} />
@@ -139,7 +140,7 @@ export function Header() {
                   o menu, e o menu aberto por trás de um modal é a camada a
                   mais que ninguém pediu. */}
               <a
-                href={RACAO_HREF}
+                href={DOAR_HREF}
                 onClick={(e) => {
                   setMenuOpen(false);
                   if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0)

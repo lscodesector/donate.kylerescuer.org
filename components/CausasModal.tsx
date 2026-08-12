@@ -5,7 +5,6 @@ import { causes, copy, type Cause } from "@/content/landing";
 import { useScrollLock } from "@/lib/scroll-lock";
 import { CHECKOUT_EVENT } from "./checkout/checkout-bus";
 import { DONATION_MODAL_EVENT, openDonationModal } from "./DonationModal";
-import { openRacaoModal, RACAO_MODAL_EVENT } from "./RacaoModal";
 import {
   IconAlert,
   IconArrowRight,
@@ -41,18 +40,14 @@ const ICONES = {
  *
  * Ele existe porque "doar" sozinho é uma decisão vaga. Escolher a frente
  * transforma um valor num destino - e destino é o que faz alguém decidir. As
- * quatro frentes estão em `causes`, no `content/landing.ts`, e cada clique
- * segue por um de dois caminhos:
+ * quatro frentes estão em `causes`, no `content/landing.ts`, e não foram
+ * inventadas: são as quatro maiores linhas da tabela de custos que a própria
+ * campanha publica.
  *
- *   **Ração** → `RacaoModal`, a grade de faixas de kg, porque essa frente tem
- *   preço fechado (um saco de 15 kg custa o que custa) e a página inteira
- *   explica o que cada faixa alimenta. Mandá-la para uma tela de valor livre
- *   seria jogar fora a única frente com preço.
- *
- *   **As outras três** → `DonationModal`, valor livre com a frequência na
- *   frente. Consulta veterinária, telha de canil e "o que estiver mais
- *   apertado" não têm unidade de venda, e inventar uma seria prometer o que
- *   não dá para comprovar.
+ * Todas seguem para o `DonationModal` - valor, com a frequência na frente.
+ * Ração, consulta veterinária, aluguel de abrigo e "o que estiver mais
+ * apertado" não têm unidade de venda, e inventar uma seria prometer o que não
+ * dá para comprovar.
  *
  * ── A mensal fecha o menu, e não é uma quinta frente ──────────────────────
  * Doação que se repete é o objetivo principal da operação. Ela aparece
@@ -92,11 +87,9 @@ export function CausasModal() {
   /* Sem devolver o foco: quem manda nele agora é o modal que acabou de abrir. */
   useEffect(() => {
     const onOutroModal = () => setAberto(false);
-    window.addEventListener(RACAO_MODAL_EVENT, onOutroModal);
     window.addEventListener(DONATION_MODAL_EVENT, onOutroModal);
     window.addEventListener(CHECKOUT_EVENT, onOutroModal);
     return () => {
-      window.removeEventListener(RACAO_MODAL_EVENT, onOutroModal);
       window.removeEventListener(DONATION_MODAL_EVENT, onOutroModal);
       window.removeEventListener(CHECKOUT_EVENT, onOutroModal);
     };
@@ -114,11 +107,11 @@ export function CausasModal() {
 
   if (!aberto) return null;
 
+  /* As quatro frentes seguem pelo mesmo caminho. Já houve uma exceção aqui - a
+     ração ia para uma grade de faixas de kg, porque tinha preço fechado -, mas
+     esta campanha não vende saco de ração: ela pede um valor, e o destino é o
+     que a pessoa acabou de escolher. */
   const escolher = (cause: Cause) => {
-    if (cause.id === "racao") {
-      openRacaoModal();
-      return;
-    }
     openDonationModal({ causeId: cause.id, freq: "mensal" });
   };
 

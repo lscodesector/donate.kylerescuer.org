@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { CheckoutValor } from "./CheckoutValor";
 
 export const metadata: Metadata = {
-  title: "Finalizar doação | SOS Animal Help",
+  title: "Finalizar doação | Caio Protetor",
   robots: { index: false, follow: false },
 };
 

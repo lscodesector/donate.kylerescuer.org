@@ -9,9 +9,9 @@ const inter = Inter({
   weight: ["400", "600", "800"],
 });
 
-const TITLE = "Doe Ração e Ajude Mais de 400 Animais | SOS Animal Help";
+const TITLE = "Doe e Ajude o Caio a Salvar Mais de 400 Animais | Caio Protetor";
 const DESCRIPTION =
-  "Ajude a SOS Animal Help a manter cinco abrigos e mais de 400 animais alimentados. Escolha quanto doar e acompanhe com transparência o impacto da sua contribuição.";
+  "O Caio é protetor e leva ração, remédios e veterinário a cinco abrigos em SP, MG, BA e ES. Mais de 400 animais dependem de cada doação. Doe via Pix, no valor que puder.";
 
 export const metadata: Metadata = {
   /*
@@ -26,22 +26,22 @@ export const metadata: Metadata = {
    * endereço sem tocar neste arquivo.
    */
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://doe.sosanimalhelp.org",
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://doe.caioprotetor.org",
   ),
   title: TITLE,
   description: DESCRIPTION,
   openGraph: {
     type: "website",
     locale: "pt_BR",
-    siteName: "SOS Animal Help",
+    siteName: "Caio Protetor",
     title: TITLE,
     description: DESCRIPTION,
     images: [
       {
-        url: "/sos-animal/abrigo-patio-caes.webp",
-        width: 1536,
-        height: 1024,
-        alt: "Cuidadora cercada por dezenas de cães resgatados no pátio do abrigo",
+        url: "/caio/historia/caio-1.webp",
+        width: 883,
+        height: 947,
+        alt: "Caio Protetor com um cão resgatado no colo",
       },
     ],
   },
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/sos-animal/abrigo-patio-caes.webp"],
+    images: ["/caio/historia/caio-1.webp"],
   },
 };
 

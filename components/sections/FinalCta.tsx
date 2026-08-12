@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { RACAO_HREF, copy } from "@/content/landing";
+import { DOAR_HREF, copy } from "@/content/landing";
 import { IconHeart, IconShield } from "../ui/Icons";
 import { Reveal } from "../ui/Reveal";
 
@@ -36,7 +36,7 @@ export function FinalCta() {
               página - o fechamento não abre um caminho de doação diferente do
               que a pessoa já viu. */}
           <a
-            href={RACAO_HREF}
+            href={DOAR_HREF}
             className="inline-flex min-h-[56px] w-full items-center justify-center gap-2 rounded-full bg-donate px-8 text-[clamp(1rem,1.8vh,1.125rem)] font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow-[0_10px_30px_-8px_rgba(27,138,75,.6)] transition-colors hover:bg-donate-hover"
           >
             <IconHeart size={20} />

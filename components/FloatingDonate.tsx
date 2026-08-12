@@ -18,9 +18,9 @@ import { IconHeart } from "./ui/Icons";
  *
  * ── Ele não abre o checkout ───────────────────────────────────────────────
  * Abre o menu de frentes (`CausasModal`): "doar" sem destino é uma decisão
- * vaga, e é escolher onde a doação entra que faz alguém decidir. Os botões com
- * destino explícito na página ("Doar ração") continuam indo direto para a
- * grade de kg - o menu é para quem clicou em *doar*, não em *doar ração*.
+ * vaga, e é escolher onde a doação entra que faz alguém decidir. Todos os CTAs
+ * da página passam por ele - não há mais nenhum com destino já embutido no
+ * rótulo, desde que as faixas de ração por kg saíram.
  *
  * ── Quando aparece ────────────────────────────────────────────────────────
  * Depois da primeira dobra, como a barra fazia. Na dobra o CTA já está na tela

@@ -12,19 +12,21 @@ export const CHECKOUT_EVENT = "sos:abrir-checkout";
 /** O que o checkout mostra no topo - o item que está sendo doado. */
 export type CheckoutItem = {
   /**
-   * `racao` é uma faixa de kg; `causa` é um valor livre para uma das frentes
-   * do menu "escolha onde ajudar" (tratamento, estrutura, mais urgente); e
-   * `mensal` é qualquer um dos dois se repetindo todo mês. A diferença muda só
-   * o texto: o Pix é o mesmo.
+   * `causa` é um valor para uma das frentes do menu "escolha onde ajudar";
+   * `mensal` é o mesmo valor se repetindo todo mês. A diferença muda só o
+   * texto: o Pix é o mesmo.
+   *
+   * Havia um terceiro, `racao`, para as faixas de kg - elas saíram junto com a
+   * virada para a campanha do Caio, que pede valor e não saco de ração.
    */
-  kind: "racao" | "causa" | "mensal";
+  kind: "causa" | "mensal";
   /** Valor da doação em centavos, **sem** a taxa. */
   amountCents: number;
-  /** Rótulo curto do item: "5 kg de ração", "Doação mensal". */
+  /** Rótulo curto do item: "Ração dos abrigos", "Doação mensal". */
   title: string;
   /** Uma linha sobre o impacto daquela quantidade. */
   impact: string;
-  /** Foto do saco. `null` no valor livre, que não tem produto. */
+  /** Foto do item. Hoje sempre `null`: a doação é um valor, não um produto. */
   image: { src: string; alt: string } | null;
   /** Identificador que vai no BR Code. */
   txid: string;

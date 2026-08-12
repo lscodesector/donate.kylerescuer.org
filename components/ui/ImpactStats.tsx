@@ -27,12 +27,36 @@ export function ImpactStats() {
   // em vez de mostrar moldura vazia.
   if (!impactNumbers.length) return null;
 
+  /*
+   * As colunas seguem a quantidade de números, em vez de estarem fixas em
+   * quatro. Com `sm:grid-cols-4` e três itens, o último ficava sozinho numa
+   * célula de largura de card e a fileira lia como grade quebrada - e é
+   * exatamente o que aconteceu quando a lista caiu de quatro para três na
+   * virada para esta campanha. No celular continuam sendo duas colunas em
+   * qualquer caso: três cards lado a lado em 360px não cabem.
+   */
+  const colunas =
+    impactNumbers.length % 4 === 0
+      ? "sm:grid-cols-4"
+      : impactNumbers.length % 3 === 0
+        ? "sm:grid-cols-3"
+        : "sm:grid-cols-2";
+
   return (
-    <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-      {impactNumbers.map((stat) => (
+    <ul className={`grid grid-cols-2 gap-3 sm:gap-4 ${colunas}`}>
+      {impactNumbers.map((stat, i) => (
         <li
           key={stat.label}
-          className="flex flex-col items-center gap-1 rounded-md border border-ink-900/10 bg-surface p-4 text-center shadow"
+          /* No celular são sempre duas colunas, então uma lista ímpar deixaria
+             o último card sozinho e com metade da largura dos outros - a
+             fileira lê como se faltasse um item. Ele passa a ocupar a linha
+             inteira; a partir de `sm` a grade fecha certinha e isso não vale
+             mais. */
+          className={`flex flex-col items-center gap-1 rounded-md border border-ink-900/10 bg-surface p-4 text-center shadow ${
+            impactNumbers.length % 2 === 1 && i === impactNumbers.length - 1
+              ? "max-sm:col-span-2"
+              : ""
+          }`}
         >
           <CountUp
             value={stat.value}

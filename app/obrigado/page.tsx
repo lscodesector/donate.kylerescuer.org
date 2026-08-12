@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/Icons";
 
 export const metadata: Metadata = {
-  title: "Obrigado pela sua doação | SOS Animal Help",
+  title: "Obrigado pela sua doação | Caio Protetor",
   robots: { index: false, follow: false },
 };
 
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
  * receptivo a virar recorrente do que quem ainda está decidindo.
  *
  * A recorrência não é automatizada nesta página: o botão leva ao WhatsApp, que
- * é onde a organização combina isso hoje. É um dos poucos pontos do site que
+ * é onde a campanha combina isso hoje. É um dos poucos pontos do site que
  * saem para fora, e sai porque do outro lado existe uma pessoa de verdade.
  */
 export default function ObrigadoPage() {
@@ -45,18 +45,18 @@ export default function ObrigadoPage() {
 
           <div className="flex flex-col gap-2">
             <h1 className="text-[clamp(1.5rem,1.2rem+1.2vw,2rem)] font-extrabold leading-[1.15] text-ink-900">
-              Obrigado. Sua doação vira ração.
+              Obrigado. Sua doação chega até os animais.
             </h1>
             <p className="mx-auto max-w-[46ch] text-[15px] leading-[1.6] text-ink-600">
-              Seu Pix foi confirmado. O valor entra na compra do próximo lote de ração e é
-              direcionado ao abrigo da rede que estiver mais apertado no mês.
+              Seu Pix foi confirmado. O Caio leva o valor em ração, remédio e
+              veterinário para o abrigo que estiver mais apertado no mês.
             </p>
           </div>
 
           <div className="relative aspect-[16/10] w-full overflow-hidden rounded-sm">
             <Image
-              src="/sos-animal/voluntarias-filhote-resgatado.webp"
-              alt="Duas voluntárias segurando um filhote recém-resgatado"
+              src="/caio/historia/caio-1.webp"
+              alt="Caio Protetor com um cão resgatado no colo"
               fill
               priority
               sizes="(min-width: 640px) 560px, 90vw"
@@ -75,9 +75,9 @@ export default function ObrigadoPage() {
               A fome dos animais é mensal. A ajuda também pode ser.
             </h2>
             <p className="text-[14px] leading-[1.6] text-ink-600">
-              Doações pontuais salvam um mês. Doações recorrentes permitem que os abrigos
-              planejem a compra de ração com antecedência, comprem em maior quantidade e
-              parem de depender de campanha em campanha.
+              Doações pontuais salvam um mês. Doações recorrentes permitem que o Caio
+              planeje a compra de ração com antecedência, compre em maior quantidade e
+              pare de depender de campanha em campanha.
             </p>
           </div>
 
@@ -108,7 +108,7 @@ export default function ObrigadoPage() {
           <div className="flex flex-col gap-2 sm:flex-row">
             <a
               href={`https://wa.me/?text=${encodeURIComponent(
-                `Acabei de ajudar a ${org.name} a manter mais de 400 animais alimentados. Se puder, dá uma olhada:`,
+                `Acabei de ajudar o ${org.name} a manter mais de 400 animais alimentados. Se puder, dá uma olhada:`,
               )}`}
               target="_blank"
               rel="noopener noreferrer"
@@ -119,7 +119,7 @@ export default function ObrigadoPage() {
             </a>
 
             <Link
-              href="/#racao"
+              href="/#doar"
               className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-full border-2 border-ink-900/12 px-5 text-[14px] font-extrabold text-ink-900 transition-colors hover:border-ink-900/30"
             >
               <IconHeart size={16} />

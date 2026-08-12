@@ -1,13 +1,13 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { RACAO_HREF } from "@/content/landing";
+import { DOAR_HREF } from "@/content/landing";
 import { openCausasModal } from "./CausasModal";
 
 /**
  * O botão "Quero doar" genérico: abre o menu de frentes (`CausasModal`).
  *
- * A diferença para o `RacaoDonateButton` é o rótulo de quem chama. Botão que
+ * A diferença para o `DonateMenuButton` é o rótulo de quem chama. Botão que
  * diz **"doar ração"** vai direto para a grade de kg - a pessoa já escolheu a
  * frente ao ler o botão. Botão que diz só **"doar"** passa pelo menu, porque
  * doar sem destino é uma decisão vaga e é o destino que faz alguém decidir.
@@ -26,7 +26,7 @@ export function DonateMenuButton({
 }) {
   return (
     <a
-      href={RACAO_HREF}
+      href={DOAR_HREF}
       onClick={(e) => {
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
         e.preventDefault();

@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { org, pix } from "@/content/landing";
-import { BackIntercept } from "@/components/BackIntercept";
 import {
   IconArrowLeft,
   IconBowl,
@@ -102,12 +101,10 @@ export function CheckoutPix({
 
   return (
     <main className="surface-alt min-h-svh py-6 md:py-10">
-      <BackIntercept variant="checkout" />
-
       <div className="container-narrow max-w-[620px]">
         <div className="flex flex-col gap-5 rounded-md border border-ink-900/10 bg-surface p-4 shadow sm:p-6">
           <Link
-            href="/#racao"
+            href="/#doar"
             className="inline-flex min-h-[44px] w-fit items-center gap-2 text-[14px] font-extrabold text-ink-900 transition-colors hover:text-action"
           >
             <IconArrowLeft size={18} />

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  RACAO_HREF,
+  DOAR_HREF,
   copy,
   shelters,
   whatsappWith,
@@ -29,7 +29,7 @@ import { Reveal } from "../ui/Reveal";
  * sendo Server Component e manda para o cliente apenas a lista e o modal.
  *
  * ── O card tem um botão só ────────────────────────────────────────────────
- * "Saiba mais", e mais nada. O Instagram e o "Doar ração" que ficavam aqui
+ * "Saiba mais", e mais nada. O Instagram e o "Doar agora" que ficavam aqui
  * foram para dentro da ficha: o Instagram tirava a pessoa da página antes de
  * ela saber quem era o abrigo, e dois botões lado a lado num card de quatro
  * linhas disputavam o mesmo clique. Com um controle só, o card inteiro é
@@ -40,7 +40,20 @@ import { Reveal } from "../ui/Reveal";
  * foco é o botão que cobre o card inteiro, e dois controles para a mesma ação
  * dariam duas paradas de teclado por abrigo.
  */
-export function AbrigosLista() {
+export function AbrigosLista({
+  /**
+   * Rótulo do botão de cada card, por `id` de abrigo. Sem isso, todos usam o
+   * "Saiba mais" de `copy.abrigos.ctaProfile`, que é o da página principal.
+   *
+   * Existe por causa da `/alternativa`, cuja régua de copy pede que cada card
+   * convide pelo nome ("Conhecer a Siulsan"). É um objeto, e não uma função,
+   * porque quem passa a prop é um Server Component - função não atravessa a
+   * fronteira do servidor para o cliente.
+   */
+  ctaLabels,
+}: {
+  ctaLabels?: Record<string, string>;
+} = {}) {
   const [aberto, setAberto] = useState<Shelter | null>(null);
 
   // Quem abriu a ficha recebe o foco de volta quando ela fecha - sem isso, o
@@ -55,7 +68,9 @@ export function AbrigosLista() {
   return (
     <>
       <ul className="flex flex-col gap-4">
-        {shelters.map((shelter, i) => (
+        {shelters.map((shelter, i) => {
+          const ctaProfile = ctaLabels?.[shelter.id] ?? copy.abrigos.ctaProfile;
+          return (
           <Reveal
             as="li"
             key={shelter.id}
@@ -101,9 +116,9 @@ export function AbrigosLista() {
                   precisa alinhar na mesma base em toda a lista. */}
               <span
                 aria-hidden="true"
-                className="mt-auto inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-full bg-action px-5 text-[13px] font-extrabold uppercase tracking-[0.02em] text-action-ink"
+                className="mt-auto inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-full bg-action px-5 text-center text-[13px] font-extrabold uppercase tracking-[0.02em] text-action-ink"
               >
-                {copy.abrigos.ctaProfile}
+                {ctaProfile}
                 <IconArrowRight size={15} className="shrink-0" />
               </span>
             </div>
@@ -111,17 +126,27 @@ export function AbrigosLista() {
             <button
               type="button"
               aria-haspopup="dialog"
-              aria-label={`${copy.abrigos.ctaProfile} sobre ${shelter.name}`}
+              aria-label={`${ctaProfile}: ${shelter.name}`}
               onClick={(e) => {
                 gatilho.current = e.currentTarget;
                 setAberto(shelter);
               }}
-              /* O contorno entra para dentro (`-outline-offset`) porque o card
-                 tem `overflow-hidden` e cortaria um anel desenhado por fora. */
-              className="absolute inset-0 cursor-pointer focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent"
+              /*
+                O contorno entra para dentro (`-outline-offset`) porque o card
+                tem `overflow-hidden` e cortaria um anel desenhado por fora.
+
+                `z-40` porque as fotos do slide empilham em `z-10`/`z-20` para a
+                troca não piscar (ver `PhotoSlideshow`). Sem z-index nenhum,
+                este botão ficava **debaixo** da foto: o card se dizia todo
+                clicável, mas o terço de cima - justamente a foto, que é o que a
+                pessoa mira - não abria a ficha. `elementFromPoint` no meio da
+                foto devolvia o `<img>`, não este botão.
+              */
+              className="absolute inset-0 z-40 cursor-pointer focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent"
             />
           </Reveal>
-        ))}
+          );
+        })}
       </ul>
 
       {aberto && <FichaAbrigo shelter={aberto} onClose={fechar} />}
@@ -187,7 +212,7 @@ function FichaAbrigo({
   const semCadastro = !profile.cnpj && !endereco.length;
 
   /*
-   * O CTA de doar não é um `<a href="#racao">` simples: com a ficha ainda
+   * O CTA de doar não é um `<a href="#doar">` simples: com a ficha ainda
    * aberta, o `body` está com `overflow: hidden` e o salto do navegador não
    * rola nada. Fecha primeiro e rola no quadro seguinte, quando a limpeza do
    * efeito já devolveu a rolagem. O `scroll-margin-top` das seções (globals)
@@ -197,7 +222,7 @@ function FichaAbrigo({
   const doar = () => {
     onClose();
     requestAnimationFrame(() => {
-      document.querySelector(RACAO_HREF)?.scrollIntoView();
+      document.querySelector(DOAR_HREF)?.scrollIntoView();
     });
   };
 
@@ -324,25 +349,32 @@ function FichaAbrigo({
           )}
 
           <div className="flex flex-col gap-2">
-            <a
-              href={shelter.instagramHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              /* `flex-wrap` + `py-3`: o rótulo mais o arroba passa da largura
-                 num celular estreito, e é melhor quebrar em duas linhas do que
-                 espremer o texto. */
-              className="inline-flex min-h-[48px] flex-wrap items-center justify-center gap-x-2 gap-y-0.5 rounded-md border border-ink-900/10 px-4 py-3 text-center text-[14px] font-extrabold text-ink-900 transition-colors hover:border-accent/50 hover:text-accent"
-            >
-              <IconInstagram size={17} className="shrink-0" />
-              {copy.abrigos.ctaInstagram}
-              <span className="font-semibold text-ink-600">{shelter.instagram}</span>
-            </a>
+            {/* Some inteiro quando o abrigo não tem perfil publicado - é o caso
+                do Abrigo Dona Rose. Um botão de Instagram com `href=""`
+                recarrega a própria página, que é pior do que não ter botão. */}
+            {shelter.instagramHref && (
+              <a
+                href={shelter.instagramHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                /* `flex-wrap` + `py-3`: o rótulo mais o arroba passa da largura
+                   num celular estreito, e é melhor quebrar em duas linhas do
+                   que espremer o texto. */
+                className="inline-flex min-h-[48px] flex-wrap items-center justify-center gap-x-2 gap-y-0.5 rounded-md border border-ink-900/10 px-4 py-3 text-center text-[14px] font-extrabold text-ink-900 transition-colors hover:border-accent/50 hover:text-accent"
+              >
+                <IconInstagram size={17} className="shrink-0" />
+                {copy.abrigos.ctaInstagram}
+                <span className="font-semibold text-ink-600">
+                  {shelter.instagram}
+                </span>
+              </a>
+            )}
 
             {/* A mensagem já vai com o nome do abrigo: do outro lado, a equipe
                 sabe de qual deles a pessoa está falando sem ter que perguntar. */}
             <a
               href={whatsappWith(
-                `Olá! Queria saber mais sobre o abrigo ${shelter.name}, que aparece na página de doação de ração.`,
+                `Olá! Queria saber mais sobre o abrigo ${shelter.name}, que aparece na campanha do Caio Protetor.`,
               )}
               target="_blank"
               rel="noopener noreferrer"
@@ -361,12 +393,11 @@ function FichaAbrigo({
               <IconArrowRight size={17} />
             </button>
 
-            {/* A doação é para a rede, não para este abrigo - dizer isso aqui,
-                onde a pessoa acabou de se afeiçoar a um nome, evita a promessa
-                que a página não cumpre (ver FAQ "Posso escolher para qual
-                abrigo vai a minha ração?"). */}
+            {/* A doação é para a campanha, não para este abrigo - dizer isso
+                aqui, onde a pessoa acabou de se afeiçoar a um nome, evita a
+                promessa que a página não cumpre. */}
             <p className="text-center text-[12px] leading-[1.5] text-ink-600">
-              A doação entra na rede e a equipe direciona a ração conforme a
+              A doação entra na campanha e o Caio direciona a ajuda conforme a
               necessidade de cada abrigo no mês.
             </p>
           </div>

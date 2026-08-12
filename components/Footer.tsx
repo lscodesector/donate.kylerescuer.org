@@ -1,67 +1,86 @@
 import Image from "next/image";
 import Link from "next/link";
-import { RACAO_HREF, adoption, copy, org, shelters } from "@/content/landing";
+import {
+  DOAR_HREF,
+  copy,
+  org,
+  shelters,
+  showPixSection,
+  whatsappHref,
+} from "@/content/landing";
 import { MonthlyDonateButton } from "./MonthlyDonateButton";
-import { IconMail, IconPin, IconShield } from "./ui/Icons";
+import {
+  IconFacebook,
+  IconInstagram,
+  IconMail,
+  IconPin,
+  IconShield,
+  IconWhatsApp,
+} from "./ui/Icons";
 
 /**
  * Os quatro grupos de links, na ordem em que entram na grade 2×2 da direita:
  *
- *   Ajude (4)            │ Abrigos (4)
- *   SOS Animal Help (2)  │ Legal (3)
+ *   Ajude (3)            │ Abrigos (até 5)
+ *   Campanha (2)         │ Legal (3)
  *
- * A ordem é escolhida para as linhas fecharem parelhas: os dois grupos de
- * quatro itens em cima, os dois curtos embaixo. Invertendo qualquer par, uma
- * coluna fica com um buraco no meio.
+ * A ordem é escolhida para as linhas fecharem parelhas: os dois grupos altos
+ * em cima, os dois curtos embaixo. Invertendo qualquer par, uma coluna fica com
+ * um buraco no meio.
  */
 const COLUMNS = [
   {
     label: "Ajude",
     links: [
-      { label: "Doe ração", href: RACAO_HREF },
-      /* "Doar via Pix" saiu: a seção `#pix` está desligada (ver
-         `showPixSection`) e a âncora não existe mais - o link levaria a
-         lugar nenhum. O Pix continua sendo o pagamento, dentro do checkout. */
+      { label: "Doar agora", href: DOAR_HREF },
       /*
-       * "Doar todo mês" é o único item destas listas que **não** é link.
-       *
-       * Ele apontava para `#mensal`, o bloco de doação recorrente que ficava
-       * no fim da seção de ração; esse bloco saiu quando a seção virou uma só,
-       * com um botão apenas. Deixar a âncora seria um link para lugar nenhum,
-       * e trocá-la por `#racao` prometeria "todo mês" e entregaria a grade de
-       * kg avulsa. Então aqui ele abre o modal de valor já em mensal - o mesmo
-       * destino do destaque no menu de frentes.
+       * "Doar todo mês" é o único item destas listas que **não** é link: não há
+       * âncora de recorrência na página (a decisão "de quanto em quanto tempo"
+       * acontece no modal), então ele abre o modal de valor já em mensal - o
+       * mesmo destino do destaque no menu de frentes.
        */
       { label: "Doar todo mês", action: "mensal" as const },
-      /* Aponta para o app da Lusa, e não mais para `#adotar`: a seção de
-         adoção saiu da página e a âncora não existe. O rodapé é onde este
-         caminho pode continuar existindo sem disputar com o pedido de doação
-         (o link sai em aba nova sozinho - ver `external` abaixo). */
-      { label: "Adotar um animal", href: adoption.appHref },
+      /* Só entra se a seção existir: com `showPixSection` em `false` a âncora
+         `#pix` não é renderizada e o link levaria a lugar nenhum. */
+      ...(showPixSection ? [{ label: "Doar via Pix", href: "#pix" }] : []),
     ],
   },
   {
     label: "Abrigos",
-    links: shelters.map((shelter) => ({
-      label: shelter.name,
-      href: shelter.instagramHref,
-    })),
+    /*
+     * Cada abrigo aponta para o site próprio quando tem um, e para o Instagram
+     * quando não tem. O que não tiver nenhum dos dois **fica de fora da lista**
+     * em vez de virar um link morto - é o caso do Abrigo Dona Rose, que a
+     * campanha não publica em lugar nenhum (ver o aviso em `shelters`).
+     */
+    links: shelters
+      .map((shelter) => ({
+        label: shelter.name,
+        href: shelter.siteHref || shelter.instagramHref,
+      }))
+      .filter((link) => link.href),
   },
   {
-    label: "SOS Animal Help",
+    label: "Campanha",
     links: [
       { label: "Transparência", href: "#transparencia" },
+      { label: "Atualizações", href: "#atualizacoes" },
       { label: "Contato", href: "#documentacao" },
     ],
   },
   {
     label: "Legal",
-    links: [
-      { label: "Termos de Uso", href: "/termos" },
-      { label: "Política de Privacidade", href: "/privacidade" },
-      { label: "Política de Doação", href: "/politica-de-doacao" },
-    ],
+    /* As três políticas ficam no site institucional da campanha
+       (`caioprotetor.org`), não aqui: este projeto é só a página de doação. */
+    links: org.policies,
   },
+];
+
+/** As redes da campanha - todas com perfil publicado e conferido. */
+const SOCIALS = [
+  { label: "Instagram", href: org.instagramHref, Icon: IconInstagram },
+  { label: "Facebook", href: org.facebookHref, Icon: IconFacebook },
+  { label: "WhatsApp", href: whatsappHref, Icon: IconWhatsApp },
 ];
 
 /**
@@ -108,11 +127,11 @@ export function Footer() {
           {/* Coluna 1 - marca, o que a organização é e como falar com ela. */}
           <div className="flex flex-col items-start gap-6">
             <Image
-              src="/logo/logo-footer.webp"
+              src="/caio/logo-caio.png"
               alt={org.name}
-              width={1024}
-              height={765}
-              className="h-[48px] w-auto object-contain"
+              width={500}
+              height={500}
+              className="h-[72px] w-auto object-contain"
             />
 
             <p className="max-w-[42ch] text-[15px] leading-[1.65] text-white/60">
@@ -120,23 +139,39 @@ export function Footer() {
             </p>
 
             {/*
-              O bloco "Redes sociais" saiu daqui.
+              A barra de redes voltou.
 
-              Ele tinha um ícone só, o do WhatsApp: uma barra de redes sociais
-              com um item lê como barra quebrada - a pessoa procura os outros e
-              não acha. Melhor não ter ícone nenhum do que ter um solitário.
-
-              O canal não sumiu da página: o WhatsApp da equipe continua na
-              seção de documentação e no FAQ, com o número escrito por extenso
-              - que é mais útil do que um ícone e é onde quem procura contato
-              olha. Se um dia existirem Instagram e Facebook da organização, a
-              barra de redes volta aqui com os três.
+              Ela tinha saído do rodapé do site institucional porque sobrava um
+              ícone só, o do WhatsApp - barra de redes com um item lê como barra
+              quebrada. A campanha do Caio tem os três perfis publicados, então
+              agora ela tem o que uma barra precisa para existir.
             */}
+            <ul className="flex items-center gap-3">
+              {SOCIALS.map(({ label, href, Icon }) => (
+                <li key={label}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${org.name} no ${label}`}
+                    className="flex h-[44px] w-[44px] items-center justify-center rounded-full border border-white/15 text-white/70 transition-colors hover:border-white/40 hover:text-white"
+                  >
+                    <Icon size={18} />
+                  </a>
+                </li>
+              ))}
+            </ul>
 
             <div className="flex flex-col items-start gap-2 text-[14px] text-white/60">
+              {/* O CNPJ é o de quem **recebe** - a SOS Animal Help -, e é por
+                  isso que o nome dela aparece escrito ao lado dele. O Caio é
+                  protetor independente e não tem CNPJ próprio nesta campanha. */}
               <p className="flex items-center gap-2">
                 <IconShield size={16} className="shrink-0" />
-                <span className="tabular-nums">CNPJ {org.cnpj}</span>
+                <span>
+                  {org.supporter} · CNPJ{" "}
+                  <span className="tabular-nums">{org.cnpj}</span>
+                </span>
               </p>
 
               <a

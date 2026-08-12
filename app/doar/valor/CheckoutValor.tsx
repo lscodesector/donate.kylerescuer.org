@@ -47,9 +47,9 @@ export function CheckoutValor() {
   const valorValido =
     Number.isInteger(cents) && cents >= MIN_CENTS && cents <= MAX_CENTS;
 
-  // Valor inválido volta para a seção de ração em vez de gerar um Pix quebrado.
+  // Valor inválido volta para a seção de doação, em vez de gerar um Pix quebrado.
   useEffect(() => {
-    if (!valorValido) router.replace("/#racao");
+    if (!valorValido) router.replace("/#doar");
   }, [valorValido, router]);
 
   useEffect(() => {
@@ -101,7 +101,7 @@ export function CheckoutValor() {
       descricao={
         mensal
           ? "Este Pix cobre o primeiro mês. A equipe combina os próximos com você pelo WhatsApp."
-          : "Sua doação vira ração e cuidado para os animais da rede."
+          : "Sua doação vira ração e cuidado nos abrigos que o Caio acompanha."
       }
       copiaECola={pagamento.copiaECola}
       qrSvg={pagamento.qrSvg}
