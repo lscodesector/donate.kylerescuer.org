@@ -131,12 +131,13 @@ export function Header() {
           botão verde logo abaixo. O que não existia em canto nenhum era o
           convite para levar a campanha adiante, que é o que traz gente nova.
 
-          Em contorno, e não em cor cheia: compartilhar não disputa com doar. É
-          a mesma pintura do "SOS Animal Help" da gaveta - borda fina, texto
-          preto e o vermelho de marca só no hover. Ver `ShareButton` para os
-          três caminhos que ele tenta (folha nativa, copiar o link, WhatsApp).
+          Redondo, só o ícone e com os mesmos 44px do hambúrguer do outro lado:
+          as duas pontas da barra viram peças do mesmo tamanho e a logo fica
+          com o centro inteiro. Em contorno, e não em cor cheia, porque
+          compartilhar não disputa com doar. Ver `ShareButton` para os três
+          caminhos que ele tenta (folha nativa, copiar o link, WhatsApp).
         */}
-        <ShareButton className="inline-flex h-[44px] shrink-0 items-center justify-center justify-self-end gap-2 whitespace-nowrap rounded-full border-2 border-ink-900/[.12] bg-surface px-4 text-fs14 font-extrabold text-ink-900 transition-colors hover:border-action hover:text-action sm:px-5" />
+        <ShareButton className="inline-flex h-[44px] w-[44px] shrink-0 items-center justify-center justify-self-end rounded-full border-2 border-ink-900/[.12] bg-surface text-ink-900 transition-colors hover:border-action hover:text-action" />
       </div>
 
     </header>

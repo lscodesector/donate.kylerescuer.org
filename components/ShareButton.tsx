@@ -75,11 +75,28 @@ export function ShareButton({ className }: { className?: string }) {
   };
 
   return (
-    <button type="button" onClick={compartilhar} className={className}>
-      {copiado ? <IconCheck size={16} /> : <IconShare size={16} />}
-      {/* `aria-live` no texto, e não no botão inteiro: o leitor de tela anuncia
-          a troca do rótulo sem reler o botão a cada renderização. */}
-      <span aria-live="polite">{copiado ? "Link copiado!" : "Compartilhar"}</span>
+    /*
+     * Só o ícone: a barra fixa tem 44px de altura e três peças disputando a
+     * largura do celular (hambúrguer, logo e este botão), e o rótulo escrito
+     * era o que apertava a marca no centro. O desenho de dois nós ligados já é
+     * o símbolo de compartilhar em todo sistema.
+     *
+     * Sem texto na tela, o nome do botão passa a ser o `aria-label` - sem ele
+     * o leitor de tela anuncia só "botão". O aviso de link copiado vira o
+     * visto no lugar do ícone e um `sr-only` com `aria-live`, que é como quem
+     * não vê a troca do desenho fica sabendo dela.
+     */
+    <button
+      type="button"
+      onClick={compartilhar}
+      aria-label={copiado ? "Link copiado" : "Compartilhar a campanha"}
+      title="Compartilhar a campanha"
+      className={className}
+    >
+      {copiado ? <IconCheck size={18} /> : <IconShare size={18} />}
+      <span className="sr-only" aria-live="polite">
+        {copiado ? "Link copiado!" : ""}
+      </span>
     </button>
   );
 }
