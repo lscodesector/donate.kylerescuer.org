@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import QRCode from "qrcode";
 import { useEffect, useState } from "react";
 import { CheckoutPix } from "@/components/checkout/CheckoutPix";
-import { formatBRL, org, pix } from "@/content/landing";
+import { formatBRLCurto, org, pix } from "@/content/landing";
 import { gerarPixCopiaECola } from "@/lib/pix";
 
 /**
@@ -56,12 +56,17 @@ export function CheckoutValor() {
     if (!valorValido) return;
 
     /*
-     * ⚠️ MENSAL AINDA NÃO É RECORRENTE.
+     * ⚠️ AQUI a mensal continua NÃO sendo recorrente - e não tem como ser.
      *
-     * O Pix abaixo cobra UMA vez - não existe gateway de assinatura ligado
-     * nesta página. Enquanto for assim, o texto na tela diz que a equipe
-     * combina os próximos meses; quando entrar o provedor de pagamento, é aqui
-     * que a cobrança recorrente deve ser criada, no lugar deste Pix.
+     * A recorrência de verdade (Pix Automático) existe desde 12/08/2026, no
+     * `CheckoutModal`: ver `createRecurringCharge` em `lib/payments/lusa.ts`.
+     * Ela depende de JavaScript - CPF validado, chamada ao gateway, `id_rec`
+     * amarrado ao lead -, e esta rota é justamente o caminho de quem está
+     * **sem** JavaScript: o Pix abaixo é estático, montado na chave da
+     * organização, e cobra uma vez só.
+     *
+     * Por isso o texto da tela continua dizendo que a equipe combina os
+     * próximos meses pelo WhatsApp: nesta rota, é o que de fato acontece.
      */
     const copiaECola = gerarPixCopiaECola({
       chave: pix.key,
@@ -97,7 +102,7 @@ export function CheckoutValor() {
     <CheckoutPix
       tier={null}
       titulo={mensal ? "Doação mensal" : "Doação única"}
-      price={formatBRL(cents)}
+      price={formatBRLCurto(cents)}
       descricao={
         mensal
           ? "Este Pix cobre o primeiro mês. A equipe combina os próximos com você pelo WhatsApp."

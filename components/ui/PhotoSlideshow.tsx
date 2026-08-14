@@ -4,7 +4,28 @@ import { Img as Image } from "@/components/ui/Img";
 import { useEffect, useRef, useState } from "react";
 import { IconArrowLeft, IconArrowRight } from "./Icons";
 
-export type Photo = { src: string; alt: string };
+export type Photo = {
+  src: string;
+  alt: string;
+  /**
+   * Onde está o rosto, em % da altura da foto - `0` no topo, `100` embaixo.
+   *
+   * ── Por que por foto, e não por quadro ────────────────────────────────
+   * O `object-cover` recorta pelo centro geométrico, que não tem relação
+   * nenhuma com onde as pessoas estão na imagem. Numa foto o Caio aparece
+   * agachado com o rosto a 20% do topo; na seguinte, de pé, a 45%. Um
+   * enquadramento só para as duas erra em uma delas - e o erro é sempre o
+   * mesmo: testa cortada.
+   *
+   * O número é o `object-position` vertical, e a conta que ele resolve é
+   * esta: com a foto transbordando `T%` da altura, a faixa visível começa
+   * em `T × foco`. Ancorar no rosto (e não no meio) é o que garante que a
+   * cabeça sobreviva ao corte em qualquer proporção de quadro.
+   *
+   * Sem valor, `50` - o comportamento de sempre.
+   */
+  focusY?: number;
+};
 
 /**
  * Fotos de um mesmo assunto passando sozinhas, uma sobre a outra.
@@ -60,10 +81,12 @@ export function PhotoSlideshow({
    */
   priority?: boolean;
   /**
-   * Onde o `object-cover` ancora o recorte quando a foto é mais alta ou mais
-   * larga que o quadro. `"top"` é para fotos de retrato onde o rosto fica no
-   * terço de cima - as fichas de abrigo usam isto, porque o quadro delas é
-   * mais baixo que a foto original e o recorte central cortava rosto.
+   * Padrão de enquadramento do quadro, para as fotos que **não** trazem o seu
+   * (`focusY`, no tipo `Photo` - é lá que está a explicação completa).
+   *
+   * `"top"` ancora no topo, para conjuntos de retrato em que o rosto fica no
+   * terço de cima. Continua útil como rede: foto nova que entre nos dados sem
+   * ponto focal cai num padrão razoável em vez de cortar cabeça.
    */
   focus?: "center" | "top";
   /** Classes do quadro - é aqui que entram a proporção e a largura. */
@@ -241,13 +264,25 @@ export function PhotoSlideshow({
              * `pointerup`), então `aoSoltar` nunca roda e o slide não troca.
              */
             draggable={false}
+            /*
+             * O ponto focal da própria foto manda; o `focus` do quadro é só o
+             * padrão de quem não declarou o seu (ver o tipo `Photo`).
+             *
+             * Vai em `style`, e não em classe: `object-[center_18%]` teria de
+             * existir escrito no código para o Tailwind gerar a regra, e estes
+             * números vêm dos dados. Classe montada por interpolação não
+             * chega ao CSS - some no build, sem erro nenhum.
+             */
+            style={{
+              objectPosition: `center ${foto.focusY ?? (focus === "top" ? 0 : 50)}%`,
+            }}
             /* `pointer-events-none` em tudo que não é a foto no ar: empilhadas,
                elas roubariam o clique das setas se ficassem no caminho. */
             className={`object-cover transition-opacity duration-400 ${
-              focus === "top" ? "object-top" : ""
-            } ${atual ? "z-20 opacity-100" : "pointer-events-none"} ${
-              saindo ? "z-10 opacity-100" : ""
-            } ${!atual && !saindo ? "opacity-0" : ""}`}
+              atual ? "z-20 opacity-100" : "pointer-events-none"
+            } ${saindo ? "z-10 opacity-100" : ""} ${
+              !atual && !saindo ? "opacity-0" : ""
+            }`}
             aria-hidden={atual ? undefined : true}
           />
         );

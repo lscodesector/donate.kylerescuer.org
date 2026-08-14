@@ -1,14 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { copy, shelters, whatsappWith, type Shelter } from "@/content/landing";
+import { openDocumentoModal } from "../DocumentoModal";
+import { openDonationModal } from "../DonationModal";
 import {
-  DOAR_HREF,
-  copy,
-  shelters,
-  whatsappWith,
-  type Shelter,
-} from "@/content/landing";
-import {
+  IconArrowLeft,
   IconArrowRight,
   IconClock,
   IconClose,
@@ -21,6 +18,7 @@ import {
 } from "../ui/Icons";
 import { PhotoSlideshow } from "../ui/PhotoSlideshow";
 import { Reveal } from "../ui/Reveal";
+import { useScrollLock } from "@/lib/scroll-lock";
 
 /**
  * A lista de abrigos e a ficha que abre no clique.
@@ -65,6 +63,7 @@ export function AbrigosLista({
     gatilho.current?.focus();
   }, []);
 
+
   return (
     <>
       <ul className="flex flex-col gap-4">
@@ -81,11 +80,16 @@ export function AbrigosLista({
                 tudo e abre a ficha, e seta dentro dele disputaria esse clique.
                 Aqui as fotos só passam; a ficha é que dá o comando.
 
-                `4/3` no celular, e não a faixa larga de antes: as fotos vêm
-                todas em 742×642 (quase quadradas) e num 16/10 o `object-cover`
-                comia 13% em cima - que é justo onde estão os rostos de quem
-                segura o animal. A partir de `sm` a altura é a da coluna de
-                texto ao lado, que dá mais ou menos a mesma proporção da foto. */}
+                `4/3` no celular, e não a faixa larga de antes: num 16/10 o
+                `object-cover` comia a parte de cima da foto - que é justo onde
+                estão os rostos de quem segura o animal. A partir de `sm` a
+                altura é a da coluna de texto ao lado.
+
+                O quadro sozinho não resolve, porque as fotos não têm todas a
+                mesma forma (de 0,80 a 1,04): quem garante que o rosto
+                sobrevive ao recorte é o `focusY` de cada uma, em
+                `content/landing.ts`. O `focus="top"` abaixo é só a rede para
+                uma foto nova que entre sem ponto focal declarado. */}
             <PhotoSlideshow
               photos={shelter.photos}
               label={shelter.name}
@@ -117,7 +121,7 @@ export function AbrigosLista({
                   precisa alinhar na mesma base em toda a lista. */}
               <span
                 aria-hidden="true"
-                className="mt-auto inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-full bg-action px-5 text-center text-[13px] font-extrabold uppercase tracking-[0.02em] text-action-ink"
+                className="mt-auto inline-flex min-h-[44px] items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-action px-5 text-center text-[13px] font-extrabold uppercase tracking-[0.02em] text-action-ink"
               >
                 {ctaProfile}
                 <IconArrowRight size={15} className="shrink-0" />
@@ -163,9 +167,11 @@ export function AbrigosLista({
  * cai para a cidade do card e o texto cai para a descrição, então a ficha nunca
  * abre vazia, mesmo em abrigo recém-cadastrado.
  *
- * Os três botões do rodapé, na ordem em que respondem à dúvida de quem chegou
- * até aqui: conferir por fora (Instagram), perguntar para alguém (WhatsApp da
- * equipe, já com o nome do abrigo na mensagem) e doar.
+ * Os botões do rodapé, na ordem em que respondem à dúvida de quem chegou até
+ * aqui: conferir o documento (o cartão CNPJ do abrigo, quando ele já tem um),
+ * conferir por fora (Instagram), perguntar para alguém (WhatsApp da equipe, já
+ * com o nome do abrigo na mensagem) e doar. O documento vem primeiro porque é a
+ * prova mais dura das quatro - as outras se checam por fora, essa está aqui.
  */
 function FichaAbrigo({
   shelter,
@@ -176,21 +182,27 @@ function FichaAbrigo({
 }) {
   const fecharRef = useRef<HTMLButtonElement>(null);
 
-  // Esc fecha e o scroll do fundo trava - sem isso a página rola atrás da ficha.
+  /* A mesma trava do checkout e do popup de documento, e não mais um
+     `overflow: hidden` local: ela conta quantos modais estão abertos, o que
+     importa aqui porque esta ficha pode abrir o cartão CNPJ por cima de si
+     mesma. Com duas travas independentes, fechar a de cima devolvia a rolagem
+     - e a página escapava para o topo por trás da ficha. Ver `lib/scroll-lock`. */
+  useScrollLock(true);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      /* `defaultPrevented`: o popup do cartão CNPJ abre por cima desta ficha e
+         trata o Esc antes (fase de captura). Sem a guarda, um Esc só fechava os
+         dois de uma vez e quem foi ver o documento voltava para a lista, e não
+         para a ficha de onde saiu. */
+      if (e.key === "Escape" && !e.defaultPrevented) onClose();
     };
     window.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
     fecharRef.current?.focus();
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
+    return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  const { profile } = shelter;
+  const { profile, cnpjDoc } = shelter;
 
   // Cada linha do endereço é opcional: monta com o que existir e, sem nada,
   // cai para a cidade do card - que é sempre melhor do que campo em branco.
@@ -205,6 +217,16 @@ function FichaAbrigo({
     { icon: IconFile, label: "CNPJ", value: profile.cnpj },
     { icon: IconPaw, label: "Animais acolhidos", value: profile.animals },
     { icon: IconClock, label: "Atuando desde", value: profile.since },
+    /*
+     * O @ do perfil é dado da ficha, e não mais um pedaço do botão.
+     *
+     * Ele ficava dentro do próprio botão do Instagram, que por isso precisava
+     * de `flex-wrap` para quebrar em duas linhas num celular estreito - rótulo
+     * em cima, arroba embaixo. Nenhum CTA da página quebra linha, e rótulo mais
+     * arroba não cabem numa só: aqui ele é uma linha de dado como o CNPJ, com
+     * `break-words` de graça, e o botão fica com o rótulo limpo.
+     */
+    { icon: IconInstagram, label: "Instagram", value: shelter.instagram },
   ].filter((linha) => linha.value);
 
   // Sem CNPJ e sem endereço, a ficha não tem o que a pessoa veio conferir:
@@ -213,18 +235,20 @@ function FichaAbrigo({
   const semCadastro = !profile.cnpj && !endereco.length;
 
   /*
-   * O CTA de doar não é um `<a href="#doar">` simples: com a ficha ainda
-   * aberta, o `body` está com `overflow: hidden` e o salto do navegador não
-   * rola nada. Fecha primeiro e rola no quadro seguinte, quando a limpeza do
-   * efeito já devolveu a rolagem. O `scroll-margin-top` das seções (globals)
-   * cuida do cabeçalho fixo, e o `scroll-behavior: smooth` do documento cuida
-   * da animação - inclusive de desligá-la em `prefers-reduced-motion`.
+   * ── Doar aqui abre o checkout, não a seção de doação ──────────────────────
+   * Ele fechava a ficha e **rolava** a página até `#doar`, onde a pessoa tinha
+   * de achar o botão de novo e clicar uma segunda vez para chegar na tela de
+   * valores. Quem clicou em "doar agora" dentro da ficha de um abrigo já
+   * decidiu: agora a tela de valores abre no lugar da ficha, e dali o caminho
+   * segue direto para o Pix.
+   *
+   * Sem `causeId`: a doação entra na campanha e o Caio direciona a ajuda, que é
+   * o que a própria linha embaixo do botão diz. Marcar uma frente aqui seria
+   * prometer que o dinheiro vai para este abrigo.
    */
   const doar = () => {
     onClose();
-    requestAnimationFrame(() => {
-      document.querySelector(DOAR_HREF)?.scrollIntoView();
-    });
+    openDonationModal();
   };
 
   return (
@@ -245,9 +269,13 @@ function FichaAbrigo({
               por cima, e é este o lugar de olhar o abrigo com calma - inclusive
               voltando numa foto que já passou.
 
-              `7/6` é a proporção em que as fotos chegam (742×642), então aqui
-              elas aparecem inteiras, sem recorte nenhum. Na ficha isso importa
-              mais do que no card: é a foto que a pessoa abriu para ver.
+              ⚠️ `7/6` foi escolhido quando as fotos chegavam todas em 742×642,
+              e o comentário aqui dizia que elas apareciam inteiras. **Não é
+              mais verdade**: as cinco atuais vão de 0,80 (Dona Rose, a mais
+              alta) a 1,04 (Siulsan), então todas perdem alguma coisa em cima e
+              embaixo - a Dona Rose perde 31% da altura. O que segura os rostos
+              é o `focusY` de cada foto (ver `content/landing.ts`), não a
+              proporção do quadro.
 
               O slide também anda mais devagar do que no card - quem abriu a
               ficha está olhando, não passando o olho. */}
@@ -261,13 +289,37 @@ function FichaAbrigo({
             className="aspect-[7/6] w-full"
           />
 
-          {/* Fundo sólido atrás do X: sobre foto clara, ícone claro some. */}
+          {/*
+            ── "Voltar", à esquerda, e o X à direita ────────────────────────
+            Os dois fecham a ficha e devolvem a pessoa para a página, e existem
+            os dois de propósito: o X é o gesto de quem já sabe que está num
+            modal, e o "Voltar" escrito é para quem chegou aqui pelo card e lê a
+            ficha como se fosse outra página - sem ele, o caminho de saída
+            depende de reconhecer um ícone.
+
+            Fundo sólido atrás dos dois: sobre foto clara, ícone claro some.
+
+            ⚠️ `z-30` nos dois, e não é enfeite: a foto do slide desenha em
+            `z-20` (ver `PhotoSlideshow`), e sem uma camada acima dela os botões
+            ficavam **debaixo** da imagem - visíveis, porque a foto começa
+            abaixo deles, mas surdos ao clique na área sobreposta. O X já vivia
+            assim antes de o "Voltar" existir.
+          */}
+          <button
+            type="button"
+            onClick={onClose}
+            className="absolute left-3 top-3 z-30 flex h-[40px] items-center gap-1.5 rounded-full bg-surface/90 px-3.5 text-[14px] font-extrabold text-ink-900 shadow backdrop-blur transition-colors hover:bg-surface"
+          >
+            <IconArrowLeft size={18} />
+            Voltar
+          </button>
+
           <button
             ref={fecharRef}
             type="button"
             onClick={onClose}
             aria-label="Fechar"
-            className="absolute right-3 top-3 flex h-[40px] w-[40px] items-center justify-center rounded-full bg-surface/90 text-ink-900 shadow backdrop-blur transition-colors hover:bg-surface"
+            className="absolute right-3 top-3 z-30 flex h-[40px] w-[40px] items-center justify-center rounded-full bg-surface/90 text-ink-900 shadow backdrop-blur transition-colors hover:bg-surface"
           >
             <IconClose size={20} />
           </button>
@@ -351,6 +403,26 @@ function FichaAbrigo({
           )}
 
           <div className="flex flex-col gap-2">
+            {/* O cartão CNPJ **do abrigo**, quando ele já tem um emitido: abre
+                no mesmo popup do documento da SOS Animal Help, por cima desta
+                ficha. Some inteiro no abrigo que ainda está sendo legalizado
+                (Abrigo Dona Rose) - ver `Shelter.cnpjDoc`.
+
+                O `cnpjDoc` desestruturado lá em cima, e não `shelter.cnpjDoc`
+                aqui: sendo uma `const`, o TypeScript mantém a garantia de que
+                ele existe dentro do `onClick`. */}
+            {cnpjDoc && (
+              <button
+                type="button"
+                aria-haspopup="dialog"
+                onClick={() => openDocumentoModal(cnpjDoc)}
+                className="inline-flex min-h-[48px] items-center justify-center gap-2 whitespace-nowrap rounded-md border border-action/30 px-4 text-center text-[14px] font-extrabold text-action transition-colors hover:bg-action/[.06]"
+              >
+                <IconFile size={17} className="shrink-0" />
+                {copy.abrigos.ctaCnpj}
+              </button>
+            )}
+
             {/* Some inteiro quando o abrigo não tem perfil publicado - é o caso
                 do Abrigo Dona Rose. Um botão de Instagram com `href=""`
                 recarrega a própria página, que é pior do que não ter botão. */}
@@ -359,16 +431,12 @@ function FichaAbrigo({
                 href={shelter.instagramHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                /* `flex-wrap` + `py-3`: o rótulo mais o arroba passa da largura
-                   num celular estreito, e é melhor quebrar em duas linhas do
-                   que espremer o texto. */
-                className="inline-flex min-h-[48px] flex-wrap items-center justify-center gap-x-2 gap-y-0.5 rounded-md border border-ink-900/10 px-4 py-3 text-center text-[14px] font-extrabold text-ink-900 transition-colors hover:border-accent/50 hover:text-accent"
+                /* Só o rótulo, numa linha: o @ do perfil é agora uma linha da
+                   ficha, logo acima (ver `dados`). */
+                className="inline-flex min-h-[48px] items-center justify-center gap-2 whitespace-nowrap rounded-md border border-ink-900/10 px-4 text-center text-[14px] font-extrabold text-ink-900 transition-colors hover:border-accent/50 hover:text-accent"
               >
                 <IconInstagram size={17} className="shrink-0" />
                 {copy.abrigos.ctaInstagram}
-                <span className="font-semibold text-ink-600">
-                  {shelter.instagram}
-                </span>
               </a>
             )}
 
@@ -380,7 +448,7 @@ function FichaAbrigo({
               )}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-md border border-donate/30 px-4 text-[14px] font-extrabold text-donate transition-colors hover:bg-donate/[.06]"
+              className="inline-flex min-h-[48px] items-center justify-center gap-2 whitespace-nowrap rounded-md border border-donate/30 px-4 text-[14px] font-extrabold text-donate-text transition-colors hover:bg-donate/[.06]"
             >
               <IconWhatsApp size={17} className="shrink-0" />
               {copy.abrigos.ctaWhatsapp}
@@ -389,7 +457,7 @@ function FichaAbrigo({
             <button
               type="button"
               onClick={doar}
-              className="mt-1 inline-flex min-h-[56px] w-full items-center justify-center gap-2 rounded-full bg-donate px-6 text-[15px] font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow transition-colors hover:bg-donate-hover"
+              className="mt-1 inline-flex min-h-[56px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-donate px-6 text-[15px] font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow transition-colors hover:bg-donate-hover"
             >
               {copy.abrigos.ctaShelter}
               <IconArrowRight size={17} />

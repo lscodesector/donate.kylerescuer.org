@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Fontes internas (PDFs de origem, documentos de copy) - nao vao para o ar
+/fontes-internas/

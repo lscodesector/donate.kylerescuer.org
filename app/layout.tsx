@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
+import { MetaPixel } from "@/components/MetaPixel";
 import { withBasePath } from "@/lib/base-path";
 import "./globals.css";
 
@@ -79,6 +80,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         suppressHydrationWarning
       >
         {children}
+
+        {/*
+          O pixel da Meta, que esta página não tinha. Fica no layout raiz para
+          valer em qualquer rota (inclusive `/obrigado`), e é um componente de
+          cliente que não renderiza nada - ver `components/MetaPixel.tsx`.
+        */}
+        <MetaPixel />
 
         {/*
           Marca o instante em que a página começou a carregar - o player do

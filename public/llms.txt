@@ -1,0 +1,31 @@
+# Caio Protetor - campanha de doação da SOS Animal Help
+
+> Campanha de arrecadação para mais de 400 animais abrigados em São Paulo, Minas Gerais, Bahia e Espírito Santo. O protetor Caio visita os abrigos; a SOS Animal Help (CNPJ 46.137.410/0001-06) recebe as doações via Pix, faz o repasse em ração, medicamentos e atendimento veterinário, e publica os comprovantes.
+
+A doação é feita nesta própria página, por Pix - único ou mensal (Pix Automático) -, sem cadastro e sem sair do site. A meta mensal é de R$ 58.000, que é a soma dos custos publicados dos cinco abrigos acompanhados.
+
+## Páginas
+
+- [Página da campanha](https://doe.caioprotetor.org/v2/): história do Caio, os cinco abrigos atendidos, tabela de custos mensais, depoimentos em vídeo dos protetores, documentação e perguntas frequentes.
+- [Doação por valor sem JavaScript](https://doe.caioprotetor.org/v2/doar/valor/): rota alternativa que monta um Pix estático na chave da organização.
+- [Confirmação de doação](https://doe.caioprotetor.org/v2/obrigado/): página exibida após o pagamento ser confirmado pelo gateway.
+
+## Quem recebe as doações
+
+- Razão social: SOS Animal Help
+- CNPJ: 46.137.410/0001-06
+- Chave Pix da campanha: caioprotetor@sosanimalhelp.org (e-mail)
+- Atendimento: WhatsApp, link publicado na própria página
+
+## Abrigos atendidos
+
+- Siulsan Resgate (Ribeirão Preto/SP)
+- SOS Joana D'Arc (Rio de Janeiro/RJ)
+- Abrigo Salve Cão (Betim/MG)
+- Casa da Mili (Vitória/ES)
+- Abrigo Dona Rose (Camaçari/BA)
+
+## Observações
+
+- Os valores, custos e números de animais publicados na página são os que a campanha divulga; o cartão CNPJ da organização e os das casas atendidas estão disponíveis na seção de documentação.
+- Esta página não coleta dados além de nome, WhatsApp (opcional) e CPF (obrigatório apenas na doação mensal, exigência do Banco Central para o Pix Automático).

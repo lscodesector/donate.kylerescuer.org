@@ -13,8 +13,14 @@ export const CHECKOUT_EVENT = "sos:abrir-checkout";
 export type CheckoutItem = {
   /**
    * `causa` é um valor para uma das frentes do menu "escolha onde ajudar";
-   * `mensal` é o mesmo valor se repetindo todo mês. A diferença muda só o
-   * texto: o Pix é o mesmo.
+   * `mensal` é o mesmo valor se repetindo todo mês.
+   *
+   * ⚠️ A diferença **não é só de texto**. Até 12/08/2026 era: a mensal gerava
+   * o mesmo Pix avulso e prometia combinar os próximos meses pelo WhatsApp.
+   * Hoje `mensal` manda o checkout por outro caminho inteiro - Pix Automático,
+   * outro endpoint, outro profile no gateway, CPF obrigatório e o mandato
+   * amarrado ao lead no Nest. Ver `createRecurringCharge` em
+   * `lib/payments/lusa.ts`.
    *
    * Havia um terceiro, `racao`, para as faixas de kg - elas saíram junto com a
    * virada para a campanha do Caio, que pede valor e não saco de ração.
@@ -30,6 +36,15 @@ export type CheckoutItem = {
   image: { src: string; alt: string } | null;
   /** Identificador que vai no BR Code. */
   txid: string;
+  /**
+   * A doação veio de um CTA que só oferece a mensal.
+   *
+   * Não muda nada no pagamento - `kind` já decide isso. Serve ao "Voltar" da
+   * etapa de dados, que reabre a tela de valores: com esta marca ela volta
+   * travada na mensal, como estava, em vez de oferecer a doação única a quem
+   * clicou em "doar todo mês". Ver `DonationIntent.somenteMensal`.
+   */
+  somenteMensal?: boolean;
 };
 
 export function openCheckout(item: CheckoutItem) {

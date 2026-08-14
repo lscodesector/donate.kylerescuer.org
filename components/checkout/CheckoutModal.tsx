@@ -1,27 +1,47 @@
 "use client";
 
-import { Img as Image } from "@/components/ui/Img";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { checkoutFee, feeCentsFor, formatBRL } from "@/content/landing";
-import { isValidPhoneBR, maskPhoneBR } from "@/lib/format";
 import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentType,
+  type ReactNode,
+} from "react";
+import { checkoutFee, feeCentsFor, formatBRLCurto, org, pix } from "@/content/landing";
+import {
+  isValidCpf,
+  isValidPhoneBR,
+  cpfDigits,
+  maskCpf,
+  maskPhoneBR,
+} from "@/lib/format";
+import {
+  bindRecurringAuthorization,
+  buildTxid,
   createCharge,
+  createRecurringCharge,
   checkLeadPaidOnSheet,
   fetchChargeStatus,
   logSheetRedirect,
   payments,
   readPixFrom,
+  readRecurringStatusHandle,
   readStatusHandle,
+  recurrenceStartDate,
   type ChargeResponse,
 } from "@/lib/payments/lusa";
 import {
   clearLeadId,
   getLeadId,
+  sendInitiateCheckoutToNest,
   trackInitiateCheckout,
   trackPixPaid,
   type LeadTracking,
 } from "@/lib/payments/tracking";
 import { useScrollLock } from "@/lib/scroll-lock";
+import { openDonationModal } from "../DonationModal";
 import {
   CHECKOUT_EVENT,
   setCheckoutOpen,
@@ -30,12 +50,14 @@ import {
 } from "./checkout-bus";
 import {
   IconArrowLeft,
-  IconBowl,
   IconCheck,
+  IconClock,
   IconClose,
   IconCopy,
   IconHeart,
-  IconPix,
+  IconMonitor,
+  IconPixMark,
+  IconQrCode,
   IconShield,
 } from "../ui/Icons";
 
@@ -52,7 +74,8 @@ import {
  * ── As etapas ─────────────────────────────────────────────────────────────
  *
  *   `dados`    nome, doação anônima, WhatsApp opcional e a opção de cobrir a
- *              taxa. Termina em "Gerar Pix agora".
+ *              taxa. Termina em "Gerar Pix agora". Na mensal a etapa é mais
+ *              curta - ver o bloco 🔁 logo abaixo.
  *   `gerando`  a cobrança sendo criada no gateway.
  *   `pix`      resumo dos valores, QR Code, copia e cola e o botão de copiar,
  *              consultando o status a cada 5 segundos.
@@ -64,11 +87,37 @@ import {
  * alimenta. Trazer isso para dentro do modal seria mostrar a mesma grade duas
  * vezes.
  *
- * ── O resumo do item e o CTA ficam fora do scroll ─────────────────────────
- * Foto, quantidade, valor e impacto ficam numa faixa entre o cabeçalho e o
- * corpo; o CTA de cada etapa mora num rodapé fixo. Só o miolo rola. É o que
- * mantém "o que estou doando" e "Copiar chave Pix" sempre na tela - antes o
- * botão ficava embaixo do QR e do código, dois scrolls abaixo da dobra.
+ * ── 🔁 Doação mensal: outro caminho, não outro texto ──────────────────────
+ * Quando `item.kind === "mensal"`, o mesmo modal fala com outra rota do
+ * gateway: Pix Automático (`createRecurringCharge`), em que **um QR só** cobra
+ * a primeira parcela e cria o mandato que autoriza o banco a debitar os
+ * próximos meses sozinho. O que muda por dentro:
+ *
+ *   • CPF vira obrigatório (o Banco Central exige devedor identificado);
+ *   • **não há taxa a cobrir** nem **doação anônima**: as duas somem da etapa
+ *     de dados. A taxa porque ela entraria em toda cobrança de todo mês, para
+ *     sempre - o que a pessoa aceitou uma vez viraria um acréscimo permanente
+ *     no débito automático dela. O anônimo porque o mandato já vai ao banco
+ *     com nome e CPF: a caixa prometia um anonimato que a tela de autorização
+ *     do banco desmente na frase seguinte;
+ *   • o InitiateCheckout é gravado no Nest **antes** da cobrança, porque o
+ *     mandato precisa de um lead onde se pendurar (`lead_not_found` é um erro
+ *     silencioso - ver `sendInitiateCheckoutToNest`);
+ *   • o `id_rec` da resposta é amarrado ao lead (`bindRecurringAuthorization`);
+ *   • o status é consultado no profile da recorrência, não no do avulso.
+ *
+ * Até 12/08/2026 a mensal era o mesmo Pix avulso com outra frase embaixo ("a
+ * equipe combina os próximos com você pelo WhatsApp"). Não é mais.
+ *
+ * ── O desenho é o do print, e o CTA fica fora do scroll ──────────────────
+ * As telas seguem `public/designe-checkout` - cabeçalho com "Voltar" escrito,
+ * formulário em uma coluna e o painel verde da taxa. Saíram de lá para cá as
+ * duas barrinhas de progresso e a faixa que repetia o valor doado: nenhuma das
+ * duas existe no print, e a faixa era a maior peça fixa da etapa.
+ *
+ * O CTA de cada etapa mora num rodapé que não rola. É o que mantém "Gerar Pix
+ * agora" e "Copiar chave Pix" sempre na tela - antes o botão ficava embaixo do
+ * QR e do código, dois scrolls abaixo da dobra.
  *
  * ── ✅ A tela de sucesso depende do gateway, e só dele ────────────────────
  * `pago` é inalcançável por clique. Não existe "já fiz o pagamento", não
@@ -99,6 +148,8 @@ type Dados = {
   nome: string;
   anonimo: boolean;
   whatsapp: string;
+  /** Só a doação mensal usa - ver `StepDados` e `lib/format.ts`. */
+  cpf: string;
   cobrirTaxa: boolean;
 };
 
@@ -106,6 +157,7 @@ const DADOS_VAZIOS: Dados = {
   nome: "",
   anonimo: false,
   whatsapp: "",
+  cpf: "",
   cobrirTaxa: checkoutFee.defaultChecked,
 };
 
@@ -242,7 +294,15 @@ export function CheckoutModal() {
   }, [aberto, etapa]);
 
   /* --- contas ------------------------------------------------------------ */
-  const taxaCents = item && dados.cobrirTaxa ? feeCentsFor(item.amountCents) : 0;
+  /* Doação mensal: outro endpoint, CPF obrigatório e outros textos - ver o
+     bloco 🔁 no topo do arquivo. */
+  const mensal = item?.kind === "mensal";
+  /* `!mensal` é trava, não redundância: na mensal o painel da taxa nem é
+     mostrado, então `cobrirTaxa` fica no padrão - e o dia em que
+     `checkoutFee.defaultChecked` virar `true` a recorrência sairia com R$ 4,99
+     a mais em toda cobrança sem ninguém ter marcado nada. */
+  const taxaCents =
+    item && dados.cobrirTaxa && !mensal ? feeCentsFor(item.amountCents) : 0;
   const totalCents = (item?.amountCents ?? 0) + taxaCents;
 
   /* --- confirmação de pagamento ------------------------------------------ */
@@ -269,6 +329,12 @@ export function CheckoutModal() {
     const controller = new AbortController();
 
     const gerar = async () => {
+      /* O piso da tela de espera começa a contar aqui, antes de qualquer ida à
+         rede: se ele só nascesse junto da cobrança, a gravação do lead no Nest
+         (mais abaixo) seria tempo somado ao piso em vez de tempo coberto por
+         ele - e a mensal ficaria visivelmente mais lenta que a única. */
+      const piso = new Promise((r) => setTimeout(r, payments.loaderMinMs));
+
       try {
         const lead = trackInitiateCheckout({
           amountCents: totalCents,
@@ -277,24 +343,58 @@ export function CheckoutModal() {
           donorName: dados.nome.trim(),
           donorPhone: dados.whatsapp,
           anonymous: dados.anonimo,
+          recurring: mensal,
         });
         leadRef.current = lead;
 
         /*
-         * A cobrança e o piso da tela de espera correm juntos. O piso existe
-         * para a tela ser lida em vez de piscar - quando a API responde antes
-         * dele, quem manda é ele; quando demora mais, ele não custa nada.
+         * ⚠️ ORDEM: na mensal o lead precisa estar gravado no Nest **antes** de
+         * o mandato ser amarrado a ele (`bindRecurringAuthorization`, mais
+         * abaixo) - um bind que chega primeiro responde `lead_not_found` calado
+         * e a recorrência fica sem dono. Por isso é `await`, e não disparar e
+         * seguir. Ver o bloco inteiro em `sendInitiateCheckoutToNest`.
+         *
+         * Nos dois fluxos, e não só na mensal: é o que a página em WordPress
+         * faz com toda doação única, e é por aqui que o nome e o WhatsApp de
+         * quem doa saem do navegador. A espera não aparece na tela - ela cabe
+         * dentro do piso do "gerando", que começou a contar acima.
+         */
+        await sendInitiateCheckoutToNest(lead);
+
+        /*
+         * A cobrança e o piso correm juntos. O piso existe para a tela ser lida
+         * em vez de piscar - quando a API responde antes dele, quem manda é
+         * ele; quando demora mais, ele não custa nada.
          */
         const [data] = await Promise.all([
-          createCharge(
-            {
-              amountCents: totalCents,
-              leadId: lead.lead_id,
-              productTitle: productTitleFor(item),
-            },
-            controller.signal,
-          ),
-          new Promise((r) => setTimeout(r, payments.loaderMinMs)),
+          mensal
+            ? createRecurringCharge(
+                {
+                  amountCents: totalCents,
+                  leadId: lead.lead_id,
+                  cpf: cpfDigits(dados.cpf),
+                  /* Sempre o nome digitado: a mensal não oferece doação
+                     anônima (ver `StepDados`), e o mandato precisa do nome
+                     que o banco vai exibir na autorização. */
+                  donorName: dados.nome.trim(),
+                  donorPhone: dados.whatsapp,
+                },
+                controller.signal,
+              )
+            : createCharge(
+                {
+                  amountCents: totalCents,
+                  leadId: lead.lead_id,
+                  productTitle: productTitleFor(item),
+                  donorName: dados.nome.trim(),
+                  donorPhone: dados.whatsapp,
+                  anonymous: dados.anonimo,
+                  /* O mesmo e-mail que foi no lead - ver `ChargeRequest`. */
+                  email: String(lead.donor_email ?? ""),
+                },
+                controller.signal,
+              ),
+          piso,
         ]);
 
         if (geracaoRef.current !== minha) return;
@@ -306,7 +406,16 @@ export function CheckoutModal() {
           );
         }
 
-        statusRef.current = readStatusHandle(data);
+        /*
+         * O mandato, amarrado ao lead assim que o `id_rec` chega - antes de
+         * qualquer tratamento de "já pago", porque é ele que garante o 2º mês.
+         * Não é aguardado: é o QR que a pessoa está esperando na tela.
+         */
+        if (mensal) bindRecurringAuthorization(lead.lead_id, data.id_rec);
+
+        statusRef.current = mensal
+          ? readRecurringStatusHandle(data, buildTxid(lead.lead_id))
+          : readStatusHandle(data);
         setPixCode(code);
         setEtapa("pix");
 
@@ -471,11 +580,13 @@ export function CheckoutModal() {
   const nomeInvalido =
     tentouEnviar && !dados.anonimo && dados.nome.trim().length < 2;
   const whatsappInvalido = tentouEnviar && !isValidPhoneBR(dados.whatsapp);
+  const cpfInvalido = tentouEnviar && mensal && !isValidCpf(dados.cpf);
 
   const enviarDados = () => {
     setTentouEnviar(true);
     if (!dados.anonimo && dados.nome.trim().length < 2) return;
     if (!isValidPhoneBR(dados.whatsapp)) return;
+    if (mensal && !isValidCpf(dados.cpf)) return;
     setErro(null);
     setEtapa("gerando");
   };
@@ -491,13 +602,39 @@ export function CheckoutModal() {
       case "pago":
         return "Pagamento confirmado";
       case "pix":
-        return "Pague com Pix";
+        /* "Gerado com sucesso", e não "Pague com Pix": é o primeiro texto que
+           a pessoa lê depois da espera, e ele responde a pergunta que ela
+           estava fazendo ("deu certo?") antes de pedir a próxima coisa. */
+        return "Pix gerado com sucesso!";
     }
   }, [etapa]);
 
   if (!item) return null;
 
-  const podeVoltar = etapa === "pix" || etapa === "erro";
+  /*
+   * "Voltar" existe em todas as etapas em que há para onde voltar. Na de
+   * dados, o passo anterior não é deste modal: é a tela de valores, que o
+   * checkout substituiu ao abrir. Fechamos um e disparamos o outro, na mesma
+   * frequência que já estava escolhida - quem entrou por engano no formulário
+   * volta para a grade em vez de cair de novo na landing.
+   */
+  const podeVoltar = etapa === "dados" || etapa === "pix" || etapa === "erro";
+
+  const voltar = () => {
+    if (etapa === "dados") {
+      setItem(null);
+      openDonationModal({
+        freq: mensal ? "mensal" : "unica",
+        /* Travada volta travada: quem entrou por um CTA de doação mensal não
+           encontra a doação única no caminho de volta. */
+        somenteMensal: item.somenteMensal,
+      });
+      return;
+    }
+    geracaoRef.current += 1;
+    statusRef.current = { pollUrl: "", reference: "" };
+    setEtapa("dados");
+  };
 
   return (
     <div
@@ -529,98 +666,94 @@ export function CheckoutModal() {
          * a base da tela sem margem. Com margem nos quatro lados, cantos
          * quadrados embaixo ficariam sobrando.
          */
-        className="anim-fade-up flex max-h-[90dvh] w-full max-w-[520px] flex-col overflow-hidden rounded-lg bg-surface shadow-xl"
+        className="anim-fade-up flex max-h-[92dvh] w-full max-w-[520px] flex-col overflow-hidden rounded-lg bg-surface shadow-xl sm:max-w-[580px]"
       >
-        {/* ── Cabeçalho ─────────────────────────────────────────────── */}
-        <header className="flex shrink-0 items-center gap-2 border-b border-ink-900/10 px-3 py-2.5 sm:px-4">
+        {/*
+          ── A altura é orçamento, não sobra ──────────────────────────────
+          A etapa "Complete seus dados" precisa caber inteira na tela, com o
+          botão à vista e sem rolagem: quem rola para achar o "Gerar Pix" já
+          hesitou uma vez. Cabeçalho, faixa do item, formulário e rodapé foram
+          apertados juntos para isso - alturas de campo, respiros entre eles,
+          textos de apoio e o resumo de valores. Antes de acrescentar qualquer
+          linha aqui, vale lembrar que o orçamento é a tela.
+        */}
+        {/*
+          ── Cabeçalho: "Voltar", título e o X ────────────────────────────
+          Escrito por extenso, como no print de referência
+          (`public/designe-checkout`) - e não mais uma setinha muda no canto.
+          Na etapa de dados ele devolve a pessoa para a tela de valores; nas
+          demais, volta um passo dentro do próprio checkout.
+
+          ── O que saiu daqui ─────────────────────────────────────────────
+          As duas barrinhas de progresso e a faixa com o valor doado. Nenhuma
+          das duas existe no print, e o desenho de lá é o que esta tela segue.
+          A faixa era também a maior peça fixa da etapa - sem ela o formulário
+          inteiro cabe numa janela de notebook, que era o outro problema.
+        */}
+        <header className="flex shrink-0 items-center gap-2 px-3 py-2.5 sm:px-4">
           {podeVoltar ? (
             <button
               type="button"
-              onClick={() => {
-                geracaoRef.current += 1;
-                statusRef.current = { pollUrl: "", reference: "" };
-                setEtapa("dados");
-              }}
-              aria-label="Voltar para os dados"
-              className="flex h-[40px] w-[40px] shrink-0 items-center justify-center rounded-full text-ink-600 transition-colors hover:bg-surface-alt hover:text-ink-900"
+              onClick={voltar}
+              aria-label="Voltar"
+              className="flex min-h-[36px] shrink-0 items-center gap-1.5 rounded-full px-2 text-[14px] font-semibold text-ink-600 transition-colors hover:bg-surface-alt hover:text-ink-900"
             >
-              <IconArrowLeft size={20} />
+              <IconArrowLeft size={18} />
+              {/* Só a seta na etapa do Pix: lá o título é a frase mais longa do
+                  checkout ("Pix gerado com sucesso!") e a palavra ao lado o
+                  empurrava para fora do centro da barra. */}
+              {etapa !== "pix" && "Voltar"}
             </button>
           ) : (
-            <span aria-hidden="true" className="h-[40px] w-[40px] shrink-0" />
+            <span aria-hidden="true" className="h-[36px] w-[36px] shrink-0" />
           )}
 
           <h2
             id="checkout-titulo"
-            className="flex-1 text-center text-[16px] font-extrabold leading-tight text-ink-900"
+            className="flex flex-1 items-center justify-center gap-1.5 text-center text-[16px] font-extrabold leading-tight text-ink-900"
           >
+            {/* O tique verde só na etapa do Pix: ali o título é uma confirmação
+                ("deu certo"), e nas outras é só o nome da etapa. */}
+            {etapa === "pix" && (
+              <IconCheck size={17} className="shrink-0 text-donate" />
+            )}
             {titulo}
           </h2>
 
           {/* Na tela de confirmação não há o que fechar: a página já vai
               trocar sozinha, e um X ali só criaria a dúvida de "perdi algo?". */}
           {etapa === "pago" ? (
-            <span aria-hidden="true" className="h-[40px] w-[40px] shrink-0" />
+            <span aria-hidden="true" className="h-[36px] w-[36px] shrink-0" />
           ) : (
             <button
               type="button"
               onClick={fechar}
               aria-label="Fechar"
-              className="flex h-[40px] w-[40px] shrink-0 items-center justify-center rounded-full text-ink-600 transition-colors hover:bg-surface-alt hover:text-ink-900"
+              className="flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-full bg-surface-alt text-ink-600 transition-colors hover:bg-ink-900/10"
             >
-              <IconClose size={20} />
+              <IconClose size={18} />
             </button>
           )}
         </header>
 
-        <StepProgress etapa={etapa} />
-
-        {/* ── O item, sempre à vista ────────────────────────────────────
-            Fora da área que rola: é o que a pessoa está comprando, e some
-            no primeiro scroll se ficar junto do corpo. */}
-        <div className="flex shrink-0 items-center gap-3 border-b border-ink-900/10 bg-surface-alt px-3 py-3 sm:px-4">
-          <div className="relative h-[62px] w-[62px] shrink-0 overflow-hidden rounded-sm border border-ink-900/10 bg-white sm:h-[72px] sm:w-[72px]">
-            {item.image ? (
-              /* `object-contain`: a foto é um produto em fundo branco, e
-                 `cover` cortaria o saco. */
-              <Image
-                src={item.image.src}
-                alt={item.image.alt}
-                fill
-                sizes="72px"
-                className="object-contain p-1"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-ink-300">
-                <IconBowl size={26} />
-              </div>
-            )}
-          </div>
-
-          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-            <span className="truncate text-[12px] font-extrabold uppercase tracking-[0.06em] text-accent">
-              {item.title}
-            </span>
-            <span className="text-[20px] font-extrabold leading-none text-ink-900 tabular-nums">
-              {formatBRL(item.amountCents)}
-            </span>
-            <span className="text-[12px] leading-[1.35] text-ink-600">
-              {item.impact}
-            </span>
-          </div>
-        </div>
-
-        {/* ── Corpo (a única parte que rola) ───────────────────────────── */}
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4 sm:px-4">
+        {/* ── Corpo (a única parte que rola) ─────────────────────────────
+            Creme na etapa do Pix, branco nas outras: lá o conteúdo é uma pilha
+            de cartões brancos, e cartão branco sobre fundo branco não é
+            cartão - some a borda e a pilha vira uma lista corrida. */}
+        <div
+          className={`min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 sm:px-4 ${
+            etapa === "pix" ? "bg-surface-alt" : ""
+          }`}
+        >
           {etapa === "dados" && (
             <StepDados
               dados={dados}
               setDados={setDados}
+              mensal={mensal}
               nomeInvalido={nomeInvalido}
               whatsappInvalido={whatsappInvalido}
+              cpfInvalido={cpfInvalido}
               amountCents={item.amountCents}
-              taxaCents={taxaCents}
-              totalCents={totalCents}
               onSubmit={enviarDados}
             />
           )}
@@ -635,69 +768,59 @@ export function CheckoutModal() {
             <StepPix
               qr={qr}
               pixCode={pixCode}
+              mensal={mensal}
               amountCents={item.amountCents}
               taxaCents={taxaCents}
               totalCents={totalCents}
+              copiado={copiado}
+              onCopiar={copiar}
             />
           )}
 
-          {etapa === "pago" && <StepPago totalCents={totalCents} />}
+          {etapa === "pago" && (
+            <StepPago totalCents={totalCents} mensal={mensal} />
+          )}
         </div>
 
-        {/* ── Rodapé fixo: o CTA da etapa ──────────────────────────────── */}
-        {(etapa === "dados" || etapa === "pix") && (
-          <div className="shrink-0 border-t border-ink-900/10 bg-surface px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 sm:px-4">
-            {etapa === "dados" ? (
-              <>
-                <button
-                  type="button"
-                  onClick={enviarDados}
-                  className="inline-flex min-h-[54px] w-full items-center justify-center gap-2 rounded-full bg-donate px-6 text-[15px] font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow-[0_10px_30px_-10px_rgba(27,138,75,.7)] transition-colors hover:bg-donate-hover"
-                >
-                  <IconPix size={18} />
-                  Gerar Pix agora
-                </button>
-                {/* A referência usa amarelo neste selo; aqui ele é verde, que
-                    é a cor de doação desta campanha. */}
-                <p className="mt-2 flex items-center justify-center gap-1.5 text-center text-[12px] font-semibold text-ink-600">
-                  <IconShield size={14} className="shrink-0 text-donate" />
-                  Pagamento 100% seguro e verificado
-                </p>
-              </>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  onClick={copiar}
-                  disabled={!pixCode}
-                  className={`inline-flex min-h-[54px] w-full items-center justify-center gap-2 rounded-full px-6 text-[15px] font-extrabold uppercase tracking-[0.03em] transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
-                    copiado
-                      ? "bg-ink-900 text-white"
-                      : "bg-donate text-donate-ink shadow-[0_10px_30px_-10px_rgba(27,138,75,.7)] hover:bg-donate-hover"
-                  }`}
-                >
-                  {copiado ? <IconCheck size={18} /> : <IconCopy size={18} />}
-                  {copiado ? "Chave Pix copiada!" : "Copiar chave Pix"}
-                </button>
-                {/* Não é enfeite: esta linha é a promessa de que a pessoa não
-                    precisa clicar em nada depois de pagar. */}
-                <p
-                  aria-live="polite"
-                  className="mt-2 flex items-center justify-center gap-1.5 text-center text-[12px] font-semibold text-ink-600"
-                >
-                  <span className="relative flex h-[8px] w-[8px] shrink-0">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-donate opacity-60" />
-                    <span className="relative inline-flex h-[8px] w-[8px] rounded-full bg-donate" />
-                  </span>
-                  Esta tela avisa sozinha quando o pagamento cair.
-                </p>
-              </>
-            )}
+        {/* ── Rodapé fixo: o CTA da etapa ────────────────────────────────
+            Só a etapa de dados tem um. Na do Pix o "copiar código" mora dentro
+            do cartão do código, como na gravação de referência - e continua
+            acima da dobra, porque é o terceiro bloco da pilha. Ver `StepPix`. */}
+        {etapa === "dados" && (
+          <div className="shrink-0 bg-surface px-3 pb-[max(0.875rem,env(safe-area-inset-bottom))] pt-2.5 sm:px-4">
+            <button
+              type="button"
+              onClick={enviarDados}
+              className="inline-flex min-h-[clamp(48px,6.6vh,56px)] w-full items-center justify-center gap-2.5 whitespace-nowrap rounded-md bg-highlight px-6 text-[15px] font-extrabold uppercase tracking-[0.03em] text-ink-900 shadow transition hover:bg-highlight-hover"
+            >
+              <IconPixMark size={18} />
+              Gerar Pix agora
+            </button>
+            <p className="mt-2 hidden items-center justify-center gap-1.5 text-center text-[12px] font-semibold text-ink-600 [@media(min-height:620px)]:flex">
+              <span aria-hidden="true" className="h-[7px] w-[7px] shrink-0 rounded-full bg-donate" />
+              Pagamento 100% seguro e verificado
+            </p>
           </div>
         )}
       </div>
     </div>
   );
+}
+
+/**
+ * `2026-09-12` → `12 de setembro`.
+ *
+ * Montada campo a campo, e não com `new Date("2026-09-12")`: a string ISO só
+ * com data é lida como UTC, e no fuso do Brasil isso volta um dia - a tela
+ * anunciaria a cobrança para 11 de setembro quando o gateway agendou 12.
+ */
+function dataPorExtenso(iso: string) {
+  const [ano, mes, dia] = iso.split("-").map(Number);
+  if (!ano || !mes || !dia) return iso;
+  return new Date(ano, mes - 1, dia).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "long",
+  });
 }
 
 /** `/obrigado` a partir de uma URL absoluta ou relativa. */
@@ -711,45 +834,32 @@ function pathnameOf(url: string) {
 
 /* ------------------------------------------------------------------ */
 
-/** Duas barrinhas: dados → pagamento. `gerando` e `erro` contam como dados. */
-function StepProgress({ etapa }: { etapa: Etapa }) {
-  const indice = etapa === "pix" || etapa === "pago" ? 1 : 0;
-  return (
-    <div className="flex shrink-0 gap-1 px-3 pb-2 sm:px-4" aria-hidden="true">
-      {[0, 1].map((i) => (
-        <span
-          key={i}
-          className={`h-[3px] flex-1 rounded-full transition-colors ${
-            i <= indice ? "bg-donate" : "bg-ink-900/10"
-          }`}
-        />
-      ))}
-    </div>
-  );
-}
-
 /* ------------------------------------------------------------------ */
 
 function StepDados({
   dados,
   setDados,
+  mensal,
   nomeInvalido,
   whatsappInvalido,
+  cpfInvalido,
   amountCents,
-  taxaCents,
-  totalCents,
   onSubmit,
 }: {
   dados: Dados;
   setDados: (patch: (d: Dados) => Dados) => void;
+  mensal: boolean;
   nomeInvalido: boolean;
   whatsappInvalido: boolean;
+  cpfInvalido: boolean;
   amountCents: number;
-  taxaCents: number;
-  totalCents: number;
   onSubmit: () => void;
 }) {
   const taxaPreview = feeCentsFor(amountCents);
+  const campo = (invalido: boolean) =>
+    `min-h-[clamp(46px,6.2vh,52px)] rounded-md border bg-surface px-3.5 text-[16px] font-semibold text-ink-900 outline-none transition-colors placeholder:font-normal placeholder:text-ink-300 ${
+      invalido ? "border-error" : "border-ink-900/[.12] focus:border-donate"
+    }`;
 
   return (
     <form
@@ -758,7 +868,17 @@ function StepDados({
         e.preventDefault();
         onSubmit();
       }}
-      className="flex flex-col gap-4"
+      /*
+        Uma coluna, na ordem do print de referência (`public/designe-checkout`):
+        nome, doação anônima, WhatsApp e o convite para cobrir a taxa. Chegou a
+        ser duas colunas no notebook; com a faixa do valor e a barra de etapas
+        fora do caminho, a pilha inteira voltou a caber na tela e o desenho de
+        lá vale de novo.
+
+        A mensal segue outra pilha: nome, WhatsApp e CPF, sem a caixa de doar
+        anônimo e sem o painel da taxa - os dois blocos abaixo dizem por quê.
+      */
+      className="flex flex-col gap-3"
     >
       <label className="flex flex-col gap-1.5">
         <span className="text-[13px] font-extrabold text-ink-900">Nome</span>
@@ -773,33 +893,40 @@ function StepDados({
           aria-invalid={nomeInvalido}
           /* `text-[16px]`: abaixo disso o Safari do iPhone dá zoom sozinho ao
              focar o campo e a pessoa perde o modal de vista. */
-          className={`min-h-[52px] rounded-md border-2 bg-surface px-3 text-[16px] font-semibold text-ink-900 outline-none transition-colors placeholder:font-normal placeholder:text-ink-300 disabled:cursor-not-allowed disabled:bg-surface-alt disabled:text-ink-300 ${
-            nomeInvalido ? "border-error" : "border-ink-900/10 focus:border-donate"
-          }`}
+          className={`${campo(nomeInvalido)} disabled:cursor-not-allowed disabled:bg-surface-alt disabled:text-ink-300`}
         />
         {nomeInvalido && (
           <span className="text-[12px] font-semibold text-error">
-            Diga como podemos te chamar - ou marque “Quero doar anonimamente”.
+            {mensal
+              ? "Diga como podemos te chamar - o seu banco pede o nome para autorizar a doação mensal."
+              : "Diga como podemos te chamar - ou marque “Quero doar anonimamente”."}
           </span>
         )}
       </label>
 
-      <label className="flex cursor-pointer items-center gap-3">
-        <input
-          type="checkbox"
-          checked={dados.anonimo}
-          onChange={(e) => setDados((d) => ({ ...d, anonimo: e.target.checked }))}
-          className="h-[22px] w-[22px] shrink-0 cursor-pointer accent-[color:var(--sos-donate)]"
-        />
-        <span className="text-[14px] font-semibold text-ink-900">
-          Quero doar anonimamente
-        </span>
-      </label>
+      {/*
+        ── Doar anônimo: só na doação única ────────────────────────────────
+        Na mensal a caixa saiu porque ela prometia o que a tela seguinte não
+        cumpre: o mandato do Pix Automático vai ao banco com nome e CPF, e é
+        isso que aparece na tela de autorização e no extrato de todo mês. Uma
+        caixa de "anonimamente" logo antes disso não esconde nada - só faz a
+        pessoa desconfiar da doação quando o nome dela aparece no banco.
+      */}
+      {!mensal && (
+        <label className="flex cursor-pointer items-center gap-2.5">
+          <input
+            type="checkbox"
+            checked={dados.anonimo}
+            onChange={(e) => setDados((d) => ({ ...d, anonimo: e.target.checked }))}
+            className="h-[20px] w-[20px] shrink-0 cursor-pointer accent-[color:var(--sos-donate)]"
+          />
+          <span className="text-[14px] text-ink-900">Quero doar anonimamente</span>
+        </label>
+      )}
 
       <label className="flex flex-col gap-1.5">
         <span className="text-[13px] font-extrabold text-ink-900">
-          WhatsApp{" "}
-          <span className="font-semibold text-ink-600">(opcional)</span>
+          WhatsApp <span className="font-semibold text-ink-600">(opcional)</span>
         </span>
         <input
           type="tel"
@@ -809,70 +936,73 @@ function StepDados({
           onChange={(e) =>
             setDados((d) => ({ ...d, whatsapp: maskPhoneBR(e.target.value) }))
           }
-          placeholder="(85) 99999-9999"
+          placeholder="(00) 00000-0000"
           aria-invalid={whatsappInvalido}
-          className={`min-h-[52px] rounded-md border-2 bg-surface px-3 text-[16px] font-semibold text-ink-900 outline-none transition-colors placeholder:font-normal placeholder:text-ink-300 ${
-            whatsappInvalido
-              ? "border-error"
-              : "border-ink-900/10 focus:border-donate"
-          }`}
+          className={campo(whatsappInvalido)}
         />
-        <span
-          className={`text-[12px] ${
-            whatsappInvalido ? "font-semibold text-error" : "text-ink-600"
-          }`}
-        >
-          {whatsappInvalido
-            ? "Confira o número: faltam dígitos."
-            : "Só usamos para avisar quando a ração chegar no abrigo."}
-        </span>
+        {whatsappInvalido && (
+          <span className="text-[12px] font-semibold text-error">
+            Confira o número: faltam dígitos.
+          </span>
+        )}
       </label>
 
-      {checkoutFee.enabled && (
-        <div
-          className={`rounded-md border-2 p-3 transition-colors ${
-            dados.cobrirTaxa ? "border-donate bg-donate/[.06]" : "border-ink-900/10"
-          }`}
-        >
-          <div className="flex items-start gap-3">
-            <input
-              id="cobrir-taxa"
-              type="checkbox"
-              checked={dados.cobrirTaxa}
-              onChange={(e) =>
-                setDados((d) => ({ ...d, cobrirTaxa: e.target.checked }))
-              }
-              aria-describedby="cobrir-taxa-desc"
-              className="mt-0.5 h-[22px] w-[22px] shrink-0 cursor-pointer accent-[color:var(--sos-donate)]"
-            />
-            <div className="flex flex-col gap-1">
-              <label
-                htmlFor="cobrir-taxa"
-                className="cursor-pointer text-[15px] font-extrabold leading-tight text-ink-900"
-              >
-                Deseja cobrir a taxa?{" "}
-                <span className="whitespace-nowrap text-donate tabular-nums">
-                  (+ {formatBRL(taxaPreview)})
-                </span>
-              </label>
-              <p id="cobrir-taxa-desc" className="text-[13px] leading-[1.5] text-ink-600">
-                Todo pagamento tem uma taxa de processamento. Cobrindo ela, o
-                valor integral da sua doação chega inteiro na organização.{" "}
-                <strong className="font-semibold text-ink-900">
-                  Pode desmarcar sem problema
-                </strong>
-                : sua doação continua valendo igual.
-              </p>
-            </div>
-          </div>
-        </div>
+      {/*
+        ── CPF: só na doação mensal ────────────────────────────────────────
+        Não é dado que a gente resolveu pedir: o Pix Automático autoriza o
+        banco a debitar a conta de alguém nos próximos meses, e o Banco Central
+        exige devedor identificado para criar esse mandato. Sem CPF válido a
+        ONZ/Infopago recusa a recorrência - e recusaria depois de a pessoa já
+        ter preenchido tudo, que é o pior momento para descobrir.
+
+        Não está no print porque o print é o da doação única. A frase abaixo do
+        campo existe porque pedir CPF numa página de doação levanta a
+        sobrancelha de qualquer um, e dizer para que serve é mais barato que
+        perder a doação.
+      */}
+      {mensal && (
+        <label className="flex flex-col gap-1.5">
+          <span className="text-[13px] font-extrabold text-ink-900">CPF</span>
+          <input
+            type="text"
+            inputMode="numeric"
+            autoComplete="off"
+            value={dados.cpf}
+            onChange={(e) => setDados((d) => ({ ...d, cpf: maskCpf(e.target.value) }))}
+            placeholder="000.000.000-00"
+            aria-invalid={cpfInvalido}
+            aria-describedby="cpf-ajuda"
+            className={campo(cpfInvalido)}
+          />
+          <span
+            id="cpf-ajuda"
+            className={`text-[12px] ${
+              cpfInvalido ? "font-semibold text-error" : "text-ink-600"
+            }`}
+          >
+            {cpfInvalido
+              ? "Confira o CPF: os dígitos não conferem."
+              : "O seu banco exige para autorizar a doação mensal."}
+          </span>
+        </label>
       )}
 
-      <ResumoValores
-        amountCents={amountCents}
-        taxaCents={taxaCents}
-        totalCents={totalCents}
-      />
+      {/*
+        ── Cobrir a taxa: só na doação única ───────────────────────────────
+        Marcar aqui na mensal não somaria R$ 4,99 a uma doação: somaria a
+        **todas**, todo mês, para sempre - a taxa vai no `valor_rec` do
+        mandato (ver `createRecurringCharge`), que é o valor que o banco passa
+        a debitar sozinho. Um convite de tela é curto demais para autorizar um
+        acréscimo permanente no débito automático de alguém.
+      */}
+      {!mensal && (
+        <PainelTaxa
+          id="cobrir-taxa"
+          taxaCents={taxaPreview}
+          marcado={dados.cobrirTaxa}
+          onMarcar={(v) => setDados((d) => ({ ...d, cobrirTaxa: v }))}
+        />
+      )}
 
       {/*
         O botão de verdade mora no rodapé fixo do modal, fora deste `<form>`.
@@ -891,7 +1021,95 @@ function StepDados({
 
 /* ------------------------------------------------------------------ */
 
-/** Doado + taxa + total. Aparece nas duas etapas, com os mesmos números. */
+/**
+ * ── O painel verde da taxa ────────────────────────────────────────────────
+ * Emblema de coração, título, a frase da campanha e, embaixo, a caixa de
+ * marcar com o valor em verde. Desenho e texto do print de referência.
+ *
+ * A caixa abre **desmarcada** (`checkoutFee.defaultChecked`): o valor que a
+ * pessoa escolheu na tela de valores é o valor que ela paga, e não ele mais
+ * R$ 4,99 que ela não pediu. O painel é verde sempre - marcado ou não, ele é um
+ * convite, e não um aviso que acende.
+ *
+ * ── E **só na doação única** ─────────────────────────────────────────────
+ * Na mensal ele não é renderizado - ver o motivo no ponto de chamada, dentro
+ * de `StepDados`.
+ *
+ * ── Ele vive **só na etapa de dados**, antes de gerar o Pix ───────────────
+ * Chegou a aparecer também na etapa do Pix, e saiu de lá: depois do QR gerado
+ * a caixa não pode mais ser marcada sem refazer a cobrança inteira - o valor já
+ * foi para o gateway e está dentro do BR Code que a pessoa vai colar. Ou a tela
+ * somava R$ 4,99 a um QR que continuava cobrando o valor antigo (alguém pagaria
+ * um número e leria outro), ou um clique de caixinha jogava a pessoa de volta
+ * para a tela de espera. Na etapa do Pix a taxa aparece na linha "Taxa abatida"
+ * do resumo, que é informação e não controle.
+ */
+function PainelTaxa({
+  id,
+  taxaCents,
+  marcado,
+  onMarcar,
+}: {
+  id: string;
+  taxaCents: number;
+  marcado: boolean;
+  onMarcar: (valor: boolean) => void;
+}) {
+  if (!checkoutFee.enabled) return null;
+
+  return (
+    <div className="flex flex-col gap-2.5 rounded-md border border-donate/20 bg-donate/[.07] p-3.5">
+      <div className="flex items-start gap-2.5">
+        <span
+          aria-hidden="true"
+          className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full bg-donate/15 text-donate"
+        >
+          <IconHeart size={16} />
+        </span>
+        <div className="flex flex-col gap-1">
+          <span className="text-[14px] font-extrabold leading-tight text-donate-text">
+            Ajude com os custos da sua doação
+          </span>
+          <p className="text-[13px] leading-[1.45] text-ink-600">
+            Cubra os custos de {formatBRLCurto(taxaCents)} do pix e garanta que sua
+            doação chegue completa ao Caio.
+          </p>
+        </div>
+      </div>
+
+      <label
+        htmlFor={id}
+        className="flex cursor-pointer items-center gap-2.5 text-[14px] font-extrabold text-ink-900"
+      >
+        <input
+          id={id}
+          type="checkbox"
+          checked={marcado}
+          onChange={(e) => onMarcar(e.target.checked)}
+          className="h-[20px] w-[20px] shrink-0 cursor-pointer accent-[color:var(--sos-donate)]"
+        />
+        Cobrir a taxa{" "}
+        <span className="whitespace-nowrap text-donate-text tabular-nums">
+          (+ {formatBRLCurto(taxaCents)})
+        </span>
+      </label>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+
+/**
+ * Doado + taxa + total, na etapa do Pix.
+ *
+ * **Sem taxa, é uma linha só** - "Valor doado" e o número à direita, como na
+ * gravação de referência. Com a caixa desmarcada, "valor doado", "taxa R$ 0,00"
+ * e "valor total" eram três linhas dizendo o mesmo número; a conta só tem o que
+ * mostrar quando existe uma parcela a somar.
+ *
+ * Não aparece na etapa de dados: lá o valor já foi escolhido na tela anterior.
+ * Quem cobre a taxa vê o total somado aqui, junto do QR.
+ */
 function ResumoValores({
   amountCents,
   taxaCents,
@@ -901,37 +1119,123 @@ function ResumoValores({
   taxaCents: number;
   totalCents: number;
 }) {
+  /* A explicação da taxa abre no "?" e não vive aberta: são três linhas que
+     respondem a uma dúvida que nem todo mundo tem, e ela empurraria o "Copiar
+     código Pix" para baixo de quem já entendeu. É o comportamento do checkout
+     de referência. */
+  const [explicando, setExplicando] = useState(false);
+
   return (
-    <dl className="flex flex-col gap-1.5 rounded-md bg-surface-alt p-3 text-[14px]">
+    <dl className={`${CARTAO} gap-1.5 p-3.5 text-[14px]`}>
       <div className="flex items-baseline justify-between gap-3">
-        <dt className="text-ink-600">Valor doado</dt>
-        <dd className="font-semibold tabular-nums text-ink-900">
-          {formatBRL(amountCents)}
+        <dt className="font-semibold text-ink-600">Valor doado</dt>
+        <dd className="text-[16px] font-extrabold tabular-nums text-ink-900">
+          {formatBRLCurto(amountCents)}
         </dd>
       </div>
 
-      <div className="flex items-baseline justify-between gap-3">
-        <dt className="text-ink-600">
-          {taxaCents > 0 ? "Taxa coberta por você" : "Taxa"}
-        </dt>
-        <dd
-          className={`font-semibold tabular-nums ${
-            taxaCents > 0 ? "text-donate" : "text-ink-600"
-          }`}
-        >
-          {taxaCents > 0 ? `+ ${formatBRL(taxaCents)}` : formatBRL(0)}
-        </dd>
-      </div>
+      {taxaCents > 0 && (
+        <>
+          <div className="flex items-baseline justify-between gap-3">
+            <dt className="flex items-center gap-1.5 font-semibold text-ink-600">
+              Taxa abatida
+              <button
+                type="button"
+                onClick={() => setExplicando((v) => !v)}
+                aria-expanded={explicando}
+                aria-label="O que é a taxa abatida"
+                className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border border-ink-900/20 text-[11px] font-extrabold leading-none text-ink-600 transition-colors hover:border-action hover:text-action"
+              >
+                ?
+              </button>
+            </dt>
+            <dd className="font-extrabold tabular-nums text-donate-text">
+              {formatBRLCurto(taxaCents)}
+            </dd>
+          </div>
 
-      <div className="flex items-baseline justify-between gap-3 border-t border-ink-900/10 pt-2">
-        <dt className="font-extrabold text-ink-900">Valor total</dt>
-        <dd className="text-[19px] font-extrabold tabular-nums text-ink-900">
-          {formatBRL(totalCents)}
-        </dd>
-      </div>
+          {explicando && (
+            <p className="rounded-md bg-surface-alt p-3 text-[13px] leading-[1.5] text-ink-600">
+              Essa é a taxa de processamento do pix que o {org.name} pagaria para
+              receber sua doação. Ao manter marcado, o valor chega inteiro pra
+              ajudar a salvar mais vidas!
+            </p>
+          )}
+
+          <div className="flex items-baseline justify-between gap-3 border-t border-ink-900/10 pt-2">
+            <dt className="font-extrabold text-ink-900">Valor total</dt>
+            <dd className="text-[19px] font-extrabold tabular-nums text-ink-900">
+              {formatBRLCurto(totalCents)}
+            </dd>
+          </div>
+        </>
+      )}
     </dl>
   );
 }
+
+/* ------------------------------------------------------------------ */
+
+/**
+ * ╔══════════════════════════════════════════════════════════════════════╗
+ * ║  A etapa do Pix - cartões empilhados sobre fundo creme                ║
+ * ╚══════════════════════════════════════════════════════════════════════╝
+ *
+ * O desenho é o da gravação de referência
+ * (`public/Gravando 2026-08-13 144530.mp4`), na ordem em que ela mostra:
+ *
+ *   valor doado → copiar código → finalize no banco → QR → selo
+ *
+ * O painel verde da taxa ficava entre os dois primeiros e saiu: aqui ele seria
+ * um controle que não pode mais ser mexido - ver `PainelTaxa`. A taxa continua
+ * na primeira linha, como número.
+ *
+ * ── Copiar vem antes do QR, e isso é escolha ──────────────────────────────
+ * A tela anterior a esta era QR à esquerda e código à direita, lado a lado. Aqui
+ * o código sobe para o topo e o QR desce para o fim, porque a maioria de quem
+ * doa está **no celular**: quem já está com o telefone na mão copia e cola, e
+ * quem está no computador é quem escaneia. O caminho do celular fica primeiro,
+ * e o do computador continua inteiro logo abaixo.
+ *
+ * ── O CTA saiu do rodapé fixo ─────────────────────────────────────────────
+ * "Copiar código Pix" mora dentro do próprio cartão do código, como na
+ * gravação, e não mais na faixa colada na base do modal. Ele continua acima da
+ * dobra porque é o terceiro bloco da pilha - o rodapé fixo existia para quando
+ * o botão ficava embaixo do QR e do código, dois scrolls abaixo.
+ */
+const CARTAO =
+  "flex flex-col rounded-md border border-ink-900/[.07] bg-surface p-4 shadow-[0_1px_3px_rgba(20,17,15,.05)]";
+
+/** Emblema quadrado-arredondado + título, a cabeça de cada cartão. */
+function TituloCartao({
+  icon: Icon,
+  tom = "action",
+  children,
+}: {
+  icon: ComponentType<{ size?: number }>;
+  /** `highlight` é o âmbar do QR; o resto da tela é vermelho de marca. */
+  tom?: "action" | "highlight";
+  children: ReactNode;
+}) {
+  return (
+    <p className="flex items-center gap-3">
+      <span
+        aria-hidden="true"
+        className={`flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-[12px] ${
+          tom === "highlight" ? "bg-highlight/25 text-warning" : "bg-action/10 text-action"
+        }`}
+      >
+        <Icon size={18} />
+      </span>
+      <span className="text-[15px] font-extrabold leading-tight text-action">
+        {children}
+      </span>
+    </p>
+  );
+}
+
+/** Quanto tempo o código vale, do jeito que o gateway foi configurado. */
+const VALIDADE_HORAS = Math.round(payments.expirationSeconds / 3600);
 
 /* ------------------------------------------------------------------ */
 
@@ -975,7 +1279,7 @@ function StepErro({
         data-autofocus=""
         type="button"
         onClick={onTentarDeNovo}
-        className="mt-1 inline-flex min-h-[50px] w-full items-center justify-center gap-2 rounded-full bg-donate px-6 text-[15px] font-extrabold uppercase tracking-[0.03em] text-donate-ink transition-colors hover:bg-donate-hover"
+        className="mt-1 inline-flex min-h-[50px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-donate px-6 text-[15px] font-extrabold uppercase tracking-[0.03em] text-donate-ink transition-colors hover:bg-donate-hover"
       >
         Tentar de novo
       </button>
@@ -988,7 +1292,13 @@ function StepErro({
  *
  * Nenhum botão leva até aqui - ver o bloco de confirmação no topo do arquivo.
  */
-function StepPago({ totalCents }: { totalCents: number }) {
+function StepPago({
+  totalCents,
+  mensal,
+}: {
+  totalCents: number;
+  mensal: boolean;
+}) {
   return (
     <div
       className="flex flex-col items-center gap-3 py-8 text-center"
@@ -999,15 +1309,28 @@ function StepPago({ totalCents }: { totalCents: number }) {
         <IconCheck size={34} />
       </span>
       <p className="text-[19px] font-extrabold text-ink-900">
-        Pagamento confirmado!
+        {mensal ? "Doação mensal ativada!" : "Pagamento confirmado!"}
       </p>
       <p className="max-w-[40ch] text-[14px] leading-[1.55] text-ink-600">
         Sua doação de{" "}
         <strong className="font-semibold text-ink-900">
-          {formatBRL(totalCents)}
+          {formatBRLCurto(totalCents)}
         </strong>{" "}
         já está a caminho de quem precisa. Obrigado de verdade.
       </p>
+      {/* O que acabou de ser autorizado, em uma frase: a partir daqui o débito
+          é automático, e quem não souber disso estranha o extrato do mês que
+          vem. A data sai da mesma conta que foi ao gateway. */}
+      {mensal && (
+        <p className="max-w-[40ch] text-[13px] leading-[1.55] text-ink-600">
+          A próxima cobrança sai sozinha em{" "}
+          <strong className="font-semibold text-ink-900">
+            {dataPorExtenso(recurrenceStartDate())}
+          </strong>
+          , e assim todo mês. Você pode cancelar quando quiser, no app do seu
+          banco, em Pix &rsaquo; Pix Automático.
+        </p>
+      )}
       <p className="mt-1 flex items-center gap-1.5 text-[12px] font-semibold text-ink-600">
         <IconHeart size={14} className="shrink-0 text-donate" />
         Levando você para a página de confirmação…
@@ -1021,16 +1344,63 @@ function StepPago({ totalCents }: { totalCents: number }) {
 function StepPix({
   qr,
   pixCode,
+  mensal,
   amountCents,
   taxaCents,
   totalCents,
+  copiado,
+  onCopiar,
 }: {
   qr: string | null;
   pixCode: string;
+  mensal: boolean;
   amountCents: number;
   taxaCents: number;
   totalCents: number;
+  copiado: boolean;
+  onCopiar: () => void;
 }) {
+  /* Os três passos do banco, com os termos que a pessoa vai procurar na tela
+     dele em destaque - é o que a gravação de referência marca em vermelho. */
+  const passos: { titulo: string; texto: ReactNode }[] = [
+    {
+      titulo: "Passo 1",
+      texto: (
+        <>
+          Abra o app ou site do seu <strong className="font-extrabold text-action">banco</strong>
+        </>
+      ),
+    },
+    {
+      titulo: "Passo 2",
+      texto: (
+        <>
+          Vá em{" "}
+          <strong className="font-extrabold text-action">
+            Pix &rarr; Pagar &rarr; Colar chave
+          </strong>{" "}
+          e cole o código
+        </>
+      ),
+    },
+    {
+      titulo: "Passo 3",
+      texto: mensal ? (
+        <>
+          Confirme o recebedor{" "}
+          <strong className="font-extrabold text-action">{pix.receiver}</strong>, autorize a{" "}
+          <strong className="font-extrabold text-action">cobrança mensal</strong> e finalize
+        </>
+      ) : (
+        <>
+          Confirme o recebedor{" "}
+          <strong className="font-extrabold text-action">{pix.receiver}</strong> e finalize a
+          transferência
+        </>
+      ),
+    },
+  ];
+
   return (
     <div className="flex flex-col gap-3">
       <ResumoValores
@@ -1039,55 +1409,158 @@ function StepPix({
         totalCents={totalCents}
       />
 
-      <p className="flex items-center justify-center gap-2 text-[12px] font-extrabold uppercase tracking-[0.08em] text-donate">
-        <IconCheck size={15} />
-        Pix gerado - escaneie ou copie
-      </p>
-
       {/*
-        168px, e não os 220px do checkout antigo. O QR precisa ser legível pela
-        câmera do celular, não ocupar a tela: com 220 mais o código e o resumo,
-        o botão de copiar caía abaixo da dobra num celular pequeno - que é o
-        problema que este passo inteiro foi reorganizado para resolver.
+        ── O que este QR faz, dito antes de ser lido ──────────────────────
+        Na mensal ele não é um Pix comum: um scan paga hoje **e** autoriza o
+        banco a repetir a cobrança nos próximos meses (Jornada 3 do Pix
+        Automático). A tela do banco vai perguntar isso em outras palavras, e
+        quem chega lá sem saber desiste na hora - autorização que aparece de
+        surpresa lê como golpe, não como doação.
       */}
-      <div className="mx-auto rounded-md border-2 border-ink-900/10 bg-white p-2">
-        {qr ? (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img
-            src={qr}
-            alt="QR Code Pix da sua doação"
-            width={168}
-            height={168}
-            className="block h-[168px] w-[168px]"
-          />
-        ) : (
-          <div className="h-[168px] w-[168px] animate-pulse rounded-sm bg-surface-alt" />
-        )}
-      </div>
+      {mensal && (
+        <div className="rounded-md border-2 border-donate/30 bg-donate/[.06] p-3.5">
+          <p className="text-[13px] font-extrabold leading-[1.45] text-ink-900">
+            Um QR só, duas coisas
+          </p>
+          <p className="mt-1 text-[13px] leading-[1.5] text-ink-600">
+            Ele paga{" "}
+            <strong className="font-semibold text-ink-900">
+              {formatBRLCurto(totalCents)} agora
+            </strong>{" "}
+            e autoriza a mesma cobrança todo mês, a partir de{" "}
+            <strong className="font-semibold text-ink-900">
+              {dataPorExtenso(recurrenceStartDate())}
+            </strong>
+            . Seu banco vai pedir essa confirmação - e você cancela quando
+            quiser, por lá mesmo.
+          </p>
+        </div>
+      )}
 
-      <div className="flex flex-col gap-1.5">
-        <span className="text-[12px] font-extrabold uppercase tracking-[0.06em] text-ink-600">
-          Pix copia e cola
-        </span>
-        <p className="max-h-[58px] overflow-y-auto break-all rounded-sm border border-ink-900/10 bg-surface-alt p-2.5 font-mono text-[11px] leading-[1.45] text-ink-600">
-          {pixCode}
+      {/* ── Copie o código Pix ─────────────────────────────────────────── */}
+      <section className={`${CARTAO} gap-3`}>
+        <TituloCartao icon={IconCopy}>Copie o código Pix</TituloCartao>
+
+        {/*
+          Uma linha só, cortada no fim (`truncate`), e não mais a caixa rolável
+          com o código inteiro em quatro linhas. Ninguém lê um BR Code: ele
+          existe para ser copiado pelo botão logo abaixo, e mostrá-lo por
+          extenso só empurrava esse botão para fora da tela. O código completo
+          continua no `title` e é o que vai para a área de transferência.
+        */}
+        <div className="flex flex-col gap-1 rounded-md border border-dashed border-ink-900/20 bg-surface-alt px-3.5 py-3">
+          <span className="text-[10px] font-extrabold uppercase tracking-[0.1em] text-ink-600">
+            Pix copia e cola
+          </span>
+          <p title={pixCode} className="truncate font-mono text-[13px] text-ink-900">
+            {pixCode}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={onCopiar}
+          disabled={!pixCode}
+          className={`inline-flex min-h-[52px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-md px-5 text-[15px] font-extrabold uppercase tracking-[0.03em] transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+            copiado
+              ? "bg-ink-900 text-white"
+              : "bg-donate text-donate-ink shadow-[0_8px_20px_-8px_rgba(27,138,75,.7)] hover:bg-donate-hover"
+          }`}
+        >
+          {copiado ? <IconCheck size={18} /> : <IconCopy size={18} />}
+          {copiado ? "Código copiado!" : "Copiar código Pix"}
+        </button>
+
+        {/* Não é enfeite: esta linha é a promessa de que a pessoa não precisa
+            clicar em nada depois de pagar. */}
+        <p
+          aria-live="polite"
+          className="flex items-center justify-center gap-1.5 text-center text-[12px] font-semibold text-ink-600"
+        >
+          <span className="relative flex h-[8px] w-[8px] shrink-0">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-donate opacity-60" />
+            <span className="relative inline-flex h-[8px] w-[8px] rounded-full bg-donate" />
+          </span>
+          Esta tela avisa sozinha quando o pagamento cair.
         </p>
-      </div>
+      </section>
 
-      <ol className="flex flex-col gap-2 rounded-sm bg-surface-alt p-3">
-        {[
-          "Abra o app do seu banco e entre em Pix › Pix Copia e Cola.",
-          "Cole o código e confira o valor.",
-          "Confirme. Esta tela avisa sozinha assim que o pagamento cair.",
-        ].map((passo, i) => (
-          <li key={passo} className="flex gap-2.5 text-[12px] leading-[1.45] text-ink-600">
-            <span className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full bg-donate text-[11px] font-extrabold text-donate-ink">
-              {i + 1}
-            </span>
-            <span>{passo}</span>
-          </li>
-        ))}
-      </ol>
+      {/* ── Finalize no seu banco ──────────────────────────────────────── */}
+      <section className={`${CARTAO} gap-3`}>
+        <TituloCartao icon={IconMonitor}>Finalize no seu banco</TituloCartao>
+
+        <ol className="flex flex-col gap-3">
+          {passos.map((passo, i) => (
+            <li key={passo.titulo} className="flex gap-3">
+              <span
+                aria-hidden="true"
+                className="mt-0.5 flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full bg-action text-[12px] font-extrabold text-action-ink"
+              >
+                {i + 1}
+              </span>
+              <span className="flex min-w-0 flex-col">
+                <span className="text-[10px] font-extrabold uppercase tracking-[0.1em] text-ink-600">
+                  {passo.titulo}
+                </span>
+                <span className="text-[14px] leading-[1.45] text-ink-900">
+                  {passo.texto}
+                </span>
+              </span>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {/* ── Ou escaneie o QR Code ──────────────────────────────────────── */}
+      <section className={`${CARTAO} gap-2.5`}>
+        <TituloCartao icon={IconQrCode} tom="highlight">
+          Ou escaneie o QR Code
+        </TituloCartao>
+
+        <p className="text-[13px] leading-[1.45] text-ink-600">
+          Use a câmera do celular para escanear e pagar diretamente
+        </p>
+
+        <div className="flex justify-center rounded-md border border-dashed border-ink-900/20 bg-surface-alt p-3.5">
+          {qr ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={qr}
+              alt="QR Code Pix da sua doação"
+              width={200}
+              height={200}
+              className="block h-[200px] w-[200px] bg-white"
+            />
+          ) : (
+            <div className="h-[200px] w-[200px] animate-pulse rounded-sm bg-ink-900/[.06]" />
+          )}
+        </div>
+      </section>
+
+      {/* ── O selo que fecha a tela ────────────────────────────────────── */}
+      <div className="flex items-center gap-3 rounded-md bg-action px-4 py-3 text-action-ink">
+        <span
+          aria-hidden="true"
+          className="flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-[12px] bg-white/15"
+        >
+          <IconShield size={18} />
+        </span>
+        <span className="flex min-w-0 flex-1 flex-col">
+          <span className="text-[14px] font-extrabold leading-tight">
+            Pagamento 100% seguro
+          </span>
+          <span className="text-[12px] leading-tight text-white/75">
+            Verificado pela {pix.receiver}
+          </span>
+        </span>
+        {/* Quanto tempo o código vale, tirado da própria configuração do
+            gateway (`payments.expirationSeconds`) - um "24h" escrito à mão
+            continuaria dizendo 24 no dia em que a validade mudasse. */}
+        <span className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-highlight px-2.5 py-1 text-[12px] font-extrabold text-ink-900">
+          <IconClock size={14} />
+          {VALIDADE_HORAS}h
+        </span>
+      </div>
     </div>
   );
 }

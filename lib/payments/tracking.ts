@@ -22,6 +22,8 @@
  * pagamento ser confirmado.
  */
 
+import { payments, placeholderEmail } from "./lusa";
+
 const LEAD_KEY = "pix_lead_id";
 const EVENT_KEY = "codex_event_id";
 
@@ -123,6 +125,25 @@ export type LeadTracking = Record<string, unknown> & {
 };
 
 /**
+ * "Maria Souza Lima" → `{ first_name: "Maria", last_name: "Souza Lima" }`.
+ *
+ * Quem só tem um nome (ou doa anônimo) repete o mesmo dos dois lados: o
+ * registro do lead rejeita sobrenome vazio, e um campo em branco ali some com
+ * o nome inteiro no relatório.
+ */
+function splitName(full: string) {
+  const nome = full.trim().replace(/\s+/g, " ");
+  if (!nome) return { first_name: "Anônimo", last_name: "Anônimo" };
+
+  const partes = nome.split(" ");
+  const primeiro = partes.shift() ?? nome;
+  return {
+    first_name: primeiro,
+    last_name: partes.length ? partes.join(" ") : nome,
+  };
+}
+
+/**
  * InitiateCheckout: dispara no clique que abre o checkout, e é aqui que o
  * `lead_id` da doação nasce.
  *
@@ -137,6 +158,7 @@ export function trackInitiateCheckout({
   donorName,
   donorPhone,
   anonymous,
+  recurring = false,
 }: {
   amountCents: number;
   productName: string;
@@ -144,10 +166,14 @@ export function trackInitiateCheckout({
   donorName: string;
   donorPhone: string;
   anonymous: boolean;
+  /** Doação mensal (Pix Automático). Muda o `gateway` - ver abaixo. */
+  recurring?: boolean;
 }): LeadTracking {
   const leadId = createLeadId();
   const eventId = generateId("ic");
   setStored(EVENT_KEY, eventId);
+
+  const nome = anonymous ? "Anônimo" : donorName;
 
   const detail: LeadTracking = {
     lead_id: leadId,
@@ -163,14 +189,31 @@ export function trackInitiateCheckout({
     page_title: document.title || "",
     referrer: document.referrer || "",
     user_agent: navigator.userAgent || "",
-    gateway: "infopago_pix",
+    /*
+     * ⚠️ O substring `recurring` **é lido pelo Nest**: é por ele que o backend
+     * sabe que deve tratar a doação no cenário de recorrência (Utmify/CAPI) em
+     * vez de avulsa. Não trocar por outro nome - "mensal", "assinatura" e
+     * afins não são reconhecidos, e a doação mensal cairia no relatório
+     * indistinguível de uma doação única.
+     */
+    gateway: recurring ? "infopago_pix_recurring" : "infopago_pix",
     currency: "BRL",
     amount: amountCents > 0 ? Number((amountCents / 100).toFixed(2)) : null,
+    amount_cents: amountCents > 0 ? amountCents : null,
     product_name: productName,
     product_description: productDescription,
-    donor_name: anonymous ? "Anônimo" : donorName,
+    donor_name: nome,
+    /* Quebrados do nome completo porque é assim que o registro do lead guarda
+       (e o CAPI espera). Sem isto o nome de quem doou nunca chega no Nest -
+       bug já visto em produção, e por isso está aqui e não só no consumidor. */
+    ...splitName(nome),
     donor_phone: donorPhone,
+    /* Um endereço por doação, gerado aqui e reaproveitado no corpo da cobrança
+       (ver `ChargeRequest.email`): é o mesmo e-mail nos dois lugares, como no
+       WordPress. O checkout não pede e-mail de ninguém. */
+    donor_email: placeholderEmail(),
     donor_anonymous: anonymous,
+    country: "BR",
     ...attribution(),
   };
 
@@ -179,6 +222,88 @@ export function trackInitiateCheckout({
   );
 
   return detail;
+}
+
+/**
+ * ╔══════════════════════════════════════════════════════════════════════╗
+ * ║  Grava o InitiateCheckout no Nest - o lead que o mandato vai pendurar  ║
+ * ╚══════════════════════════════════════════════════════════════════════╝
+ *
+ * ── Por que isto existe aqui, e não num bloco de tracking da página ───────
+ * No WordPress quem fazia esta chamada era o bloco `15-nest.html`, escutando o
+ * `CustomEvent` que sai daqui. Esta página é um export estático publicado por
+ * conta própria: **ninguém está escutando** aquele evento. Sem esta chamada, o
+ * lead nunca chega na tabela de IC do funil.
+ *
+ * ── E por que a doação mensal depende disso ───────────────────────────────
+ * O `bind` do Pix Automático (`bindRecurringAuthorization`) procura o lead por
+ * `lead_id` para pendurar nele o mandato. Lead que não está lá → resposta
+ * `{ok:false, reason:'lead_not_found'}`, **sem erro visível em lugar nenhum**,
+ * e a recorrência nunca cobra o 2º mês. Por isso esta chamada é aguardada
+ * antes de criar a cobrança, e não disparada e esquecida.
+ *
+ * ⚠️ Vale para os **dois** fluxos, único e mensal.
+ *
+ * Chegou a valer só para a mensal, com a justificativa de que a doação única
+ * "já é conciliada pela planilha" e que mandá-la ao Nest duplicaria lead. Era
+ * engano: `doe.caioprotetor.org` (WordPress) manda **toda** doação única para
+ * esta mesma rota - é o que faz o bloco `15-nest.html` de lá, escutando o
+ * `CustomEvent` que sai daqui. As duas páginas são caminhos alternativos para a
+ * mesma campanha, nunca simultâneos, então não há o que duplicar. O que havia
+ * era uma doação única cujo nome e WhatsApp morriam no navegador.
+ *
+ * Nunca lança: falhar aqui atrapalha o relatório, não a doação. O `catch` é
+ * silencioso de propósito, mas o `console.debug` fica - é o que permite
+ * diagnosticar `lead_not_found` olhando o console da página publicada.
+ */
+export async function sendInitiateCheckoutToNest(detail: LeadTracking) {
+  const url = payments.recurring.icUrl;
+  if (!url) return;
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        event: "InitiateCheckout",
+        campaign: payments.recurring.funnelSlug,
+        lead_id: detail.lead_id,
+        first_name: detail.first_name ?? null,
+        last_name: detail.last_name ?? null,
+        phone: detail.donor_phone ?? null,
+        email: detail.donor_email ?? null,
+        /* Os mesmos campos que o WordPress manda no `buildLeadPayload` dele:
+           é por eles que o Nest monta o evento de CAPI/Utmify. */
+        event_id: detail.event_id,
+        checkout_event_id: detail.event_id,
+        donation_flow: detail.donation_flow ?? null,
+        product_name: detail.product_name ?? null,
+        product_description: detail.product_description ?? null,
+        country: detail.country ?? "BR",
+        page_title: detail.page_title ?? null,
+        referrer: detail.referrer ?? null,
+        amount: detail.amount,
+        amount_cents: detail.amount_cents ?? null,
+        currency: detail.currency ?? "BRL",
+        gateway: detail.gateway,
+        event_time: detail.event_time,
+        page_url: detail.page_url,
+        user_agent: detail.user_agent,
+        fbc: detail.fbc ?? null,
+        fbp: detail.fbp ?? null,
+        fbclid: detail.fbclid ?? null,
+        utm_source: detail.utm_source ?? null,
+        utm_medium: detail.utm_medium ?? null,
+        utm_campaign: detail.utm_campaign ?? null,
+        utm_term: detail.utm_term ?? null,
+        utm_content: detail.utm_content ?? null,
+      }),
+      keepalive: true,
+    });
+    console.debug("[ic][nest]", res.status);
+  } catch (err) {
+    console.debug("[ic][nest] falhou", err);
+  }
 }
 
 /**
@@ -217,7 +342,10 @@ export function trackPixPaid(
     page_title: document.title || "",
     referrer: document.referrer || "",
     user_agent: navigator.userAgent || "",
-    gateway: "infopago_pix",
+    /* Herda do InitiateCheckout: numa doação mensal ele é
+       `infopago_pix_recurring`, e sobrescrever com o avulso aqui faria a
+       ativação do mandato ser contada como doação única no relatório. */
+    gateway: base?.gateway ?? "infopago_pix",
     currency: paid.currency || "BRL",
     amount: Number.isFinite(amount) ? Number(amount.toFixed(2)) : null,
     ...attribution(base as Record<string, string> | undefined),

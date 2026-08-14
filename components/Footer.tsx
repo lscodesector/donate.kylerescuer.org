@@ -36,8 +36,9 @@ const COLUMNS = [
       /*
        * "Doar todo mês" é o único item destas listas que **não** é link: não há
        * âncora de recorrência na página (a decisão "de quanto em quanto tempo"
-       * acontece no modal), então ele abre o modal de valor já em mensal - o
-       * mesmo destino do destaque no menu de frentes.
+       * acontece no modal), então ele abre a tela de valor travada na mensal -
+       * o mesmo destino do botão da barra fixa e do fechamento da página. Ver
+       * `MonthlyDonateButton`.
        */
       { label: "Doar todo mês", action: "mensal" as const },
       /* Só entra se a seção existir: com `showPixSection` em `false` a âncora
@@ -127,10 +128,10 @@ export function Footer() {
           {/* Coluna 1 - marca, o que a organização é e como falar com ela. */}
           <div className="flex flex-col items-start gap-6">
             <Image
-              src="/caio/logo-caio.png"
+              src="/caio/logo-caio.webp"
               alt={org.name}
-              width={500}
-              height={500}
+              width={160}
+              height={160}
               className="h-[72px] w-auto object-contain"
             />
 

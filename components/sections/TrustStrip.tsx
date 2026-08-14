@@ -1,6 +1,6 @@
 import type { ComponentType, SVGProps } from "react";
 import { trustStrip } from "@/content/landing";
-import { IconBowl, IconCheck, IconFile, IconHome, IconPix, IconShield, IconWhatsApp } from "../ui/Icons";
+import { IconBowl, IconCheck, IconFile, IconHome, IconPixMark, IconShield, IconWhatsApp } from "../ui/Icons";
 import { Reveal } from "../ui/Reveal";
 
 type IconComponent = ComponentType<SVGProps<SVGSVGElement> & { size?: number }>;
@@ -9,7 +9,7 @@ const ICONS: Record<string, IconComponent> = {
   shield: IconShield,
   file: IconFile,
   whatsapp: IconWhatsApp,
-  pix: IconPix,
+  pix: IconPixMark,
   bowl: IconBowl,
   home: IconHome,
 };

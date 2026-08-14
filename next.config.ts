@@ -33,6 +33,23 @@ const nextConfig: NextConfig = {
   output: "export",
   basePath,
 
+  experimental: {
+    /*
+     * CSS dentro do `<head>`, em vez de um `<link>` que bloqueia a renderização.
+     *
+     * O navegador precisava baixar o HTML, achar o `<link>`, pedir o CSS e só
+     * então pintar - uma ida e volta inteira antes do primeiro pixel, que no 4G
+     * do relatório custa caro. Inline, o estilo chega junto com o HTML.
+     *
+     * A contrapartida documentada é o CSS deixar de ser cacheado em separado,
+     * o que pesa para quem volta muitas vezes e navega entre páginas. Aqui é o
+     * contrário disso: é uma página só, e o tráfego vem de anúncio - quase todo
+     * mundo chega pela primeira vez. Com Tailwind o arquivo é pequeno
+     * (~61 KB crus, ~10 KB comprimidos), então o HTML engorda pouco.
+     */
+    inlineCss: true,
+  },
+
   /*
    * `/doar/5kg` vira `out/doar/5kg/index.html` em vez de `out/doar/5kg.html`.
    * É o formato que qualquer hospedagem burra (Apache, nginx, cPanel, S3)

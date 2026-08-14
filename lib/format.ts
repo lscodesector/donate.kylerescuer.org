@@ -1,5 +1,5 @@
 /**
- * Formatação de campo de formulário - hoje só o telefone do checkout.
+ * Formatação de campo de formulário: o telefone e o CPF do checkout.
  */
 
 /**
@@ -41,4 +41,105 @@ export function phoneDigits(input: string): string {
 export function isValidPhoneBR(input: string): boolean {
   const d = phoneDigits(input);
   return d.length === 0 || d.length === 10 || d.length === 11;
+}
+
+/* ------------------------------------------------------------------ */
+
+/**
+ * ╔══════════════════════════════════════════════════════════════════════╗
+ * ║  Valor em reais - o campo "o que o seu coração mandar"                ║
+ * ╚══════════════════════════════════════════════════════════════════════╝
+ *
+ * O campo aceitava só dígitos e multiplicava por 100: quem quisesse doar
+ * R$ 12,50 não tinha como, e quem fosse testar a recorrência com centavos
+ * também não. Com a máscara, o campo lê "1.234,56" e devolve centavos.
+ *
+ * Milhares agrupados enquanto se digita; a vírgula é a única pontuação que
+ * sobrevive à limpeza, porque é ela que separa os centavos.
+ */
+function agruparMilhares(digitos: string) {
+  const partes: string[] = [];
+  let resto = digitos;
+  while (resto.length > 3) {
+    partes.unshift(resto.slice(-3));
+    resto = resto.slice(0, -3);
+  }
+  if (resto.length) partes.unshift(resto);
+  return partes.join(".");
+}
+
+/** Máscara progressiva: `1234,5` → `1.234,5`. */
+export function maskBRL(input: string): string {
+  const limpo = input.trim().replace(/[^\d,]/g, "");
+  if (!limpo) return "";
+
+  if (limpo.includes(",")) {
+    const [inteiroCru, decimalCru = ""] = limpo.split(",");
+    const inteiro = inteiroCru.replace(/\D/g, "") || "0";
+    const decimal = decimalCru.replace(/\D/g, "").slice(0, 2);
+    return agruparMilhares(inteiro) + (decimal ? `,${decimal}` : ",");
+  }
+  return agruparMilhares(limpo.replace(/\D/g, "") || "0");
+}
+
+/** `1.234,56` → `123456` (centavos). Campo vazio vale zero. */
+export function centsFromBRL(input: string): number {
+  if (!input) return 0;
+  const normalizado = input.replace(/\./g, "").replace(",", ".");
+  const centavos = Math.round(parseFloat(normalizado || "0") * 100);
+  return Number.isNaN(centavos) ? 0 : centavos;
+}
+
+/* ------------------------------------------------------------------ */
+
+/**
+ * ╔══════════════════════════════════════════════════════════════════════╗
+ * ║  CPF - só a doação mensal precisa                                     ║
+ * ╚══════════════════════════════════════════════════════════════════════╝
+ *
+ * O Pix Automático autoriza o banco a debitar a conta de alguém nos próximos
+ * meses, e o Banco Central exige devedor identificado para criar esse mandato:
+ * sem CPF válido, a ONZ/Infopago recusa a recorrência. A doação única não pede
+ * nada disso - por isso o campo só aparece na mensal (ver `CheckoutModal`).
+ *
+ * ⚠️ O CPF vai **só** no corpo da cobrança, nunca no evento de tracking: o
+ * payload de tracking é espalhado para fora (Meta, planilha, CRM), e CPF ali
+ * dentro vira dado pessoal entregue a terceiro. O aviso está repetido em
+ * `createRecurringCharge` porque é lá que o erro seria cometido.
+ */
+export function cpfDigits(input: string): string {
+  return input.replace(/\D/g, "").slice(0, 11);
+}
+
+/** `123.456.789-01`, aplicada enquanto a pessoa digita. */
+export function maskCpf(input: string): string {
+  const d = cpfDigits(input);
+  if (d.length <= 3) return d;
+  if (d.length <= 6) return `${d.slice(0, 3)}.${d.slice(3)}`;
+  if (d.length <= 9) return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6)}`;
+  return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
+}
+
+/**
+ * Dígito verificador de verdade, não só a contagem de 11 dígitos.
+ *
+ * Espelha o `isValidCpf` do backend (`OnzInfopagoController`). Validar aqui não
+ * substitui o servidor - serve para a pessoa ver o erro **antes** de esperar o
+ * Pix ser gerado e voltar recusado, que é o pior momento para descobrir que
+ * digitou um número errado.
+ */
+export function isValidCpf(input: string): boolean {
+  const c = cpfDigits(input);
+  /* Sequências como 111.111.111-11 passam na conta dos dígitos, mas não são
+     CPF - o próprio algoritmo da Receita as exclui. */
+  if (c.length !== 11 || /^(\d)\1{10}$/.test(c)) return false;
+
+  for (let t = 9; t < 11; t++) {
+    let soma = 0;
+    for (let i = 0; i < t; i++) soma += Number(c[i]) * (t + 1 - i);
+    let digito = (soma * 10) % 11;
+    if (digito === 10) digito = 0;
+    if (digito !== Number(c[t])) return false;
+  }
+  return true;
 }

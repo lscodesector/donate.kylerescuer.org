@@ -1,4 +1,4 @@
-import { CausasModal } from "@/components/CausasModal";
+import { DocumentoModal } from "@/components/DocumentoModal";
 import { DonationModal } from "@/components/DonationModal";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
@@ -37,8 +37,9 @@ import type { Metadata } from "next";
  *  2. TrustStrip    prova rápida de confiança, antes que a objeção apareça
  *  3. Missao        "quem é o Caio" - a história, com as fotos dele
  *  4. Abrigos       quem recebe a ajuda, com nome, endereço e perfil
- *  5. ComoFunciona  os três passos, para o clique não ser um salto no escuro
- *  6. DoarAgora     o argumento (o contraste) e o pedido, num botão só
+ *  5. DoarAgora     o argumento (o contraste) e o pedido, num botão só
+ *  6. ComoFunciona  os três passos, para quem chegou ao fim do pedido sem
+ *                   clicar - o que acontece depois do botão
  *  7. Pix           a chave da campanha, para quem prefere o app do banco
  *  8. Transparencia a conta mensal dos abrigos e os números da campanha
  *  9. Atualizacoes  a linha do tempo - inclusive o que deu errado
@@ -85,8 +86,8 @@ export default function DonationPage() {
         <TrustStrip />
         <Missao />
         <Abrigos />
-        <ComoFunciona />
         <DoarAgora />
+        <ComoFunciona />
         {showPixSection && <Pix />}
         <Transparencia />
         <Atualizacoes />
@@ -101,9 +102,8 @@ export default function DonationPage() {
       <StickyDonateBar />
 
       {/*
-        Os três modais, na ordem em que se empilham e em que a decisão acontece:
+        Os dois modais, na ordem em que se empilham e em que a decisão acontece:
 
-          CausasModal  (z-55)  onde ajudar - as quatro frentes
           DonationModal(z-60)  quanto e com que frequência
           CheckoutModal(z-70)  dados e Pix
 
@@ -111,9 +111,9 @@ export default function DonationPage() {
         cada um com a sua trava de rolagem, é o caminho curto para a página
         voltar ao topo sozinha.
       */}
-      <CausasModal />
       <DonationModal />
       <CheckoutModal />
+      <DocumentoModal />
     </>
   );
 }

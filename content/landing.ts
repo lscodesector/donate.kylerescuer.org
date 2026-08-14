@@ -52,32 +52,74 @@ export function checkoutValorHref(cents: number, mensal = false) {
 }
 
 /**
- * Os valores do modal de doação, em centavos.
+ * Os valores do modal de doação, em centavos - **uma escada por frequência**.
  *
- * São **os mesmos da campanha do Caio**, na mesma ordem e com o mesmo destaque:
- * R$ 30 é o "popular" lá e continua sendo aqui. A escada vai até R$ 1.000
- * porque é até onde ela vai na página original.
+ * São nove degraus em cada uma, na grade de 3×3. Nenhum abre marcado: quem
+ * escolhe é quem doa, e o campo logo abaixo da grade recebe o que for clicado
+ * (e aceita qualquer outro número - é o que mais converte neste checkout).
  *
- * `donationAmounts` (mensal) começa mais baixo que a avulsa pelo motivo de
- * sempre: o que sustenta os abrigos é o valor se repetir todo mês, não ser alto
- * uma vez.
+ * ── Por que as duas escadas são diferentes ────────────────────────────────
+ * Não é o mesmo pedido. Doar R$ 100 uma vez é um gesto; R$ 100 todo mês é um
+ * compromisso, e uma escada avulsa oferecida na mensal pede alto demais - a
+ * mensal começa mais baixo e sobe mais devagar. A única vai a R$ 1.000, que é
+ * até onde a campanha do Caio vai.
+ *
+ * `popular` marca **R$ 30** nas duas: é o valor que a campanha aponta como o
+ * mais escolhido, e ele existe nas duas escadas.
+ *
+ * ⚠️ O selo fica pendurado na borda **de cima** do cartão (ver `DonationModal`),
+ * então o degrau marcado precisa continuar na **primeira fileira** - entre os
+ * três primeiros de cada lista.
  */
-export const donationAmounts = [
+export type DonationAmount = {
+  cents: number;
+  popular: boolean;
+  /** Degrau de teste - ver `testAmount`. Nunca aparece no site publicado. */
+  teste?: boolean;
+};
+
+/**
+ * O degrau de **R$ 0,01**, que só existe em `localhost`.
+ *
+ * Serve para fechar o fluxo inteiro - Pix gerado, webhook, planilha, mandato
+ * da recorrência - sem gastar o valor de um degrau real por tentativa. Ele entra na frente da
+ * escada, nas duas frequências, e vem marcado como "teste" na tela para não
+ * ser confundido com um valor de campanha.
+ *
+ * ⚠️ Quem decide se ele aparece é `isLocalhost()` (`lib/test-mode.ts`), pelo
+ * endereço de quem está servindo a página - não por variável de build. Em
+ * `doe.caioprotetor.org` a grade começa em R$ 15 (mensal) ou R$ 20
+ * (única), sempre.
+ */
+export const testAmount: DonationAmount = {
+  cents: 1,
+  popular: false,
+  teste: true,
+};
+
+/** Doação **única** - R$ 20 a R$ 1.000. */
+export const donationAmountsUnica: readonly DonationAmount[] = [
   { cents: 2000, popular: false },
   { cents: 3000, popular: true },
   { cents: 5000, popular: false },
   { cents: 10000, popular: false },
   { cents: 15000, popular: false },
   { cents: 20000, popular: false },
+  { cents: 25000, popular: false },
+  { cents: 50000, popular: false },
+  { cents: 100000, popular: false },
 ] as const;
 
-/** Os mesmos valores para quem escolhe doar **uma vez só**. */
-export const donationAmountsUnica = [
-  { cents: 3000, popular: false },
+/** Doação **mensal** - R$ 15 a R$ 500, a escada que a campanha pratica. */
+export const donationAmountsMensal: readonly DonationAmount[] = [
+  { cents: 1500, popular: false },
+  { cents: 3000, popular: true },
+  { cents: 3500, popular: false },
   { cents: 5000, popular: false },
-  { cents: 10000, popular: true },
-  { cents: 15000, popular: false },
-  { cents: 25000, popular: false },
+  { cents: 6500, popular: false },
+  { cents: 8000, popular: false },
+  { cents: 12000, popular: false },
+  { cents: 30000, popular: false },
   { cents: 50000, popular: false },
 ] as const;
 
@@ -152,6 +194,19 @@ export const org = {
    */
   supporter: "SOS Animal Help",
   supporterHref: "https://sosanimalhelp.org/sobre-nos/",
+  /**
+   * O site da **SOS Animal Help**, que o menu publica como o único destino fora
+   * desta página.
+   *
+   * ⚠️ Não é quem recebe as doações desta campanha - quem recebe é a SOS Animal
+   * Help, com o CNPJ logo abaixo. O rótulo aqui é só o nome, sem "parceira" nem
+   * "mantenedora": a página não tem como comprovar vínculo nenhum, e afirmar um
+   * ao lado de um pedido de dinheiro é o que não se conserta depois.
+   */
+  humanHelp: {
+    label: "SOS Animal Help",
+    href: "https://sosanimalhelp.org/pt-br/",
+  },
   cnpj: "63.153.881/0001-09",
   email: "support@sosanimalhelp.org",
   address: {
@@ -171,17 +226,21 @@ export const org = {
   instagram: "@caio.protetor",
   instagramHref: "https://www.instagram.com/caio.protetor/",
   facebookHref: "https://www.facebook.com/caioprotetor",
-  /** Políticas publicadas no site institucional da campanha. */
+  /**
+   * As três políticas, **nesta página**.
+   *
+   * Eram links para `caioprotetor.org`, o site institucional - um destino fora
+   * daqui para um documento que fala das doações feitas aqui. Agora cada uma é
+   * uma rota própria (`app/politica-*`), com o texto em `content/legal.ts`.
+   *
+   * ⚠️ Caminho relativo, sem domínio: quem monta o `<Link>` é o Next, que
+   * prefixa o `basePath` sozinho (o site é publicado em `/v2`). Escrever a URL
+   * inteira aqui quebraria os três links no dia em que o caminho mudasse.
+   */
   policies: [
-    {
-      label: "Política de Privacidade",
-      href: "https://caioprotetor.org/politica-de-privacidade",
-    },
-    { label: "Termos de Uso", href: "https://caioprotetor.org/termos-de-uso" },
-    {
-      label: "Política de Doação",
-      href: "https://caioprotetor.org/politica-de-doacao",
-    },
+    { label: "Política de Privacidade", href: "/politica-de-privacidade" },
+    { label: "Termos de Uso", href: "/termos-de-uso" },
+    { label: "Política de Doação", href: "/politica-de-doacao" },
   ],
 };
 
@@ -261,8 +320,7 @@ export const copy = {
    */
   missao: {
     eyebrow: "Quem é o Caio",
-    statement:
-      "Um protetor. Uma missão. 400 vidas que dependem da sua ajuda.",
+    statement: "Um protetor. Uma missão. 400 vidas que dependem da sua ajuda.",
     paragraphs: [
       "Meu nome é Caio, sou protetor e faço a ajuda chegar até abrigos que cuidam de animais em estado crítico.",
       "Através da SOS Animal Help, eu visito projetos que estão no limite, conheço de perto a realidade dos protetores e levo apoio financeiro para ração, remédios, veterinário e cuidados urgentes, para que esses animais tenham a chance de continuar vivos.",
@@ -273,12 +331,38 @@ export const copy = {
       "Mesmo diante de tanta dificuldade, eu não consigo virar as costas. Se a gente não ajudar agora, muitos desses animais continuarão sofrendo sem socorro, sem alimento e sem ninguém por eles.",
       "Abandonar esses animais não é uma opção...",
     ],
+    /**
+     * Os trechos que saem em **vermelho** no meio dos parágrafos - o vermelho
+     * da marca (`--sos-action`), o mesmo dos selos e dos links.
+     *
+     * São procurados dentro de `paragraphs` e `paragraphsAfter` como texto
+     * literal: cada item precisa bater **caractere por caractere** com um
+     * pedaço do parágrafo, acentos e vírgulas inclusive. O que não bater é
+     * simplesmente ignorado - mexer na história acima nunca quebra a tela, no
+     * máximo apaga um realce, e é por isso que a lista mora aqui junto do
+     * texto em vez de dentro do componente.
+     *
+     * A citação (`quote`) não entra na lista: o texto dela sai em preto e quem
+     * a destaca é a moldura vermelha do `<blockquote>` em `Missao`.
+     */
+    realces: [
+      "faço a ajuda chegar até abrigos que cuidam de animais em estado crítico.",
+      "SOS Animal Help",
+      "projetos que estão no limite",
+      "para que esses animais tenham a chance de continuar vivos",
+      "continuarão sofrendo sem socorro, sem alimento e sem ninguém por eles",
+      "Abandonar esses animais não é uma opção...",
+    ],
   },
   abrigos: {
     eyebrow: "Quem recebe",
     title: "Abrigos que o Caio ajuda",
-    lead: "A ajuda não fica com a gente. Ela chega nos abrigos que já estão com os animais na mão - cada um com nome, endereço e perfil aberto para você conferir.",
+    /* Sem `lead`: a linha de apoio que ficava aqui ("A ajuda não fica com a
+       gente...") prometia por escrito exatamente o que a lista logo abaixo
+       mostra - nome, cidade e ficha aberta em cada card. Ler a promessa antes
+       de ver a prova só adiava a prova. */
     ctaProfile: "Saiba mais",
+    ctaCnpj: "Ver o cartão CNPJ do abrigo",
     ctaShelter: "Doar agora",
     ctaInstagram: "Ver o dia a dia no Instagram",
     ctaWhatsapp: "Pedir os dados no WhatsApp",
@@ -288,8 +372,12 @@ export const copy = {
   /** O bloco de doação: o argumento (o contraste) e o pedido, num botão só. */
   doar: {
     eyebrow: "Como ajudar",
-    title: "Cada doação é a diferença entre um animal ter ou não ter uma chance",
-    lead: "O Caio não consegue fazer isso sozinho. O que entra aqui vira ração, remédio, veterinário e aluguel pago - nos cinco abrigos que ele acompanha.",
+    title:
+      "Cada doação é a diferença entre um animal ter ou não ter uma chance",
+    /* Sem `lead`: a linha que ficava aqui ("O Caio não consegue fazer isso
+       sozinho...") dizia em outras palavras o que os dois cards logo abaixo
+       mostram item a item, e a frase que fecha a seção (`impactCompare.closing`)
+       repetia a primeira metade dela. Menos texto entre o título e o pedido. */
     cta: "Quero ajudar agora",
     seal: "Doação segura · Pix na hora · CNPJ verificado",
   },
@@ -309,7 +397,9 @@ export const copy = {
   depoimentos: {
     eyebrow: "Depoimentos",
     title: "Quem recebe, falando por si",
-    lead: "Cinco protetores, cinco abrigos. Cada vídeo foi gravado por quem está com os animais na mão.",
+    /* Sem `lead`: os cinco vídeos logo abaixo já mostram cinco protetores de
+       cinco abrigos, cada um com nome e cidade na legenda. A linha só narrava
+       em texto o que a fileira mostra em vídeo. */
   },
   mensal: {
     title: "Quer garantir a ajuda todo mês?",
@@ -331,10 +421,15 @@ export const copy = {
         title: "Faz o pagamento via Pix",
         text: "O código é gerado na hora, sem sair desta página. Pagamento rápido, seguro e direto para o CNPJ da SOS Animal Help.",
       },
+      /* Quem entrega e quem presta contas é a **organização**, não o Caio: ele
+         é quem visita os abrigos e mostra a realidade deles, e a SOS Animal
+         Help é quem recebe a doação, faz o repasse e publica o comprovante no
+         app. Trocar os dois de lugar num texto que fala de dinheiro é o tipo de
+         imprecisão que vira desconfiança. */
       {
         icon: "heart",
-        title: "O Caio leva a ajuda até o abrigo",
-        text: "A doação vira ração, remédio e veterinário nos abrigos que ele acompanha - e o Caio publica os comprovantes.",
+        title: "A SOS Animal Help leva a ajuda até o abrigo",
+        text: "A doação vira ração, remédio e veterinário nos abrigos que o Caio acompanha - e a SOS Animal Help publica os comprovantes no app.",
       },
     ],
   },
@@ -368,10 +463,19 @@ export const copy = {
     ctaWhatsapp: "Falar no WhatsApp",
   },
   final: {
-    title: "Abandonar esses animais não é uma opção.",
-    text: "São mais de 400 vidas em cinco abrigos que dependem de gente que decidiu não virar as costas. Cada doação, por menor que seja, é a diferença entre um animal ter ou não ter uma chance.",
-    ctaPrimary: "Quero ajudar agora",
-    ctaSecondary: "Tenho uma dúvida antes de doar",
+    /* Uma frase só, e ela é o `h2` da seção. O fechamento tinha duas linhas -
+       "Abandonar esses animais não é uma opção." como título e esta como apoio
+       -, e a primeira já é a última frase da história do Caio, dita alguns
+       blocos acima. No fim da página o que falta não é repetir o argumento: é
+       dizer o que a doação faz e apontar os dois botões. */
+    title: "Sua doação hoje mantém mais de 400 animais vivos. Ajude agora!",
+    /* "Escolher um valor", e não "quero ajudar agora": o botão abre a grade de
+       valores, e o rótulo agora diz exatamente o que acontece no clique. */
+    ctaPrimary: "Escolher um valor",
+    /* Doação mensal, e não mais "tenho uma dúvida": no fechamento a pessoa já
+       passou pelo FAQ, e o que falta oferecer é a doação que os abrigos podem
+       planejar - não mais um desvio para tirar dúvida. */
+    ctaSecondary: "Quero ajudar todo mês",
     seal: "Doação segura · CNPJ verificado · Atendimento direto no WhatsApp",
   },
   footerAbout:
@@ -386,9 +490,8 @@ export const copy = {
  * campanha, sem edição: ela é o que dá o tom da página inteira.
  */
 export const heroCopy = {
-  headline: "Um protetor desesperado.",
-  headlineAccent:
-    "400 filhinhos que sofrem todos os dias.",
+  headline: "Um protetor desesperado!",
+  headlineAccent: "400 filhinhos que sofrem todos os dias.",
   /** Linha de apoio, logo abaixo da manchete. */
   lead: "Ajude o Caio a levar ajuda antes que seja tarde.",
   ctaPrimary: "Quero ajudar agora",
@@ -403,38 +506,66 @@ export const heroCopy = {
  * elas tinham lá. Baixadas para `/public/caio/historia/`: o site é exportado
  * estático e enviado por FTP, então depender do WordPress da campanha para
  * servir imagem é depender de um servidor que não é nosso.
+ *
+ * ── `focusY`: onde está o rosto ───────────────────────────────────────────
+ * As seis são quase quadradas (0,93 a 1,00) e aparecem em quadros bem mais
+ * largos - 4:3 na seção da missão, 16:10 na página de obrigado. O
+ * `object-cover` recorta pelo centro geométrico, e nestas fotos o centro cai
+ * no peito de quem está agachado: sobra chão, corta testa.
+ *
+ * O número de cada uma foi medido na própria foto (topo da cabeça e queixo em
+ * % da altura) e aponta para o meio do rosto. Trocar a foto do arquivo sem
+ * remedir este número é como não ter número nenhum. A conta está no tipo
+ * `Photo`, em `PhotoSlideshow`.
  */
 export const historiaPhotos = [
   {
     src: "/caio/historia/caio-1.webp",
     alt: "Caio Protetor com um cão resgatado no colo",
     caption: "Um protetor. Uma missão. 400 vidas que dependem da sua ajuda.",
+    /* Agachado, de frente: cabeça 9%, queixo 31%. */
+    focusY: 20,
   },
   {
     src: "/caio/historia/caio-2.webp",
     alt: "Caio entre os animais de que cuida todos os dias",
     caption: "Caio com os animais que cuida todo dia · ração, remédios e amor",
+    /* O cabelo começa a 3% da borda de cima: qualquer corte no topo
+       decapita. Daí o número mais baixo das seis - num 4:3 ele deixa a
+       faixa visível começar em 2,8%, com folga de sobra para a cabeça. O
+       preço é a barriga do cão sair embaixo, que é o que se pode perder. */
+    focusY: 10,
   },
   {
     src: "/caio/historia/caio-3.webp",
     alt: "Cão resgatado recebendo cuidado depois do resgate",
     caption: "Cada resgate é uma segunda chance de vida",
+    /* A única em que o rosto está na metade de baixo (55% a 80%), com o cão
+       no ombro logo acima - o par ocupa de 20% a 80%. */
+    focusY: 55,
   },
   {
     src: "/caio/historia/caio-4.webp",
     alt: "Abrigo lotado, com animais aguardando atendimento",
     caption: "Abrigos no limite · animais esperando por cuidado urgente",
+    /* Rosto grande e centralizado na largura: cabelo 6,6%, queixo 48%. O 22
+       (e não 27) é o que mantém o topo do cabelo dentro num quadro 4:3. */
+    focusY: 22,
   },
   {
     src: "/caio/historia/caio-5.webp",
     alt: "Sacos de ração e medicamentos entregues no abrigo",
     caption:
       "Ração, remédios e veterinário · cada doação chega direta aos animais",
+    /* Sentado no chão, rosto pequeno e alto no quadro: 12% a 27%. */
+    focusY: 20,
   },
   {
     src: "/caio/historia/caio-6.webp",
     alt: "Cães resgatados no pátio de um dos abrigos apoiados",
     caption: "400+ animais que não teriam outra chance sem o seu apoio",
+    /* De lado, beijando o cão preto: cabeça 19%, queixo 33%. */
+    focusY: 26,
   },
 ];
 
@@ -460,6 +591,15 @@ export const heroVideo: {
     smartplayerSrc: string;
     streamSrc: string;
     ratio: number;
+    /**
+     * O primeiro quadro do vídeo, **hospedado por nós** em `public/`.
+     *
+     * Não é enfeite: é o elemento que marca a LCP da página (ver o comentário
+     * no `VturbPlayer`). Ao trocar o vídeo, baixe o pôster novo do player -
+     * ele está no `player.js`, como `.../poster.jpg` - e substitua o arquivo,
+     * reduzido para 1120px de largura.
+     */
+    poster: string;
   } | null;
   aspect: string;
 } = {
@@ -472,12 +612,45 @@ export const heroVideo: {
     streamSrc:
       "https://cdn.converteai.net/25b0cdcd-2b93-4910-aa45-91b9a6275957/6a3dc9676e2c9c5a5916f3ba/main.m3u8",
     ratio: 78.125,
+    poster: "/caio/vsl-poster.webp",
   },
   /**
    * Formato do player, em `largura / altura`. 78,125% de padding é
    * `1 / 0.78125` - um formato levemente deitado, que é o do vídeo da campanha.
    */
   aspect: "1 / 0.78125",
+};
+
+/**
+ * Um documento que a página publica para ser conferido.
+ *
+ * Hoje são o cartão CNPJ de quem recebe as doações (`cnpjDocument`) e o de cada
+ * abrigo (`Shelter.cnpjDoc`). Todos abrem no mesmo popup (`DocumentoModal`),
+ * por cima da página - quem foi conferir um documento não sai do fluxo da
+ * doação para isso.
+ *
+ * ⚠️ **Só entra aqui documento que existe em `public/`.** Uma linha apontando
+ * para um arquivo que não foi enviado vira um botão que abre um quadro vazio
+ * numa página que pede dinheiro, que é pior do que não ter o botão.
+ */
+export type Documento = {
+  /** Caminho dentro de `public/`. O `basePath` do build entra na renderização. */
+  src: string;
+  alt: string;
+  /** Título do popup - e do card, onde houver card. */
+  title: string;
+  /** Linha de apoio, só no card do documento. */
+  subtitle?: string;
+  /** Legenda sob a imagem, dentro do popup: o número, quando ele é público. */
+  caption?: string;
+  /**
+   * Proporção do arquivo (`largura / altura`), para a moldura já nascer do
+   * tamanho certo e a página não pular quando a imagem carrega. O padrão é o
+   * A4 em pé do cartão da Receita; documento em outro formato declara o seu.
+   * A imagem aparece inteira de todo jeito (`object-contain`) - o que a
+   * proporção errada custa são tarjas em volta, nunca recorte.
+   */
+  aspect?: string;
 };
 
 /**
@@ -525,8 +698,23 @@ export type Shelter = {
   instagramHref: string;
   /** Site próprio do abrigo, quando ele tem um. */
   siteHref?: string;
-  photos: { src: string; alt: string }[];
+  /**
+   * As fotos do abrigo, no formato que o `PhotoSlideshow` desenha.
+   *
+   * A forma é repetida aqui, e não importada de `components/ui/PhotoSlideshow`,
+   * porque este arquivo é só conteúdo e não importa nada - nem tipo. Quem
+   * manda no `focusY` (o ponto do rosto que o recorte tem de preservar) é a
+   * documentação de lá; aqui ficam os números de cada foto.
+   */
+  photos: { src: string; alt: string; focusY?: number }[];
   profile: ShelterProfile;
+  /**
+   * O cartão CNPJ **do abrigo**, quando ele já tem um emitido e o arquivo está
+   * em `public/documentos/`. Sem esta linha, a ficha não mostra o botão "ver o
+   * cartão CNPJ" - é o caso do Abrigo Dona Rose, que está em processo de
+   * legalização. Botão que abre um quadro vazio é pior do que botão ausente.
+   */
+  cnpjDoc?: Documento;
 };
 
 /**
@@ -539,6 +727,12 @@ export type Shelter = {
  * ⚠️ O Instagram só está preenchido onde ele foi confirmado. O Abrigo Dona Rose
  * está sem perfil e sem site aqui porque a campanha não publica nenhum dos dois
  * - link inventado numa página que pede doação é pior do que link ausente.
+ *
+ * ── Os cartões CNPJ dos abrigos ───────────────────────────────────────────
+ * Quatro dos cinco têm `cnpjDoc`, e o arquivo de cada um mora em
+ * `public/documentos/cnpj-<id do abrigo>.webp`. O Abrigo Dona Rose não tem:
+ * ele está sendo legalizado e o cartão ainda não foi emitido, então a ficha
+ * dele abre sem o botão - ver `Shelter.cnpjDoc`.
  */
 export const shelters: Shelter[] = [
   {
@@ -546,7 +740,7 @@ export const shelters: Shelter[] = [
     name: "Siulsan Resgate",
     location: "Tatuí, São Paulo",
     description:
-      "53 cães resgatados. Recebe apoio mensal para ração, medicamentos e cirurgias veterinárias.",
+      "53 cães resgatados. Recebe apoio mensal do Caio para ração, medicamentos e cirurgias veterinárias.",
     instagram: "@siulsanresgate",
     instagramHref: "https://www.instagram.com/siulsanresgate/",
     siteHref: "https://siulsanresgate.org/",
@@ -554,16 +748,21 @@ export const shelters: Shelter[] = [
       {
         src: "/caio/abrigos/siulsan-resgate.webp",
         alt: "Cães resgatados no abrigo Siulsan Resgate, em Tatuí",
+        /* Siulsan e a esposa, os dois com um cão no colo: rostos de 20% a
+           40% da altura. Ver `focusY` no tipo `Photo`. */
+        focusY: 30,
       },
     ],
     profile: {
-      responsible: "Siulsan",
-      cnpj: "",
+      responsible: "Siulsan Garcia",
+      /* Razão social no cartão: ASSOCIACAO PROTETORA DOS ANIMAIS DE TATUI
+         "PRO-ANIMAL" - o nome de fantasia é que é "Siulsan Resgate". */
+      cnpj: "16.836.217/0001-76",
       address: {
         line1: "Rua Maria Pontes Fernandes, 140",
         line2: "Vale dos Lagos",
         city: "Tatuí – SP",
-        zip: "",
+        zip: "18.277-800",
       },
       mapsHref:
         "https://www.google.com/maps/search/?api=1&query=Rua+Maria+Pontes+Fernandes,+140,+Vale+dos+Lagos,+Tatui+SP",
@@ -572,13 +771,20 @@ export const shelters: Shelter[] = [
       about:
         "Recebe apoio mensal do Caio para ração, medicamentos e cirurgias veterinárias.",
     },
+    cnpjDoc: {
+      src: "/documentos/cnpj-siulsan-resgate.webp",
+      alt: "Cartão CNPJ do abrigo Siulsan Resgate emitido pela Receita Federal",
+      title: "Cartão CNPJ · Siulsan Resgate",
+      caption: "CNPJ 16.836.217/0001-76 · situação ativa",
+      aspect: "1354 / 1510",
+    },
   },
   {
     id: "sos-joana-darc",
     name: "SOS Joana Darc",
     location: "Santa Luzia, Minas Gerais",
     description:
-      "200 animais, com foco em gatos resgatados de maus-tratos. Depende inteiramente de doações.",
+      "200 animais. Foco em cães e gatos vítimas de maus-tratos. Depende inteiramente de doações.",
     instagram: "@sosjoanadarc",
     instagramHref: "https://www.instagram.com/sosjoanadarc/",
     siteHref: "https://sosjoanadarc.org/",
@@ -586,23 +792,33 @@ export const shelters: Shelter[] = [
       {
         src: "/caio/abrigos/sos-joana-darc.webp",
         alt: "Gatos e cães resgatados no abrigo SOS Joana Darc, em Santa Luzia",
+        /* Selfie da Joana com a filha: a filha ocupa 20% a 38%, a Joana 28%
+           a 48%. O foco no meio das duas segura os dois rostos. */
+        focusY: 34,
       },
     ],
     profile: {
-      responsible: "Joana",
-      cnpj: "",
+      responsible: "Joana Darc",
+      cnpj: "65.975.512/0001-19",
       address: {
         line1: "Rua Alto do Tanque, 1925",
         line2: "Vila Íris",
         city: "Santa Luzia – MG",
-        zip: "",
+        zip: "33.040-210",
       },
       mapsHref:
         "https://www.google.com/maps/search/?api=1&query=Rua+Alto+do+Tanque,+1925,+Vila+Iris,+Santa+Luzia+MG",
       animals: "200 animais",
       since: "",
       about:
-        "Foco em gatos resgatados de maus-tratos. Depende inteiramente de doações para continuar funcionando.",
+        "Foco em cães e gatos vítimas de maus-tratos. Depende inteiramente de doações para continuar funcionando.",
+    },
+    cnpjDoc: {
+      src: "/documentos/cnpj-sos-joana-darc.webp",
+      alt: "Cartão CNPJ do abrigo SOS Joana Darc emitido pela Receita Federal",
+      title: "Cartão CNPJ · SOS Joana Darc",
+      caption: "CNPJ 65.975.512/0001-19 · situação ativa",
+      aspect: "1494 / 1608",
     },
   },
   {
@@ -610,7 +826,7 @@ export const shelters: Shelter[] = [
     name: "Abrigo Salve Cão",
     location: "Floresta Azul, Bahia",
     description:
-      "92 animais. Em maio quase fechou por falta de aluguel. Segue aberto graças às doações mensais.",
+      "92 animais. Em maio quase fechou por surto de cinomose. Segue aberto graças às doações mensais.",
     instagram: "@abrigosalvecao",
     instagramHref: "https://www.instagram.com/abrigosalvecao/",
     siteHref: "https://salvecaoabrigo.org/",
@@ -618,11 +834,13 @@ export const shelters: Shelter[] = [
       {
         src: "/caio/abrigos/abrigo-salve-cao.webp",
         alt: "Cães resgatados no Abrigo Salve Cão, em Floresta Azul",
+        /* Andrezza de pé com o cão no colo, rosto colado no dele: 10% a 30%. */
+        focusY: 20,
       },
     ],
     profile: {
-      responsible: "Andrezza",
-      cnpj: "",
+      responsible: "Andrezza Monteiro",
+      cnpj: "65.940.924/0001-13",
       address: {
         line1: "Almadina, 3",
         line2: "Zona Rural",
@@ -634,7 +852,14 @@ export const shelters: Shelter[] = [
       animals: "92 animais",
       since: "",
       about:
-        "Em maio de 2026 quase fechou por falta de aluguel. Segue aberto graças às doações mensais.",
+        "Em maio de 2026 quase fechou por um surto de cinomose. Segue aberto graças às doações mensais.",
+    },
+    cnpjDoc: {
+      src: "/documentos/cnpj-abrigo-salve-cao.webp",
+      alt: "Cartão CNPJ do Abrigo Salve Cão emitido pela Receita Federal",
+      title: "Cartão CNPJ · Abrigo Salve Cão",
+      caption: "CNPJ 65.940.924/0001-13 · situação ativa",
+      aspect: "1354 / 1510",
     },
   },
   {
@@ -642,18 +867,23 @@ export const shelters: Shelter[] = [
     name: "Casa da Mili",
     location: "Tambaú, São Paulo",
     description:
-      "74 animais entre cães e gatos resgatados, mantidos com voluntários e doações mensais.",
+      "74 animais. Está em situação crítica de estrutura, mantido com apoio de doações voluntárias.",
     instagram: "@milenaefernanda.ong",
     instagramHref: "https://www.instagram.com/milenaefernanda.ong/",
     photos: [
       {
         src: "/caio/abrigos/casa-da-mili.webp",
         alt: "Cães e gatos resgatados na Casa da Mili, em Tambaú",
+        /* Milena e Fernanda lado a lado, cada uma com um cão: os dois rostos
+           entre 10% e 30%. */
+        focusY: 20,
       },
     ],
     profile: {
-      responsible: "Milena",
-      cnpj: "",
+      responsible: "Milena Aparecida",
+      /* Razão social no cartão: ABRIGO VOLUNTARIO MILENA E FERNANDA - "Casa da
+         Mili" é como a campanha o chama. */
+      cnpj: "65.538.453/0001-11",
       address: {
         line1: "Av. Sebastião José Bething, 672",
         line2: "Jardim Nova Cidade",
@@ -665,7 +895,14 @@ export const shelters: Shelter[] = [
       animals: "74 cães e gatos",
       since: "",
       about:
-        "A Milena mantém o abrigo com voluntários e doações mensais para ração e veterinário.",
+        "Está em situação crítica de estrutura, mantido com apoio de doações voluntárias para ração e veterinário.",
+    },
+    cnpjDoc: {
+      src: "/documentos/cnpj-casa-da-mili.webp",
+      alt: "Cartão CNPJ da Casa da Mili emitido pela Receita Federal",
+      title: "Cartão CNPJ · Casa da Mili",
+      caption: "CNPJ 65.538.453/0001-11 · situação ativa",
+      aspect: "1494 / 1608",
     },
   },
   {
@@ -681,6 +918,10 @@ export const shelters: Shelter[] = [
       {
         src: "/caio/abrigos/abrigo-dona-rose.webp",
         alt: "Cães resgatados no Abrigo Dona Rose, em Jacaraípe",
+        /* A mais alta das cinco (0,80) e a de rosto mais alto: a Dona Rose
+           está de pé, cercada de cães, com o rosto entre 6% e 15%. Recorte
+           central aqui mostrava só os cães e o chão. */
+        focusY: 11,
       },
     ],
     profile: {
@@ -773,8 +1014,8 @@ export const timeline = [
   },
   {
     date: "Mai 2026 · Crise na Bahia",
-    title: "Abrigo Salve Cão quase fecha por falta de aluguel",
-    text: "Caio negociou 30 dias de prazo. 92 animais dependiam dessa decisão. Com a ajuda dos doadores o abrigo se manteve.",
+    title: "Abrigo Salve Cão quase fecha por surto de doença",
+    text: "Fizemos o necessário para salvar mais de 90 vidas, porém 22 morreram por surto de cinomose, uma batalha perdida por falta de vacinação.",
     tone: "done" as const,
   },
   {
@@ -802,16 +1043,17 @@ export const timeline = [
  * completa"). `percent` fica em zero: ele existe para o dia em que a conta virar
  * "1,2% + R$ 0,99".
  *
- * `defaultChecked` deixa a caixa marcada ao abrir a etapa de dados - como na
- * campanha original. A contrapartida está na tela: o valor aparece em destaque,
- * o motivo é explicado e o total logo abaixo já vem somado. O que gera
- * contestação não é a taxa, é a pessoa descobrir depois.
+ * `defaultChecked` está **desligado**: a caixa abre desmarcada e quem soma os
+ * R$ 4,99 é quem quer somar. Marcada por padrão, o valor que a pessoa escolheu
+ * na tela anterior não era o valor que ela via no total da tela seguinte - e
+ * doação em que o número muda sozinho entre uma tela e outra é a que volta como
+ * contestação.
  */
 export const checkoutFee = {
   enabled: true,
   percent: 0,
   fixedCents: 499,
-  defaultChecked: true,
+  defaultChecked: false,
 };
 
 /** Quanto a taxa custa para um valor de doação. `0` quando desligada. */
@@ -844,7 +1086,7 @@ export const pix = {
  * Só afirmações que a própria página sustenta.
  */
 export const trustStrip = {
-  title: "Da sua doação até o abrigo, sem escala.",
+  title: "Salve nossos animais!",
   items: [
     { icon: "shield", label: "CNPJ verificado" },
     { icon: "home", label: "5 abrigos identificados" },
@@ -859,11 +1101,13 @@ export const trustStrip = {
  *
  * São os seis cards da seção "O impacto da sua doação" da campanha, divididos
  * nos dois lados que eles já formavam lá (três "sem", três "com").
+ *
+ * Sem `title` e sem `intro`: o cabeçalho próprio ("O impacto da sua doação") e
+ * a frase de abertura viraram um segundo título dentro de uma seção que já tem
+ * o seu, e o contraste dos dois cards é auto-explicativo - "Sem apoio" contra
+ * "Com você", lado a lado, não precisa ser apresentado.
  */
 export const impactCompare = {
-  title: "O impacto da sua doação",
-  intro:
-    "Num abrigo com dezenas de animais, ração acabando não é uma compra adiada. É um protetor decidindo quem come a porção inteira hoje.",
   withoutTitle: "Sem apoio",
   without: [
     "A ração acaba antes do fim do mês e os animais passam fome.",
@@ -906,12 +1150,16 @@ export const monthlyCostsTotal = monthlyCosts.items.reduce(
   0,
 );
 
-/** Cartão CNPJ, o documento oficial que qualquer pessoa pode conferir. */
-export const cnpjDocument = {
+/**
+ * O cartão CNPJ de **quem recebe as doações** - o documento oficial que
+ * qualquer pessoa pode conferir. O de cada abrigo está em `Shelter.cnpjDoc`.
+ */
+export const cnpjDocument: Documento = {
   src: "/documentos/cnpj-animal.webp",
   alt: "Cartão CNPJ da SOS Animal Help emitido pela Receita Federal",
   title: "Cartão CNPJ · SOS Animal Help",
   subtitle: "Documento oficial da Receita Federal",
+  caption: `CNPJ ${org.cnpj}`,
 };
 
 /**
@@ -961,5 +1209,24 @@ export function formatBRL(cents: number) {
   return (cents / 100).toLocaleString("pt-BR", {
     style: "currency",
     currency: "BRL",
+  });
+}
+
+/**
+ * O mesmo valor, **sem os centavos quando eles são zero**: `R$ 30`, e não
+ * `R$ 30,00`.
+ *
+ * É a forma das telas de escolha e de conferência de valor. Numa grade de nove
+ * degraus, nove vírgulas seguidas de dois zeros são só ruído entre a pessoa e o
+ * número que ela está lendo - e o número é a única coisa que importa ali.
+ *
+ * Centavo que existe continua aparecendo (`R$ 4,99`, `R$ 34,99`): esconder
+ * centavo real seria mentir sobre quanto vai sair da conta de quem doa.
+ */
+export function formatBRLCurto(cents: number) {
+  return (cents / 100).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: cents % 100 === 0 ? 0 : 2,
   });
 }

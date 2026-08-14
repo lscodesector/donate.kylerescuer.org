@@ -1,19 +1,18 @@
 import { copy } from "@/content/landing";
-import { IconBowl, IconHeart, IconPix, IconShield } from "../ui/Icons";
+import { IconBowl, IconHeart, IconPixMark, IconShield } from "../ui/Icons";
 import { Reveal } from "../ui/Reveal";
 
 /**
- * Os três passos, logo antes do pedido.
+ * Os três passos, logo **depois** do pedido.
  *
- * Fica entre `Abrigos` e `DoarRacao` de propósito: os abrigos acabaram de
- * mostrar quem recebe, o pedido vem logo abaixo, e no meio falta responder o
- * que acontece depois do clique. Quem nunca doou nesta página trava aí - não
- * por desconfiar da causa, mas por não saber se vai cair num formulário longo,
- * num cadastro ou num boleto.
+ * Trocou de lugar com `DoarAgora`: o argumento e o botão vêm primeiro, e estes
+ * três passos ficam para quem chegou até o fim do pedido sem clicar. Quem trava
+ * ali não trava por desconfiar da causa - trava por não saber se o clique leva
+ * a um formulário longo, a um cadastro ou a um boleto, e é essa dúvida que os
+ * passos respondem.
  *
- * Sem CTA próprio: o botão está logo abaixo, na seção seguinte - que agora é a
- * única da página com botão de doar ração. Um segundo aqui só dividiria o
- * clique com ele.
+ * Sem CTA próprio: o botão está logo acima, na seção do pedido. Um segundo aqui
+ * só dividiria o clique com ele.
  *
  * ── Layout ────────────────────────────────────────────────────────────────
  * No celular os passos empilham em linhas de ícone + texto (o número fica no
@@ -23,7 +22,11 @@ import { Reveal } from "../ui/Reveal";
 
 const ICONES = {
   bowl: IconBowl,
-  pix: IconPix,
+  /* A marca oficial do Pix (ver `IconPixMark`), e não um losango simplificado:
+     no cartão que fala do pagamento, o desenho que a pessoa reconhece do app
+     do banco vale mais que um ícone parecido. O emblema redondo verde continua
+     igual - muda só o traço de dentro. */
+  pix: IconPixMark,
   heart: IconHeart,
 } as const;
 
@@ -41,7 +44,7 @@ export function ComoFunciona() {
 
           {/* Selo em pílula verde: é a objeção que este bloco responde, e ela
               vale mais lida de relance do que dentro de um parágrafo. */}
-          <p className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-donate/10 px-3 py-1.5 text-[13px] font-extrabold text-donate">
+          <p className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-donate/10 px-3 py-1.5 text-[13px] font-extrabold text-donate-text">
             <IconShield size={15} className="shrink-0" />
             {copy.comoFunciona.seal}
           </p>

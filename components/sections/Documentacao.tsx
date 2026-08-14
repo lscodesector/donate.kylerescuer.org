@@ -1,7 +1,6 @@
-import { Img as Image } from "@/components/ui/Img";
-import { cnpjDocument, copy, googleReviews, org, whatsappHref } from "@/content/landing";
-import { withBasePath } from "@/lib/base-path";
-import { IconFile, IconMail, IconPin, IconStar, IconWhatsApp } from "../ui/Icons";
+import { copy, googleReviews, org, whatsappHref } from "@/content/landing";
+import { DocumentoCard } from "../DocumentoCard";
+import { IconMail, IconPin, IconStar, IconWhatsApp } from "../ui/Icons";
 import { Reveal } from "../ui/Reveal";
 import { SectionHead } from "../ui/SectionHead";
 
@@ -26,38 +25,11 @@ export function Documentacao() {
         {/* Cartão CNPJ: o documento em si, não só o número.
             O arquivo é a página A4 inteira (1600×2264) e mais de um terço dela
             embaixo é papel em branco - a moldura recorta a faixa útil e ancora
-            no topo, onde estão o brasão, o número e a razão social. */}
-        <Reveal className="overflow-hidden rounded-md border border-ink-900/10 bg-surface shadow">
-          <div className="flex flex-col items-center gap-3 border-b border-ink-900/[.07] p-4 text-center sm:flex-row sm:items-start sm:text-left">
-            <IconFile size={20} className="shrink-0 text-action sm:mt-0.5" />
-            <div className="flex flex-col">
-              <span className="text-[14px] font-extrabold text-ink-900">{cnpjDocument.title}</span>
-              <span className="text-[12px] text-ink-600">{cnpjDocument.subtitle}</span>
-              <span className="mt-1 text-[13px] font-semibold tabular-nums text-ink-900">
-                CNPJ {org.cnpj}
-              </span>
-            </div>
-          </div>
-
-          <div className="relative aspect-[16/11] w-full overflow-hidden bg-surface">
-            <Image
-              src={cnpjDocument.src}
-              alt={cnpjDocument.alt}
-              fill
-              sizes="(min-width: 640px) 620px, 92vw"
-              className="object-cover object-top"
-            />
-          </div>
-
-          <a
-            href={withBasePath(cnpjDocument.src)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex min-h-[48px] items-center justify-center gap-2 border-t border-ink-900/10 px-4 text-[13px] font-extrabold text-accent transition-colors hover:bg-surface-alt sm:justify-start"
-          >
-            <IconFile size={15} />
-            Ver documento
-          </a>
+            no topo, onde estão o brasão, o número e a razão social. Abre num
+            popup por cima da página (`DocumentoModal`), não numa aba nova -
+            ver `DocumentoCard`. */}
+        <Reveal>
+          <DocumentoCard />
         </Reveal>
 
         <div className="grid gap-3 sm:grid-cols-2">
@@ -75,7 +47,7 @@ export function Documentacao() {
             <span className="text-[12px] leading-[1.4] text-ink-600">
               Fale diretamente com nossa equipe.
             </span>
-            <span className="mt-auto pt-2 text-[13px] font-extrabold text-donate">
+            <span className="mt-auto pt-2 text-[13px] font-extrabold text-donate-text">
               Falar no WhatsApp
             </span>
           </a>
@@ -101,7 +73,7 @@ export function Documentacao() {
                 que se lê como informação e não como "clique aqui". `span`, e
                 não `button`: um botão de verdade dentro do link seria
                 interativo dentro de interativo. */}
-            <span className="mt-auto flex items-center gap-1.5 pt-2 text-[13px] font-extrabold text-donate">
+            <span className="mt-auto flex items-center gap-1.5 pt-2 text-[13px] font-extrabold text-donate-text">
               <IconMail size={15} className="shrink-0" />
               Enviar e-mail
             </span>
@@ -122,7 +94,7 @@ export function Documentacao() {
               <br />
               {org.address.line2}, {org.address.city} · {org.address.zip}
             </address>
-            <span className="mt-auto pt-2 text-[13px] font-extrabold text-donate">
+            <span className="mt-auto pt-2 text-[13px] font-extrabold text-donate-text">
               Ver localização
             </span>
           </a>

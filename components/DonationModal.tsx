@@ -3,14 +3,19 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   causeById,
-  donationAmounts,
+  donationAmountsMensal,
   donationAmountsUnica,
   formatBRL,
+  formatBRLCurto,
+  testAmount,
   type Cause,
 } from "@/content/landing";
+import { centsFromBRL, maskBRL } from "@/lib/format";
+import { payments } from "@/lib/payments/lusa";
 import { useScrollLock } from "@/lib/scroll-lock";
+import { isLocalhost } from "@/lib/test-mode";
 import { CHECKOUT_EVENT, openCheckout } from "./checkout/checkout-bus";
-import { IconArrowRight, IconClose, IconRepeat, IconShield } from "./ui/Icons";
+import { IconArrowRight, IconClose, IconHeart } from "./ui/Icons";
 
 /**
  * Evento que abre o modal. É um evento de janela, e não um contexto React,
@@ -24,6 +29,20 @@ export type DonationIntent = {
   causeId?: string;
   /** Com que frequência a tela abre. Única é o padrão - ver abaixo. */
   freq?: Freq;
+  /**
+   * Trava a tela na **mensal**: sem as abas de frequência, sem a escada da
+   * única, sem caminho para o checkout avulso.
+   *
+   * É o que todo CTA de doação mensal manda (barra fixa, menu, rodapé,
+   * fechamento - ver `MonthlyDonateButton`). Um botão que diz "doar todo mês" e
+   * abre uma tela com a doação única a um toque de distância está oferecendo
+   * outra coisa no lugar do que prometeu; quem quer a única tem os botões de
+   * "doar agora" espalhados pela página inteira.
+   *
+   * Sem esta marca a tela continua com as duas abas: é o caminho genérico, em
+   * que a pessoa ainda não escolheu a frequência.
+   */
+  somenteMensal?: boolean;
 };
 
 export function openDonationModal(intent: DonationIntent = {}) {
@@ -39,10 +58,11 @@ type Freq = "mensal" | "unica";
  * ║  Quanto, e com que frequência                                         ║
  * ╚══════════════════════════════════════════════════════════════════════╝
  *
- * É a segunda etapa do menu de frentes (`CausasModal`): a pessoa já escolheu
- * *onde* ajudar, aqui ela escolhe *quanto* e *de quanto em quanto tempo*. A
- * exceção é a ração, que tem preço fechado por kg e por isso vai para a grade
- * de faixas (`RacaoModal`) em vez de vir para cá.
+ * É a primeira e única etapa antes do checkout: todo CTA de doação abre esta
+ * tela direto, sem passar por um menu de "onde ajudar" antes - um passo a
+ * menos entre o clique e o Pix. `causeId` continua existindo para quem chega
+ * por um link com frente marcada (`MonthlyDonateButton`, por exemplo); sem
+ * ele, a doação vai para a rede toda.
  *
  * ── A única vem selecionada ───────────────────────────────────────────────
  * Quem clica em "onde ajudar" ainda não decidiu se quer se comprometer com um
@@ -51,10 +71,12 @@ type Freq = "mensal" | "unica";
  * mensal continua a um toque de distância, na mesma tela, com o selo de
  * recomendada - quem já sabia que queria ajudar todo mês não perde nada.
  *
- * A escada de valores muda junto com a frequência (`donationAmounts` contra
- * `donationAmountsUnica`): R$ 30 por mês e R$ 30 uma vez não resolvem a mesma
- * coisa, e oferecer a mesma escada nas duas faria uma delas estar sempre
- * errada.
+ * Cada frequência tem a **sua escada** (`donationAmountsUnica` contra
+ * `donationAmountsMensal`): a única vai de R$ 20 a R$ 1.000, a mensal de R$ 15
+ * a R$ 500 - doar R$ 100 uma vez é um gesto, R$ 100 todo mês é um compromisso,
+ * e a mesma escada nas duas faria uma delas pedir errado. O selo de "mais
+ * escolhido" fica em R$ 30 nos dois casos. Nenhum degrau abre marcado, e o
+ * campo logo abaixo da grade recebe o que for clicado.
  *
  * ── As abas "Doação Única / Mensal" já saíram daqui uma vez ───────────────
  * Na versão de campanha o modal era só mensal, e a doação única era a grade de
@@ -62,12 +84,29 @@ type Freq = "mensal" | "unica";
  * ração: tratamento, estrutura e "onde for mais urgente" não têm faixa de kg
  * nenhuma, e sem a escolha de frequência essas três frentes não teriam como
  * ser doadas.
+ *
+ * ── …e viram uma faixa só quando quem abriu já disse "mensal" ─────────────
+ * Com `somenteMensal` o cartão é o mesmo de sempre - mesmo título, mesmo
+ * emblema, mesma grade -, e o que muda é a linha da frequência: a mensal ocupa
+ * a largura das duas, sozinha, sem a única ao lado. É o que os CTAs de doação
+ * mensal mandam, e é o que eles prometem no rótulo. Ver
+ * `DonationIntent.somenteMensal`.
  */
 export function DonationModal() {
   const [intent, setIntent] = useState<DonationIntent | null>(null);
   const [freq, setFreq] = useState<Freq>("unica");
-  const [selecionado, setSelecionado] = useState<number | null>(null);
-  const [valorLivre, setValorLivre] = useState("");
+  /*
+   * Um estado só para o valor, e ele é o **conteúdo do campo de baixo**.
+   *
+   * Eram dois - o degrau clicado na grade e o texto digitado -, e o de baixo
+   * tinha a palavra final. Clicar em R$ 30 marcava o cartão e deixava o campo
+   * vazio: a tela mostrava a escolha em dois lugares e o valor em um só. Agora
+   * clicar no cartão **escreve** no campo, digitar no campo acende o cartão de
+   * mesmo valor, e o que segue para o checkout é sempre o que está escrito ali.
+   */
+  const [valor, setValor] = useState("");
+  /** Só depois do `blur` ou do clique - ver o campo de valor livre. */
+  const [mostrarMinimo, setMostrarMinimo] = useState(false);
   const fecharRef = useRef<HTMLButtonElement>(null);
   const gatilhoRef = useRef<HTMLElement | null>(null);
 
@@ -79,15 +118,18 @@ export function DonationModal() {
     gatilhoRef.current?.focus();
   }, []);
 
+
   useEffect(() => {
     const onAbrir = (e: Event) => {
       const detalhe = (e as CustomEvent<DonationIntent>).detail ?? {};
       gatilhoRef.current =
         document.activeElement instanceof HTMLElement ? document.activeElement : null;
       setIntent(detalhe);
-      setFreq(detalhe.freq ?? "unica");
-      setSelecionado(null);
-      setValorLivre("");
+      /* `somenteMensal` manda na frequência mesmo sem `freq` junto: quem trava
+         a tela na mensal não precisa dizer duas vezes. */
+      setFreq(detalhe.somenteMensal ? "mensal" : (detalhe.freq ?? "unica"));
+      setValor("");
+      setMostrarMinimo(false);
     };
 
     window.addEventListener(DONATION_MODAL_EVENT, onAbrir);
@@ -117,13 +159,44 @@ export function DonationModal() {
   if (!intent) return null;
 
   const cause = causeById(intent.causeId);
-  const mensal = freq === "mensal";
-  const valores = mensal ? donationAmounts : donationAmountsUnica;
+  /* Travada na mensal: sem abas e sem a escada da única - ver
+     `DonationIntent.somenteMensal`. */
+  const somenteMensal = intent.somenteMensal === true;
+  const mensal = somenteMensal || freq === "mensal";
 
-  // O valor livre, quando preenchido, manda no que foi clicado acima.
-  const centsLivre = Number(valorLivre || 0) * 100;
-  const cents = centsLivre > 0 ? centsLivre : selecionado;
-  const podeSeguir = cents !== null && cents > 0;
+  /*
+   * A escada, com o degrau de R$ 0,01 na frente quando a página está sendo
+   * servida de `localhost` - nas duas frequências. Ver `lib/test-mode.ts`: a
+   * checagem é pelo endereço do servidor, então o centavo não existe no site
+   * publicado, mesmo que este mesmo pacote seja o que sobe por FTP.
+   *
+   * A conta é feita no corpo do componente, e não em `useMemo`: o modal só
+   * renderiza depois de um clique (`if (!intent) return null`), então não há
+   * HTML pré-gerado com o centavo dentro nem divergência de hidratação.
+   */
+  const escada = mensal ? donationAmountsMensal : donationAmountsUnica;
+  const valores = isLocalhost() ? [testAmount, ...escada] : escada;
+
+  const cents = centsFromBRL(valor);
+
+  /*
+   * O piso da mensal não é escolha de campanha: abaixo de R$ 10 a ONZ/Infopago
+   * recusa a criação do mandato de recorrência (ver `payments.recurring`). A
+   * escada da mensal já começa em R$ 15 - quem esbarra nisso é sempre o campo
+   * livre, e barrar aqui é melhor do que deixar a pessoa preencher nome, CPF e
+   * WhatsApp para receber a recusa do gateway no fim.
+   */
+  const minimoCents = mensal ? payments.recurring.minCents : 0;
+  const temValor = cents > 0;
+  const abaixoDoMinimo = temValor && cents < minimoCents;
+
+  /*
+   * O botão continua **clicável** com valor abaixo do mínimo, e é `seguir` que
+   * barra. Desabilitado ele engoliria o clique sem dizer nada, e a pessoa
+   * ficaria olhando para um botão morto sem saber que o problema é o valor -
+   * exatamente o que a mensagem de mínimo existe para evitar.
+   */
+  const podeSeguir = temValor;
 
   /*
    * Fecha este modal e abre o checkout no lugar dele - sem trocar de página.
@@ -136,6 +209,10 @@ export function DonationModal() {
    */
   const seguir = () => {
     if (!podeSeguir) return;
+    if (abaixoDoMinimo) {
+      setMostrarMinimo(true);
+      return;
+    }
     openCheckout({
       kind: mensal ? "mensal" : "causa",
       amountCents: cents,
@@ -143,182 +220,288 @@ export function DonationModal() {
       impact: impactoDoItem(cause, mensal),
       image: null,
       txid: `${cause?.txid ?? "DOACAO"}${mensal ? "MENSAL" : "UNICA"}`,
+      /* Vai junto só para o "Voltar" do checkout devolver a pessoa para a
+         mesma tela de onde ela saiu - travada, se travada estava. */
+      somenteMensal,
     });
   };
 
+  /*
+   * A aba escolhida é uma faixa vermelha cheia, com o brilho de baixo que o
+   * checkout de `doe.caioprotetor.org` usa (`0 2px 8px` do próprio vermelho a
+   * 35%); a outra fica em contorno frio. Raio de 8px, como lá.
+   */
   const aba = (destino: Freq) =>
-    `relative flex min-h-[46px] flex-1 items-center justify-center gap-1.5 rounded-full px-3 text-[14px] font-extrabold transition-colors ${
+    `flex min-h-[42px] items-center justify-center rounded-[8px] px-3 text-[13px] font-bold transition-colors ${
       freq === destino
-        ? "bg-surface text-ink-900 shadow"
-        : "text-ink-600 hover:text-ink-900"
+        ? "bg-action text-white shadow-[0_2px_8px_rgba(191,5,33,.35)]"
+        : "border border-cp-borda bg-surface text-cp-legenda hover:border-action/40 hover:text-cp-titulo"
     }`;
 
   return (
+    /*
+     * Fundo escuro **e desfocado**, como no original: `blur(8px)` sobre preto a
+     * 60%. A página continua lá atrás, reconhecível, mas nada nela disputa a
+     * leitura com o cartão - que é o que um modal de decisão precisa.
+     */
     <div
-      className="fixed inset-0 z-[60] flex items-end justify-center bg-night/70 p-0 anim-fade-in sm:items-center sm:p-4"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-2.5 backdrop-blur-[8px] anim-fade-in sm:p-4"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) fechar();
       }}
     >
+      {/*
+        Cabeçalho, miolo e rodapé - a mesma anatomia do `CheckoutModal`, e pelo
+        mesmo motivo: com nove valores na grade mais o campo livre, o cartão
+        inteiro rolando levava o "Continuar" para fora da tela num celular, e o
+        botão que fecha a decisão não pode depender de a pessoa rolar até ele.
+        Só o miolo rola; o título e o botão ficam parados.
+      */}
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="doacao-titulo"
-        className="anim-fade-up max-h-[92dvh] w-full max-w-[520px] overflow-y-auto rounded-t-lg bg-surface p-5 shadow-xl sm:rounded-lg sm:p-6"
+        /*
+          420px e cantos de 16px, com a sombra vermelha e difusa do original
+          (`0 30px 80px` do vermelho a 20%) - não a sombra cinza genérica. Era
+          uma folha colada na base da tela no celular (`rounded-t-lg`,
+          `items-end`); agora é o mesmo cartão centralizado em qualquer
+          largura, que é como o checkout de referência aparece.
+        */
+        className="anim-fade-up flex max-h-[92dvh] w-full max-w-[420px] flex-col overflow-hidden rounded-[16px] border border-[#e5e5e5]/90 bg-surface shadow-[0_30px_80px_rgba(191,5,33,.2)]"
       >
-        <div className="flex items-start justify-between gap-3">
+        {/* Emblema quadrado-arredondado, título e o X - a linha de topo do
+            print de referência (`public/designe-checkout`). */}
+        <div className="flex shrink-0 items-center justify-between gap-3 px-5 pt-[clamp(0.875rem,2.4vh,1.5rem)] sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
-            <span className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full bg-action/10 text-action">
-              <IconRepeat size={20} />
+            {/* Coração **cheio** sobre rosa claro, como no original - o de
+                contorno lia como ícone de "favoritar", não como emblema. */}
+            <span className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-[14px] bg-cp-prefixo-bg text-action">
+              <IconHeart size={22} fill="currentColor" stroke="none" />
             </span>
             <div className="flex min-w-0 flex-col">
-              {/* O rótulo diz a frente escolhida; sem frente, diz o que a tela
-                  é. Assim quem chegou pelo menu não perde de vista onde a
-                  doação vai cair. */}
-              <span className="truncate text-[12px] font-extrabold uppercase tracking-[0.08em] text-accent">
-                {cause ? cause.title : "Doação"}
-              </span>
+              {/* Só quando a pessoa chegou por uma frente marcada: aí o rótulo
+                  diz onde a doação vai cair. No caminho normal - que é o do
+                  print - o título vem sozinho. */}
+              {cause && (
+                <span className="truncate text-[12px] font-extrabold uppercase tracking-[0.08em] text-accent">
+                  {cause.title}
+                </span>
+              )}
+              {/* Azul-ardósia (`--cp-titulo`), e não o preto do resto da
+                  página: é a cor que o checkout de referência usa no título e
+                  nos números - ver a paleta em `globals.css`. */}
               <h2
                 id="doacao-titulo"
-                className="text-[19px] font-extrabold leading-tight text-ink-900"
+                className="text-[17px] font-extrabold leading-tight text-cp-titulo"
               >
-                Quanto você quer doar?
+                Qual valor deseja doar?
               </h2>
             </div>
           </div>
 
+          {/* 38px e cinza neutro, como no original - o X é saída, não CTA. */}
           <button
             ref={fecharRef}
             type="button"
             onClick={fechar}
             aria-label="Fechar"
-            className="flex h-[40px] w-[40px] shrink-0 items-center justify-center rounded-full bg-surface-alt text-ink-600 transition-colors hover:bg-ink-900/10"
+            className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full bg-[#f5f5f5] text-[#6b6b6b] transition-colors hover:bg-ink-900/10"
           >
-            <IconClose size={20} />
+            <IconClose size={18} />
           </button>
         </div>
 
-        {cause && (
-          <p className="mt-3 text-[14px] leading-[1.55] text-ink-600">{cause.text}</p>
-        )}
+        {/* ── O miolo: a única parte que rola ─────────────────────────── */}
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-[clamp(0.75rem,2.2vh,1.25rem)] sm:px-6">
+          {cause && (
+            <p className="mt-3 text-[14px] leading-[1.55] text-ink-600">{cause.text}</p>
+          )}
 
-        {/* ── A frequência, antes do valor ──────────────────────────────
-            Nesta ordem porque ela muda a escada de valores logo abaixo:
-            escolher R$ 50 e só então descobrir que era mensal seria a pessoa
-            decidindo com metade da informação. */}
-        <div
-          role="tablist"
-          aria-label="Frequência da doação"
-          className="mt-4 flex gap-1 rounded-full bg-surface-alt p-1"
-        >
-          <button
-            type="button"
-            role="tab"
-            aria-selected={mensal}
-            onClick={() => {
-              setFreq("mensal");
-              setSelecionado(null);
-            }}
-            className={aba("mensal")}
-          >
-            Todo mês
-            <span className="rounded-full bg-donate px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-[0.04em] text-donate-ink">
-              melhor
-            </span>
-          </button>
+          {/* ── A frequência, antes do valor ──────────────────────────────
+              Nesta ordem porque ela muda o que a grade abaixo quer dizer:
+              escolher R$ 50 e só então descobrir que era mensal seria a pessoa
+              decidindo com metade da informação.
 
-          <button
-            type="button"
-            role="tab"
-            aria-selected={!mensal}
-            onClick={() => {
-              setFreq("unica");
-              setSelecionado(null);
-            }}
-            className={aba("unica")}
-          >
-            Uma vez
-          </button>
-        </div>
+              Duas barras lado a lado, e não mais um par de pílulas dentro de
+              uma trilha cinza: é o desenho do print de referência, em que a
+              aba escolhida é uma faixa vermelha cheia e a outra fica em
+              contorno. A única vem primeiro porque é a que abre selecionada.
 
-        <p className="mt-3 text-[13px] leading-[1.55] text-ink-600">
-          {mensal
-            ? "Com um valor fixo todo mês, os abrigos conseguem comprar em quantidade em vez de esperar a próxima campanha."
-            : "Uma doação só, no valor que você escolher, aplicada já no próximo repasse para os abrigos."}
-        </p>
+              ⚠️ Quando quem abriu a tela já disse "mensal" (`somenteMensal`),
+              a faixa da única **não some**: a mensal ocupa a largura das duas,
+              sozinha, exatamente como o checkout de referência faz com a única.
+              O cartão continua sendo o mesmo de sempre - o que muda é que não
+              há segunda opção para trocar, porque o CTA prometeu doação mensal
+              e oferecer a única aqui seria trocar o pedido depois do clique.
 
-        <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-3">
-          {valores.map((amount) => {
-            const ativo = selecionado === amount.cents && centsLivre === 0;
-            return (
+              Nesse caso ela vira **texto**, e não mais um botão: uma aba que
+              não tem para onde alternar é um rótulo com cara de controle, e
+              quem usa leitor de tela ouviria "botão, selecionado" sem ter o que
+              selecionar. Ver `DonationIntent.somenteMensal`. */}
+          {somenteMensal ? (
+            <p className={`${aba("mensal")} mt-[clamp(0.625rem,1.9vh,1rem)]`}>
+              Doação Mensal
+            </p>
+          ) : (
+            <div
+              role="tablist"
+              aria-label="Frequência da doação"
+              className="mt-[clamp(0.625rem,1.9vh,1rem)] grid grid-cols-2 gap-2"
+            >
               <button
-                key={amount.cents}
                 type="button"
+                role="tab"
+                aria-selected={!mensal}
                 onClick={() => {
-                  setSelecionado(amount.cents);
-                  setValorLivre("");
+                  setFreq("unica");
+                  setMostrarMinimo(false);
                 }}
-                className={`relative min-h-[56px] rounded-md border-2 px-1 text-[15px] font-extrabold transition-colors ${
-                  ativo
-                    ? "border-action bg-action/[.06] text-action"
-                    : "border-ink-900/10 bg-surface text-ink-900 hover:border-action/40"
-                }`}
+                className={aba("unica")}
               >
-                {amount.popular && (
-                  <span className="absolute -top-2 right-1 rounded-full bg-warning px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-[0.04em] text-ink-900">
-                    popular
-                  </span>
-                )}
-                {formatBRL(amount.cents).replace(/\s/g, " ")}
-                {mensal && (
-                  <span className="block text-[10px] font-semibold text-ink-600">
-                    /mês
-                  </span>
-                )}
+                Doação Única
               </button>
-            );
-          })}
+
+              <button
+                type="button"
+                role="tab"
+                aria-selected={mensal}
+                onClick={() => {
+                  setFreq("mensal");
+                  setMostrarMinimo(false);
+                }}
+                className={aba("mensal")}
+              >
+                Doação Mensal
+              </button>
+            </div>
+          )}
+
+          {/* Sem a linha que explicava cada frequência ("com um valor fixo todo
+              mês…"): a grade de valores aparece logo abaixo da aba e é ela que
+              responde a pergunta do título. O que a mensal tem de diferente -
+              o débito automático - continua dito, mas só embaixo do botão, onde
+              é uma autorização e não mais um argumento de venda. */}
+          <div className="mt-[clamp(0.625rem,1.9vh,1rem)] grid grid-cols-3 gap-2 sm:gap-2.5">
+            {valores.map((amount) => {
+              const ativo = cents === amount.cents;
+              return (
+                <button
+                  key={amount.cents}
+                  type="button"
+                  onClick={() => {
+                    /* `maskBRL` para o campo receber o número no mesmo formato
+                       em que ele seria digitado - "1.000" e não "1000". */
+                    setValor(maskBRL(String(amount.cents / 100)));
+                    setMostrarMinimo(false);
+                  }}
+                  /* Cartão do original: 48px de altura, cantos de 10px, borda
+                     fria (`--cp-borda`) e o número em azul-ardósia. Marcado, a
+                     borda e o texto viram o vermelho de marca. */
+                  className={`relative flex min-h-[48px] flex-col items-center justify-center rounded-[10px] border px-1 py-3 text-[15px] font-bold transition-colors ${
+                    ativo
+                      ? "border-action bg-action/[.06] text-action"
+                      : "border-cp-borda bg-surface text-cp-numero hover:border-action/40"
+                  }`}
+                >
+                  {/*
+                    A pílula âmbar pendurada no canto de cima, como no checkout
+                    de referência: `#F5A623`, texto quase preto, 8px e cantos de
+                    4px - um retângulo pequeno, não uma cápsula.
+
+                    O rótulo é "popular", o mesmo de lá - em caixa baixa, como
+                    lá - e não mais "Mais escolhido": com três vezes a largura,
+                    o selo passava das duas bordas do cartão e encostava no
+                    vizinho. Curto, ele cabe inteiro no canto, que é onde o
+                    original o coloca. Em maiúsculas ele fica gritado numa
+                    pílula de 9px.
+
+                    ⚠️ Ela sobe 7px para fora do cartão, então só funciona na
+                    **primeira fileira** da grade - hoje é onde o R$ 30 está. Se
+                    o destaque mudar para um valor de outra fileira, a pílula
+                    passa a encostar no cartão de cima.
+                  */}
+                  {amount.popular && (
+                    <span className="absolute -top-[7px] right-1.5 whitespace-nowrap rounded-[4px] bg-[#f5a623] px-1.5 py-[3px] text-[9px] font-bold leading-none text-[#040404]">
+                      popular
+                    </span>
+                  )}
+                  {/* Só o número. O "/mês" que ficava embaixo do valor na aba
+                      mensal saiu: a aba já diz a frequência, e a repetição
+                      dentro de cada um dos nove cartões só engordava a grade. */}
+                  {formatBRLCurto(amount.cents).replace(/\s/g, " ")}
+                  {amount.teste && (
+                    <span className="block text-[10px] font-extrabold uppercase tracking-[0.06em] text-ink-300">
+                      teste
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <label className="mt-[clamp(0.75rem,2.2vh,1.25rem)] block text-[14px] font-semibold text-[#2c2c34]">
+            Ou o que o seu coração mandar ❤️:
+            <div
+              className={`mt-2 flex overflow-hidden rounded-[10px] border ${
+                mostrarMinimo
+                  ? "border-error"
+                  : "border-cp-borda focus-within:border-action"
+              }`}
+            >
+              {/* Prefixo em rosa muito claro com o "R$" no vermelho de marca -
+                  é o bloco de 58px do checkout de referência. */}
+              <span className="flex w-[58px] shrink-0 items-center justify-center bg-cp-prefixo-bg text-[17px] font-bold text-action">
+                R$
+              </span>
+              <input
+                inputMode="decimal"
+                value={valor}
+                onChange={(e) => {
+                  setValor(maskBRL(e.target.value).slice(0, 12));
+                  setMostrarMinimo(false);
+                }}
+                /* No `blur` além do clique em Continuar: descobrir o mínimo só ao
+                   tentar seguir é descobrir tarde - a pessoa já tinha decidido o
+                   valor. */
+                onBlur={() => setMostrarMinimo(abaixoDoMinimo)}
+                aria-invalid={mostrarMinimo}
+                placeholder="Valor livre"
+                className="min-h-[54px] w-full bg-surface px-3 text-[16px] font-semibold text-cp-numero outline-none placeholder:font-normal placeholder:text-cp-legenda/70"
+              />
+            </div>
+            {mostrarMinimo && (
+              <span className="mt-1.5 block text-[12px] font-semibold text-error">
+                O valor mínimo para doação mensal é{" "}
+                {formatBRL(payments.recurring.minCents)}.
+              </span>
+            )}
+          </label>
         </div>
 
-        <label className="mt-5 block text-[14px] font-extrabold text-ink-900">
-          Ou o que o seu coração mandar ❤️:
-          <div className="mt-2 flex overflow-hidden rounded-md border-2 border-ink-900/10 focus-within:border-action">
-            <span className="flex w-[64px] shrink-0 items-center justify-center bg-action/[.06] text-[16px] font-extrabold text-action">
-              R$
-            </span>
-            <input
-              inputMode="numeric"
-              value={valorLivre}
-              onChange={(e) => setValorLivre(e.target.value.replace(/\D/g, "").slice(0, 7))}
-              placeholder={mensal ? "Valor por mês" : "Valor da doação"}
-              className="min-h-[56px] w-full bg-surface px-3 text-[16px] font-semibold text-ink-900 outline-none placeholder:font-normal placeholder:text-ink-300"
-            />
-          </div>
-        </label>
+        {/* ── Rodapé fixo: o botão que fecha a decisão ─────────────────── */}
+        <div className="shrink-0 bg-surface px-5 pb-[max(0.875rem,env(safe-area-inset-bottom))] pt-[clamp(0.5rem,1.7vh,0.75rem)] sm:px-6">
+          {/*
+            56px de altura, cantos de 14px e o halo âmbar em volta - o botão do
+            checkout de referência não tem sombra projetada para baixo, tem um
+            brilho da própria cor espalhado nos quatro lados. O texto sai em
+            azul-ardósia, e não em preto: é o mesmo tom do título.
+          */}
+          <button
+            type="button"
+            onClick={seguir}
+            disabled={!podeSeguir}
+            className="inline-flex min-h-[56px] w-full items-center justify-center gap-2.5 whitespace-nowrap rounded-[14px] bg-highlight px-6 text-[16px] font-bold uppercase tracking-[0.03em] text-cp-titulo shadow-[0_0_10px_1px_rgba(243,182,57,.6)] transition hover:bg-highlight-hover disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
+          >
+            Continuar
+            <IconArrowRight size={18} />
+          </button>
 
-        <button
-          type="button"
-          onClick={seguir}
-          disabled={!podeSeguir}
-          className="mt-5 inline-flex min-h-[56px] w-full items-center justify-center gap-2 rounded-md bg-warning px-6 text-[16px] font-extrabold uppercase tracking-[0.03em] text-ink-900 shadow transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          Continuar
-          <IconArrowRight size={18} />
-        </button>
-
-        {/* O Pix do checkout cobra só o primeiro mês - dizer isso aqui, e não
-            só lá, evita que a pessoa descubra depois de pagar. */}
-        {mensal && (
-          <p className="mt-3 text-center text-[12px] leading-[1.5] text-ink-600">
-            O Pix cobre o primeiro mês. A equipe combina os próximos com você
-            pelo WhatsApp.
+          <p className="mt-2 hidden items-center justify-center gap-1.5 text-center text-[11.5px] font-medium text-cp-legenda [@media(min-height:620px)]:flex">
+            <span aria-hidden="true" className="h-[7px] w-[7px] shrink-0 rounded-full bg-donate" />
+            Pagamento 100% seguro e verificado
           </p>
-        )}
-
-        <p className="mt-2 flex items-center justify-center gap-1.5 text-center text-[12px] font-semibold text-ink-600">
-          <IconShield size={14} className="shrink-0 text-donate" />
-          Pagamento 100% seguro e verificado
-        </p>
+        </div>
       </div>
     </div>
   );
@@ -339,8 +522,11 @@ function tituloDoItem(cause: Cause | null, mensal: boolean) {
 
 /** A linha de apoio do item, dentro do checkout. */
 function impactoDoItem(cause: Cause | null, mensal: boolean) {
+  /* Curto de propósito: esta linha vive na faixa do item, no topo do checkout,
+     e cada linha que ela quebra empurra o formulário para fora da tela. O
+     detalhe do débito automático está inteiro na etapa do Pix. */
   if (mensal) {
-    return "Este Pix cobre o primeiro mês. A equipe combina os próximos com você pelo WhatsApp.";
+    return "Cobrado todo mês. Cancele quando quiser pelo app.";
   }
   return cause?.text ?? "Sua doação vai direto para os abrigos que apoiamos.";
 }

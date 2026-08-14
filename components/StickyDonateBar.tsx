@@ -6,7 +6,7 @@ import {
   getCampaignSnapshot,
   subscribeCampaign,
 } from "@/lib/campaign";
-import { openCausasModal } from "./CausasModal";
+import { openDonationModal } from "./DonationModal";
 import { IconHeart } from "./ui/Icons";
 
 /**
@@ -66,10 +66,18 @@ export function StickyDonateBar() {
       className="fixed inset-x-0 bottom-0 z-40 anim-fade-up border-t border-ink-900/10 bg-surface/98 shadow-[0_-8px_24px_-8px_rgba(0,0,0,.12)] backdrop-blur"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <div className="container-narrow flex items-center gap-3 py-2.5 sm:gap-5 sm:py-3">
-        {/* O contador encolhe (é `min-w-0` que permite) antes do botão -
-            "Doar agora" não pode nunca quebrar linha ou sumir. */}
-        <div className="flex min-w-0 flex-1 flex-col gap-1">
+      <div className="container-narrow flex items-center justify-center gap-3 py-2.5 sm:gap-5 sm:py-3">
+        {/* Os mesmos 520px do contador da dobra (`CampaignProgress`, no
+            `Hero`), e o conjunto centrado - não um contador esticado de ponta
+            a ponta. Esticado, no monitor largo, os quatro números iam parar
+            cada um num canto: "R$ 11.377" perto da borda esquerda e
+            "de R$ 58.000" colado no botão, com meio palmo de barra vazia no
+            meio. Medida fixa, eles voltam a ser lidos como um bloco só.
+
+            `w-full` + `min-w-0` para o celular, onde 520px não cabem: aí o
+            contador encolhe - e encolhe antes do botão, porque "Doar agora"
+            não pode nunca quebrar linha ou sumir. */}
+        <div className="flex w-full min-w-0 max-w-[520px] flex-col gap-1">
           <div className="flex items-baseline justify-between gap-2 text-[13px] sm:text-[14px]">
             <span className="font-extrabold text-ink-900 tabular-nums">
               {estado ? brl(estado.raised) : "—"}
@@ -87,14 +95,18 @@ export function StickyDonateBar() {
             aria-label="Progresso da meta da campanha"
             className="h-[6px] w-full overflow-hidden rounded-full bg-ink-900/10"
           >
+            {/* `transform: scaleX`, e não `width`: animar largura obriga o
+                navegador a refazer o layout a cada quadro (o Lighthouse chama
+                isso de "animação não composta"); a escala roda na GPU.
+                `origin-left` para a barra crescer da esquerda, como antes. */}
             <div
-              className="h-full rounded-full bg-donate transition-[width] duration-700 ease-out"
-              style={{ width: `${estado?.percent ?? 0}%` }}
+              className="h-full w-full origin-left rounded-full bg-donate transition-transform duration-700 ease-out"
+              style={{ transform: `scaleX(${(estado?.percent ?? 0) / 100})` }}
             />
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-[11px] font-semibold">
-            <span className="text-donate">
+            <span className="text-donate-text">
               {estado ? `${estado.percent}% da meta` : " "}
             </span>
             <span className="inline-flex items-center gap-1 text-ink-600">
@@ -109,8 +121,8 @@ export function StickyDonateBar() {
 
         <button
           type="button"
-          onClick={() => openCausasModal()}
-          className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-full bg-donate px-4 text-[13px] font-extrabold uppercase tracking-[0.02em] text-donate-ink shadow-[0_8px_20px_-8px_rgba(27,138,75,.6)] transition-colors hover:bg-donate-hover sm:min-h-[48px] sm:px-6 sm:text-[14px]"
+          onClick={() => openDonationModal()}
+          className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-donate px-4 text-[13px] font-extrabold uppercase tracking-[0.02em] text-donate-ink shadow-[0_8px_20px_-8px_rgba(27,138,75,.6)] transition-colors hover:bg-donate-hover sm:min-h-[48px] sm:px-6 sm:text-[14px]"
         >
           <IconHeart size={17} />
           Doar agora

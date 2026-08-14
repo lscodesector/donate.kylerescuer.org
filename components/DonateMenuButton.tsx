@@ -2,15 +2,10 @@
 
 import type { ReactNode } from "react";
 import { DOAR_HREF } from "@/content/landing";
-import { openCausasModal } from "./CausasModal";
+import { openDonationModal } from "./DonationModal";
 
 /**
- * O botão "Quero doar" genérico: abre o menu de frentes (`CausasModal`).
- *
- * A diferença para o `DonateMenuButton` é o rótulo de quem chama. Botão que
- * diz **"doar ração"** vai direto para a grade de kg - a pessoa já escolheu a
- * frente ao ler o botão. Botão que diz só **"doar"** passa pelo menu, porque
- * doar sem destino é uma decisão vaga e é o destino que faz alguém decidir.
+ * O botão "Quero doar" genérico: abre direto a tela de valor (`DonationModal`).
  *
  * É um `<a href="#racao">` de verdade: sem JavaScript o link leva ao bloco de
  * doação da página, que explica o que acontece e traz os canais da equipe.
@@ -30,7 +25,7 @@ export function DonateMenuButton({
       onClick={(e) => {
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
         e.preventDefault();
-        openCausasModal();
+        openDonationModal();
       }}
       className={className}
     >

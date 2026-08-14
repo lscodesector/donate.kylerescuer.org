@@ -77,15 +77,20 @@ export function CampaignProgress({ className = "" }: { className?: string }) {
       >
         {/* `transition` para a barra deslizar até a marca em vez de aparecer
             pronta: sem ela, a correção pelo relógio do servidor daria um pulo
-            seco. `width: 0` no esqueleto. */}
+            seco. Escala `0` no esqueleto.
+
+            `transform: scaleX`, e não `width`: animar largura obriga o
+            navegador a refazer o layout a cada quadro (o Lighthouse chama isso
+            de "animação não composta"); a escala roda na GPU. `origin-left`
+            para a barra crescer da esquerda, como antes. */}
         <div
-          className="h-full rounded-full bg-donate transition-[width] duration-700 ease-out"
-          style={{ width: `${estado?.percent ?? 0}%` }}
+          className="h-full w-full origin-left rounded-full bg-donate transition-transform duration-700 ease-out"
+          style={{ transform: `scaleX(${(estado?.percent ?? 0) / 100})` }}
         />
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-[12px] font-semibold">
-        <span className="text-donate">
+        <span className="text-donate-text">
           {estado ? `${estado.percent}% da meta atingida` : " "}
         </span>
 

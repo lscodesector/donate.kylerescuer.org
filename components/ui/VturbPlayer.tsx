@@ -1,4 +1,6 @@
 import Script from "next/script";
+import { withBasePath } from "@/lib/base-path";
+import { PlayerA11y } from "./PlayerA11y";
 import { prefetchDNS, preload } from "react-dom";
 
 /** Os quatro domínios que o player toca: scripts, vídeo, imagens e licença. */
@@ -61,6 +63,7 @@ export function VturbPlayer({
   smartplayerSrc,
   streamSrc,
   ratio,
+  poster,
 }: {
   /** `id` do elemento, no formato `vid-<id do player>`. */
   playerId: string;
@@ -72,7 +75,10 @@ export function VturbPlayer({
   streamSrc: string;
   /** Altura em % da largura - o mesmo número do `padding-top` do embed. */
   ratio: number;
+  /** Primeiro quadro do vídeo, servido por nós - ver o bloco sobre LCP. */
+  poster: string;
 }) {
+  const posterSrc = withBasePath(poster);
   /*
    * `preload`/`prefetchDNS` do `react-dom`, e não `<link>` escrito no JSX: o
    * React de-duplica estas chamadas por URL antes de escrever o `<head>`.
@@ -80,6 +86,12 @@ export function VturbPlayer({
    * inofensivo para o navegador, mas é lixo no `<head>` de uma página cujo
    * argumento é carregar rápido.
    */
+  /*
+   * O pôster primeiro, e com prioridade: ele é o maior elemento da primeira
+   * dobra, ou seja, é ele que define a LCP da página - ver o bloco sobre isso
+   * mais abaixo.
+   */
+  preload(posterSrc, { as: "image", fetchPriority: "high" });
   preload(scriptSrc, { as: "script" });
   preload(smartplayerSrc, { as: "script" });
   // Sem `crossOrigin` de propósito: é o que o VTurb entrega, e um modo
@@ -107,10 +119,47 @@ export function VturbPlayer({
             zIndex: 0,
             backgroundColor: "black",
           }}
-        />
+        >
+          {/*
+            ── O pôster, e por que ele mora aqui ────────────────────────────
+            Este quadro é o maior elemento da primeira dobra, então é ele que
+            marca a LCP da página. Antes o espaço reservado era um retângulo
+            preto, e o primeiro pixel com conteúdo só aparecia quando o
+            `player.js` (terceiro, ~10s no 4G lento do Lighthouse) baixava,
+            bootava e buscava a própria miniatura - LCP de 10,1s, zero ponto
+            dos 25 que ela vale.
+
+            Agora o primeiro quadro do vídeo é um arquivo nosso, pré-carregado
+            com prioridade alta no `<head>`: ele pinta junto com o resto da
+            dobra e o player entra por cima quando estiver pronto. É a mesma
+            imagem que o VTurb usaria - baixada do próprio player e reduzida
+            para a maior largura em que ela aparece (1120px = 560 CSS em 2×).
+
+            `alt=""` porque ela é decorativa: quem conta o que está no vídeo é
+            a manchete logo acima, e descrever o quadro de novo faria o leitor
+            de tela repetir a mesma informação.
+          */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={posterSrc}
+            alt=""
+            fetchPriority="high"
+            decoding="async"
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
+          />
+        </div>
       </vturb-smartplayer>
 
       <Script id={`vturb-player-${playerId}`} src={scriptSrc} strategy="afterInteractive" />
+
+      {/* A miniatura que o player injeta vem sem `alt` - ver `PlayerA11y`. */}
+      <PlayerA11y playerId={playerId} />
     </>
   );
 }

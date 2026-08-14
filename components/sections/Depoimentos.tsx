@@ -51,10 +51,11 @@ export function Depoimentos() {
   return (
     <section id="depoimentos" className="py-[clamp(2.5rem,6vh,4.5rem)]">
       <div className="container-narrow flex max-w-[660px] flex-col gap-6">
+        {/* Sem `lead`: os cinco vídeos logo abaixo já dizem em vídeo o que a
+            linha de apoio dizia em texto - cinco protetores, cinco abrigos. */}
         <SectionHead
           eyebrow={copy.depoimentos.eyebrow}
           title={copy.depoimentos.title}
-          lead={copy.depoimentos.lead}
         />
 
         {/*

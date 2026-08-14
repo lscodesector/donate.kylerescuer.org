@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { copy as texts, pix } from "@/content/landing";
-import { IconCheck, IconCopy, IconPix } from "../ui/Icons";
+import { IconCheck, IconCopy, IconPixMark } from "../ui/Icons";
 
 /**
  * Pix direto: a chave, o botão de copiar e os três passos.
@@ -47,7 +47,7 @@ export function Pix() {
             meio de pagamento, e não um ícone decorativo de título. */}
         <div className="flex flex-col items-center gap-1 text-center">
           <p className="flex items-center gap-2 text-[13px] font-extrabold uppercase tracking-[0.12em] text-white/80">
-            <IconPix size={18} />
+            <IconPixMark size={18} />
             {texts.pix.eyebrow}
           </p>
           <h2 className="text-[clamp(1.375rem,1.05rem+1.3vw,2.125rem)] font-extrabold leading-[1.15] text-white">
@@ -77,7 +77,7 @@ export function Pix() {
           <button
             type="button"
             onClick={copiarChave}
-            className={`inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-full px-6 text-[15px] font-extrabold uppercase tracking-[0.03em] transition-colors ${
+            className={`inline-flex min-h-[52px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full px-6 text-[15px] font-extrabold uppercase tracking-[0.03em] transition-colors ${
               copied
                 ? "bg-ink-900 text-white"
                 : "bg-donate text-donate-ink hover:bg-donate-hover"

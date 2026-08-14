@@ -9,7 +9,7 @@ import {
   IconBowl,
   IconCheck,
   IconCopy,
-  IconPix,
+  IconPixMark,
   IconShield,
 } from "@/components/ui/Icons";
 
@@ -168,7 +168,7 @@ export function CheckoutPix({
               <div className="flex flex-col gap-4 anim-fade-up">
                 <div className="flex flex-col items-center gap-1 text-center">
                   <p className="inline-flex items-center gap-2 text-[12px] font-extrabold uppercase tracking-[0.1em] text-donate">
-                    <IconPix size={16} />
+                    <IconPixMark size={16} />
                     Pague com Pix
                   </p>
                   <h2 className="text-[clamp(1.125rem,1rem+0.6vw,1.375rem)] font-extrabold text-ink-900">
@@ -198,7 +198,7 @@ export function CheckoutPix({
                   <button
                     type="button"
                     onClick={copiar}
-                    className={`inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-full px-6 text-[15px] font-extrabold uppercase tracking-[0.03em] transition-colors ${
+                    className={`inline-flex min-h-[52px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full px-6 text-[15px] font-extrabold uppercase tracking-[0.03em] transition-colors ${
                       copiado
                         ? "bg-ink-900 text-white"
                         : "bg-donate text-donate-ink hover:bg-donate-hover"

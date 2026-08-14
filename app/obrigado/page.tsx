@@ -53,14 +53,29 @@ export default function ObrigadoPage() {
             </p>
           </div>
 
-          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-sm">
+          {/*
+            4:3 no lugar do 16:10 que estava aqui, e o recorte ancorado no
+            rosto.
+
+            A foto é quase quadrada (883×947). Num quadro 16:10 só 58% da
+            altura dela cabia, e o `object-cover` centrado descartava 21% em
+            cima - onde está a cabeça do Caio, que começa a 9%. A tela dizia
+            "obrigado" mostrando um homem sem testa.
+
+            O 4:3 já devolve quase todo o corte (72% da altura visível); o
+            `object-position` faz o resto, empurrando a faixa visível para o
+            alto. Os dois juntos, e não só um: com 16:10 mesmo ancorado no
+            rosto, os cães do colo é que sumiriam - e eles são metade do
+            motivo da foto estar aqui.
+          */}
+          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-sm">
             <Image
               src="/caio/historia/caio-1.webp"
               alt="Caio Protetor com um cão resgatado no colo"
               fill
               priority
               sizes="(min-width: 640px) 560px, 90vw"
-              className="object-cover"
+              className="object-cover object-[center_20%]"
             />
           </div>
         </div>
@@ -85,7 +100,7 @@ export default function ObrigadoPage() {
             href={recurringHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-[54px] w-full items-center justify-center gap-2 rounded-full bg-donate px-6 text-[15px] font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow-[0_10px_30px_-8px_rgba(27,138,75,.5)] transition-colors hover:bg-donate-hover"
+            className="inline-flex min-h-[54px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-donate px-6 text-[15px] font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow-[0_10px_30px_-8px_rgba(27,138,75,.5)] transition-colors hover:bg-donate-hover"
           >
             <IconWhatsApp size={18} />
             Quero doar todo mês
@@ -112,7 +127,7 @@ export default function ObrigadoPage() {
               )}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-full border-2 border-ink-900/12 px-5 text-[14px] font-extrabold text-ink-900 transition-colors hover:border-ink-900/30"
+              className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full border-2 border-ink-900/12 px-5 text-[14px] font-extrabold text-ink-900 transition-colors hover:border-ink-900/30"
             >
               <IconShare size={16} />
               Compartilhar a campanha
@@ -120,7 +135,7 @@ export default function ObrigadoPage() {
 
             <Link
               href="/#doar"
-              className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-full border-2 border-ink-900/12 px-5 text-[14px] font-extrabold text-ink-900 transition-colors hover:border-ink-900/30"
+              className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full border-2 border-ink-900/12 px-5 text-[14px] font-extrabold text-ink-900 transition-colors hover:border-ink-900/30"
             >
               <IconHeart size={16} />
               Doar novamente

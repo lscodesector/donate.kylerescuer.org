@@ -21,11 +21,10 @@ export function Abrigos() {
   return (
     <section id="abrigos" className="surface-alt py-[clamp(2.5rem,6vh,4.5rem)]">
       <div className="container-narrow flex max-w-[660px] flex-col gap-6">
-        <SectionHead
-          eyebrow={copy.abrigos.eyebrow}
-          title={copy.abrigos.title}
-          lead={copy.abrigos.lead}
-        />
+        {/* Sem `lead`: a linha de apoio que ficava aqui dizia por escrito o que
+            a lista logo abaixo mostra - nome, cidade e ficha aberta em cada
+            card. Ler a promessa antes de ver a prova só adiava a prova. */}
+        <SectionHead eyebrow={copy.abrigos.eyebrow} title={copy.abrigos.title} />
 
         <AbrigosLista />
       </div>

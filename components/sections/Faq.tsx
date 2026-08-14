@@ -61,7 +61,7 @@ export function Faq() {
             href={whatsappHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-[52px] items-center gap-2 rounded-full bg-[#25D366] px-8 text-[15px] font-extrabold text-white shadow transition-[filter] hover:brightness-95"
+            className="inline-flex min-h-[52px] items-center gap-2 whitespace-nowrap rounded-full bg-[#25D366] px-8 text-[15px] font-extrabold text-white shadow transition-[filter] hover:brightness-95"
           >
             <IconWhatsApp size={21} />
             {copy.faq.ctaWhatsapp}

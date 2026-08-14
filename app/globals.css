@@ -14,19 +14,23 @@
   --sos-surface: rgb(var(--sos-surface-c));
   --sos-surface-alt: rgb(var(--sos-surface-alt-c));
 
-  /* Ação - #E11D2E #B8151F #FFFFFF - vermelho de marca, fixo. */
-  --sos-action-c: 225 29 46;
-  --sos-action-hover-c: 184 21 31;
+  /* Ação - #BF0521 #99041A #FFFFFF - vermelho de marca, fixo.
+     O hover é o mesmo tom 20% mais escuro: um botão que não muda de cor no
+     mouse lê como desabilitado. */
+  --sos-action-c: 191 5 33;
+  --sos-action-hover-c: 153 4 26;
   --sos-action-ink-c: 255 255 255;
 
   --sos-action: rgb(var(--sos-action-c));
   --sos-action-hover: rgb(var(--sos-action-hover-c));
   --sos-action-ink: rgb(var(--sos-action-ink-c));
 
-  /* Sinalização */
+  /* Sinalização. O erro é o **mesmo** vermelho de marca (#BF0521): a página
+     tem um vermelho só, e um segundo tom para mensagem de campo não sinalizava
+     nada que o texto já não dissesse. */
   --sos-success-c: 27 138 75;
   --sos-warning-c: 200 118 10;
-  --sos-error-c: 196 33 33;
+  --sos-error-c: 191 5 33;
   --sos-progress-c: 232 163 61;
 
   --sos-success: rgb(var(--sos-success-c));
@@ -40,9 +44,53 @@
   --sos-graphite-c: 33 31 29;
   --sos-graphite: rgb(var(--sos-graphite-c));
 
-  /* Acento de detalhe - vermelho de marca (selos, links, patinhas do fundo). */
-  --org-accent: var(--sos-action);
-  --org-accent-soft: rgba(225, 29, 46, 0.12);
+  /*
+   * Acento de detalhe - vermelho de marca (selos, links, patinhas do fundo).
+   *
+   * É **o mesmo** #BF0521 dos botões, e não mais um tom à parte. O acento
+   * existia dois por cento mais escuro que o vermelho antigo (#DD1C2D contra
+   * #E11D2E) porque aquele reprovava em contraste como texto pequeno: dava
+   * 4,45:1 sobre o creme do `surface-alt`, abaixo dos 4,5:1 da WCAG AA. O
+   * #BF0521 dá 6,4:1 no branco e 6,0:1 no creme - passa com folga, e a página
+   * volta a ter um vermelho só.
+   */
+  --org-accent: #bf0521;
+  --org-accent-soft: rgba(191, 5, 33, 0.12);
+
+  /*
+   * Verde de **texto**, mais escuro que o dos botões.
+   *
+   * O `--sos-donate` (#1B8A4B) foi escolhido para fundo cheio com branco por
+   * cima, e nessa função ele está certo. Como texto sobre branco ele dá
+   * 4,39:1, e sobre a pílula `bg-donate/10` cai para 4,07:1 - reprova nos dois.
+   * Este tom (#187942) passa em todos: 5,45:1 no branco, 5,11:1 no creme e
+   * 4,52:1 dentro da pílula. Ícone continua no verde original, que para
+   * elemento gráfico o mínimo é 3:1.
+   */
+  --sos-donate-text-c: 24 121 66;
+  --sos-donate-text: rgb(var(--sos-donate-text-c));
+
+  /* A aba ativa do checkout. Era #8E1B2D - o vermelho de marca puxado para o
+     vinho, porque cheio numa barra larga o #E11D2E vibrava demais e brigava
+     com o amarelo do botão logo abaixo. O #BF0521 já é escuro o bastante para
+     não fazer isso, então o token virou o mesmo vermelho do resto da página.
+     Ele continua existindo para o dia em que a aba precisar destoar de novo. */
+  --sos-action-deep-c: 191 5 33;
+  --sos-action-deep: rgb(var(--sos-action-deep-c));
+
+  /* Amarelo de destaque - #F4BC4B. Só duas peças o usam, e as duas são o
+     mesmo gesto: "olhe para cá antes de decidir" - o botão "Continuar" do
+     modal de valores e o selo de "mais escolhido" na grade.
+
+     Não é o `--sos-warning` (#C8760A), que é sinalização (o ponto "agora" da
+     linha do tempo, a fatia de custos): aquele é âmbar escuro, e num botão
+     grande ele lia como cor de alerta. Este é claro o bastante para o preto
+     por cima continuar legível e para saltar do branco da tela. */
+  --sos-highlight-c: 244 188 75;
+  --sos-highlight-hover-c: 226 169 51;
+
+  --sos-highlight: rgb(var(--sos-highlight-c));
+  --sos-highlight-hover: rgb(var(--sos-highlight-hover-c));
 
   /* Verde - só os botões de doação, para se destacar do vermelho de detalhe. */
   --sos-donate-c: 27 138 75;
@@ -52,6 +100,27 @@
   --sos-donate: rgb(var(--sos-donate-c));
   --sos-donate-hover: rgb(var(--sos-donate-hover-c));
   --sos-donate-ink: rgb(var(--sos-donate-ink-c));
+
+  /*
+   * ╔════════════════════════════════════════════════════════════════════╗
+   * ║  A paleta do checkout de `doe.caioprotetor.org`                     ║
+   * ╚════════════════════════════════════════════════════════════════════╝
+   *
+   * Medidos no próprio site, na tela de valores: são os tons frios que ele usa
+   * **só ali** - azul-ardósia no título e nos números, cinza-azulado nas bordas
+   * dos cartões e no selo de segurança. O resto da página continua com os
+   * neutros quentes (`--sos-ink-*`); estes não vazam para fora do modal.
+   *
+   * O vermelho do prefixo "R$" de lá é `rgb(191,5,33)` - o mesmo #BF0521 desta
+   * página, e é por isso que ele não aparece nesta lista: quem responde por ele
+   * é `--sos-action`.
+   */
+  --cp-titulo: #2c425c;
+  --cp-numero: #1a2535;
+  --cp-borda: #e4e9f0;
+  --cp-legenda: #6b7a90;
+  /* Fundo do prefixo "R$" - rosa muito claro, o vermelho de marca a 6%. */
+  --cp-prefixo-bg: #fdf0f1;
 
   /* Tipografia */
   --font-display: var(--font-inter), "Inter", system-ui, sans-serif;
@@ -72,6 +141,50 @@
      barra é enxuta e a marca é o que preenche o centro. Se a marca crescer de
      novo, este número sobe junto - a folga aqui é de poucos pixels. */
   --header-h: 72px;
+
+  /*
+   * ╔════════════════════════════════════════════════════════════════════╗
+   * ║  A medida única da primeira dobra                                   ║
+   * ╚════════════════════════════════════════════════════════════════════╝
+   *
+   * Manchete, vídeo, barra de meta e botões saem **todos** com esta largura.
+   * Antes eram três medidas diferentes na mesma pilha centralizada - manchete
+   * em `24ch`, barra e botões em 520px fixos e o vídeo no que sobrasse de
+   * altura -, e num notebook de 1366×768 isso dava 552, 520 e 413px empilhados:
+   * o desalinhamento que aparecia na tela.
+   *
+   * 594px é o teto, medido no player do site original (`doe.caioprotetor.org`),
+   * onde a coluna não muda de tamanho em nenhuma tela. Aqui ela **encolhe com a
+   * altura**, porque esta dobra fecha em uma tela e o vídeo é quem cede: a
+   * conta é a sobra vertical (tela − barra fixa − o resto da pilha) convertida
+   * em largura pela proporção do vídeo (1 ÷ 0,78125 = 1,28).
+   *
+   * `--hero-reserva` é quanto o resto da pilha ocupa, e ela muda de valor
+   * porque a própria pilha muda: abaixo de 820px de janela a linha de apoio e o
+   * selo somem (ver `Hero`), e o que eles liberam vai para o vídeo. Os dois
+   * números foram **medidos** no navegador, não estimados - com eles a coluna
+   * cai em cima da largura que o vídeo assume sozinho (diferença de ~5px), que
+   * é o que faz as quatro peças lerem como uma coluna só.
+   *
+   * O piso de 470px existe para telas muito baixas (720p): sem ele a conta
+   * pedia 413px, e nessa largura a manchete quebrava em quatro linhas - o que
+   * comia de volta a altura que o vídeo tinha acabado de ganhar.
+   */
+  --hero-reserva: 17rem;
+  --hero-col: min(
+    100%,
+    clamp(
+      470px,
+      calc((100svh - var(--header-h) - var(--hero-reserva)) * 1.28),
+      594px
+    )
+  );
+}
+
+@media (min-height: 820px) {
+  :root {
+    --hero-reserva: 22rem;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -102,9 +215,21 @@
   --color-donate: var(--sos-donate);
   --color-donate-hover: var(--sos-donate-hover);
   --color-donate-ink: var(--sos-donate-ink);
+  --color-donate-text: var(--sos-donate-text);
+
+  --color-action-deep: var(--sos-action-deep);
+
+  --color-highlight: var(--sos-highlight);
+  --color-highlight-hover: var(--sos-highlight-hover);
 
   --color-accent: var(--org-accent);
   --color-accent-soft: var(--org-accent-soft);
+
+  --color-cp-titulo: var(--cp-titulo);
+  --color-cp-numero: var(--cp-numero);
+  --color-cp-borda: var(--cp-borda);
+  --color-cp-legenda: var(--cp-legenda);
+  --color-cp-prefixo-bg: var(--cp-prefixo-bg);
 
   --font-display: var(--font-display);
   --font-body: var(--font-body);
@@ -172,6 +297,24 @@
 
   p {
     text-wrap: pretty;
+  }
+
+  /*
+   * A mãozinha de "isto clica" em tudo que clica.
+   *
+   * O preflight do Tailwind v4 deixou de forçar `cursor: pointer` em botão - e
+   * o padrão do navegador para `<button>` é a seta comum, a mesma de um
+   * parágrafo. Num site que pede doação isso custa caro: "Quero doar
+   * mensalmente", "Doar agora" e os cartões de valor no modal são todos
+   * `<button>`, e um botão que não muda o cursor lê como enfeite.
+   *
+   * `:not(:disabled)` porque desabilitado não clica, e `[role="button"]` para
+   * os que não são a tag - o cartão de valor no `DonationModal`, por exemplo.
+   * `:where()` zera a especificidade: qualquer `cursor-*` de classe continua
+   * ganhando desta regra.
+   */
+  :where(button, [role="button"]):not(:disabled) {
+    cursor: pointer;
   }
 
   :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
@@ -341,14 +484,28 @@
 
 @keyframes sos-pulse-ring {
   0% {
-    box-shadow: 0 0 0 0 rgba(225, 29, 46, 0.35);
+    box-shadow: 0 0 0 0 rgba(191, 5, 33, 0.35);
   }
   70% {
-    box-shadow: 0 0 0 12px rgba(225, 29, 46, 0);
+    box-shadow: 0 0 0 12px rgba(191, 5, 33, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(225, 29, 46, 0);
+    box-shadow: 0 0 0 0 rgba(191, 5, 33, 0);
   }
+}
+
+/* O painel do menu, entrando pela borda esquerda. */
+@keyframes sos-slide-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.anim-slide-in-left {
+  animation: sos-slide-in-left 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* Rastro de patinhas do fundo do hero - um passo acende, fica e apaga. */
