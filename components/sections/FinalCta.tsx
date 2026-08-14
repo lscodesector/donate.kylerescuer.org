@@ -1,7 +1,7 @@
 import { copy } from "@/content/landing";
 import { DonateMenuButton } from "../DonateMenuButton";
 import { MonthlyDonateButton } from "../MonthlyDonateButton";
-import { IconArrowRight, IconHeart, IconShield } from "../ui/Icons";
+import { IconArrowRight, IconHeartFilled, IconShield } from "../ui/Icons";
 import { Reveal } from "../ui/Reveal";
 
 /**
@@ -61,7 +61,9 @@ export function FinalCta() {
                 frequência e terminando no checkout de recorrência - ver
                 `MonthlyDonateButton`. */}
             <MonthlyDonateButton className="inline-flex min-h-[56px] flex-1 basis-0 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-action px-6 text-center text-[clamp(0.872rem,1.488vh,0.988rem)] font-extrabold uppercase tracking-[0.03em] text-action-ink shadow-[0_10px_30px_-10px_rgba(191,5,33,.5)] transition-colors hover:bg-action-hover">
-              <IconHeart size={20} className="shrink-0" />
+              {/* Cheio, e não o coração vazado: no vermelho o contorno fino
+                  desaparece de longe - o miolo tem a cor do próprio botão. */}
+              <IconHeartFilled size={20} className="shrink-0" />
               {copy.final.ctaSecondary}
             </MonthlyDonateButton>
           </div>

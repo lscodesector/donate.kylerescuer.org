@@ -14,6 +14,7 @@ import {
   IconClose,
   IconFile,
   IconHeart,
+  IconHeartFilled,
   IconHome,
   IconMenu,
   IconPaw,
@@ -249,7 +250,15 @@ export function Header() {
                   largura da gaveta inteira, e quem abriu o menu parou para
                   escolher: vale prometer exatamente o que a próxima tela vai
                   oferecer. Quem quer doar uma vez tem o "Doar agora" da lista
-                  logo acima, o do hero e o da barra da base. */}
+                  logo acima, o do hero e o da barra da base.
+
+                  É a mesma frase e a mesma pintura do botão que fecha a página
+                  (`FinalCta`): vermelho de marca, maiúsculas e o coração cheio
+                  (`IconHeartFilled` - o vazado some no vermelho). Dois pedidos
+                  iguais, com a mesma cara, leem como o mesmo pedido; antes este
+                  era verde e dizia outra coisa. Uma medida abaixo do outro
+                  (`text-fs14`) porque a gaveta tem 340px no máximo, e a frase
+                  em maiúsculas não pode quebrar linha. */}
               <a
                 href={DOAR_HREF}
                 onClick={(e) => {
@@ -259,10 +268,10 @@ export function Header() {
                   e.preventDefault();
                   openDonationModal({ freq: "mensal", somenteMensal: true });
                 }}
-                className="inline-flex min-h-[46px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-donate px-5 text-fs15 font-extrabold text-donate-ink shadow transition-colors hover:bg-donate-hover"
+                className="inline-flex min-h-[46px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-action px-5 text-fs14 font-extrabold uppercase tracking-[0.03em] text-action-ink shadow transition-colors hover:bg-action-hover"
               >
-                <IconHeart size={18} />
-                Apadrinhe todo mês
+                <IconHeartFilled size={18} />
+                Quero ajudar todo mês
               </a>
 
               {/* O único destino fora desta página, e por isso ele fica depois

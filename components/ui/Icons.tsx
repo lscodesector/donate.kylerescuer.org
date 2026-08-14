@@ -24,6 +24,32 @@ export const IconHeart = (p: IconProps) => (
   </svg>
 );
 
+/**
+ * O mesmo coração, cheio.
+ *
+ * É o dos botões em cor cheia (o "Quero ajudar todo mês" da gaveta e o do
+ * fechamento): no vermelho, o contorno vazado do `IconHeart` some a um palmo
+ * de distância - o miolo tem a cor do fundo e sobra um risco fino. Preenchido,
+ * o desenho lê como um coração antes de a pessoa focar nele.
+ *
+ * `fill` e nenhum traço, como o `IconStar`: engrossar o `strokeWidth` para
+ * fechar o miolo mudaria a silhueta e o tamanho aparente ao lado dos outros
+ * ícones da mesma linha.
+ */
+export const IconHeartFilled = ({ size = 20, ...rest }: IconProps) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    aria-hidden="true"
+    focusable={false}
+    {...rest}
+  >
+    <path d="M20.8 5.6a5.5 5.5 0 0 0-7.8 0L12 6.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l8.8 8.8 8.8-8.8a5.5 5.5 0 0 0 0-7.8Z" />
+  </svg>
+);
+
 export const IconShield = (p: IconProps) => (
   <svg {...base(p)}>
     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
