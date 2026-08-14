@@ -696,7 +696,7 @@ export function CheckoutModal() {
               type="button"
               onClick={voltar}
               aria-label="Voltar"
-              className="flex min-h-[36px] shrink-0 items-center gap-1.5 rounded-full px-2 text-[14px] font-semibold text-ink-600 transition-colors hover:bg-surface-alt hover:text-ink-900"
+              className="flex min-h-[36px] shrink-0 items-center gap-1.5 rounded-full px-2 text-fs14 font-semibold text-ink-600 transition-colors hover:bg-surface-alt hover:text-ink-900"
             >
               <IconArrowLeft size={18} />
               {/* Só a seta na etapa do Pix: lá o título é a frase mais longa do
@@ -710,7 +710,7 @@ export function CheckoutModal() {
 
           <h2
             id="checkout-titulo"
-            className="flex flex-1 items-center justify-center gap-1.5 text-center text-[16px] font-extrabold leading-tight text-ink-900"
+            className="flex flex-1 items-center justify-center gap-1.5 text-center text-fs16 font-extrabold leading-tight text-ink-900"
           >
             {/* O tique verde só na etapa do Pix: ali o título é uma confirmação
                 ("deu certo"), e nas outras é só o nome da etapa. */}
@@ -791,12 +791,12 @@ export function CheckoutModal() {
             <button
               type="button"
               onClick={enviarDados}
-              className="inline-flex min-h-[clamp(48px,6.6vh,56px)] w-full items-center justify-center gap-2.5 whitespace-nowrap rounded-md bg-highlight px-6 text-[15px] font-extrabold uppercase tracking-[0.03em] text-ink-900 shadow transition hover:bg-highlight-hover"
+              className="inline-flex min-h-[clamp(48px,6.6vh,56px)] w-full items-center justify-center gap-2.5 whitespace-nowrap rounded-md bg-highlight px-6 text-fs15 font-extrabold uppercase tracking-[0.03em] text-ink-900 shadow transition hover:bg-highlight-hover"
             >
               <IconPixMark size={18} />
               Gerar Pix agora
             </button>
-            <p className="mt-2 hidden items-center justify-center gap-1.5 text-center text-[12px] font-semibold text-ink-600 [@media(min-height:620px)]:flex">
+            <p className="mt-2 hidden items-center justify-center gap-1.5 text-center text-fs12 font-semibold text-ink-600 [@media(min-height:620px)]:flex">
               <span aria-hidden="true" className="h-[7px] w-[7px] shrink-0 rounded-full bg-donate" />
               Pagamento 100% seguro e verificado
             </p>
@@ -856,6 +856,10 @@ function StepDados({
   onSubmit: () => void;
 }) {
   const taxaPreview = feeCentsFor(amountCents);
+  /* `text-[16px]` fixos, e é a única medida da página que não entrou na escala
+     fluida: abaixo de 16px o Safari do iPhone dá zoom sozinho ao focar o campo
+     e a pessoa perde o modal de vista. O `text-fs16` da escala chega a 15px no
+     celular - justamente onde o zoom acontece. */
   const campo = (invalido: boolean) =>
     `min-h-[clamp(46px,6.2vh,52px)] rounded-md border bg-surface px-3.5 text-[16px] font-semibold text-ink-900 outline-none transition-colors placeholder:font-normal placeholder:text-ink-300 ${
       invalido ? "border-error" : "border-ink-900/[.12] focus:border-donate"
@@ -881,7 +885,7 @@ function StepDados({
       className="flex flex-col gap-3"
     >
       <label className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-extrabold text-ink-900">Nome</span>
+        <span className="text-fs13 font-extrabold text-ink-900">Nome</span>
         <input
           data-autofocus=""
           type="text"
@@ -891,12 +895,10 @@ function StepDados({
           onChange={(e) => setDados((d) => ({ ...d, nome: e.target.value }))}
           placeholder="Seu nome completo"
           aria-invalid={nomeInvalido}
-          /* `text-[16px]`: abaixo disso o Safari do iPhone dá zoom sozinho ao
-             focar o campo e a pessoa perde o modal de vista. */
           className={`${campo(nomeInvalido)} disabled:cursor-not-allowed disabled:bg-surface-alt disabled:text-ink-300`}
         />
         {nomeInvalido && (
-          <span className="text-[12px] font-semibold text-error">
+          <span className="text-fs12 font-semibold text-error">
             {mensal
               ? "Diga como podemos te chamar - o seu banco pede o nome para autorizar a doação mensal."
               : "Diga como podemos te chamar - ou marque “Quero doar anonimamente”."}
@@ -920,12 +922,12 @@ function StepDados({
             onChange={(e) => setDados((d) => ({ ...d, anonimo: e.target.checked }))}
             className="h-[20px] w-[20px] shrink-0 cursor-pointer accent-[color:var(--sos-donate)]"
           />
-          <span className="text-[14px] text-ink-900">Quero doar anonimamente</span>
+          <span className="text-fs14 text-ink-900">Quero doar anonimamente</span>
         </label>
       )}
 
       <label className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-extrabold text-ink-900">
+        <span className="text-fs13 font-extrabold text-ink-900">
           WhatsApp <span className="font-semibold text-ink-600">(opcional)</span>
         </span>
         <input
@@ -941,7 +943,7 @@ function StepDados({
           className={campo(whatsappInvalido)}
         />
         {whatsappInvalido && (
-          <span className="text-[12px] font-semibold text-error">
+          <span className="text-fs12 font-semibold text-error">
             Confira o número: faltam dígitos.
           </span>
         )}
@@ -962,7 +964,7 @@ function StepDados({
       */}
       {mensal && (
         <label className="flex flex-col gap-1.5">
-          <span className="text-[13px] font-extrabold text-ink-900">CPF</span>
+          <span className="text-fs13 font-extrabold text-ink-900">CPF</span>
           <input
             type="text"
             inputMode="numeric"
@@ -976,7 +978,7 @@ function StepDados({
           />
           <span
             id="cpf-ajuda"
-            className={`text-[12px] ${
+            className={`text-fs12 ${
               cpfInvalido ? "font-semibold text-error" : "text-ink-600"
             }`}
           >
@@ -1067,10 +1069,10 @@ function PainelTaxa({
           <IconHeart size={16} />
         </span>
         <div className="flex flex-col gap-1">
-          <span className="text-[14px] font-extrabold leading-tight text-donate-text">
+          <span className="text-fs14 font-extrabold leading-tight text-donate-text">
             Ajude com os custos da sua doação
           </span>
-          <p className="text-[13px] leading-[1.45] text-ink-600">
+          <p className="text-fs13 leading-[1.45] text-ink-600">
             Cubra os custos de {formatBRLCurto(taxaCents)} do pix e garanta que sua
             doação chegue completa ao Caio.
           </p>
@@ -1079,7 +1081,7 @@ function PainelTaxa({
 
       <label
         htmlFor={id}
-        className="flex cursor-pointer items-center gap-2.5 text-[14px] font-extrabold text-ink-900"
+        className="flex cursor-pointer items-center gap-2.5 text-fs14 font-extrabold text-ink-900"
       >
         <input
           id={id}
@@ -1126,10 +1128,10 @@ function ResumoValores({
   const [explicando, setExplicando] = useState(false);
 
   return (
-    <dl className={`${CARTAO} gap-1.5 p-3.5 text-[14px]`}>
+    <dl className={`${CARTAO} gap-1.5 p-3.5 text-fs14`}>
       <div className="flex items-baseline justify-between gap-3">
         <dt className="font-semibold text-ink-600">Valor doado</dt>
-        <dd className="text-[16px] font-extrabold tabular-nums text-ink-900">
+        <dd className="text-fs16 font-extrabold tabular-nums text-ink-900">
           {formatBRLCurto(amountCents)}
         </dd>
       </div>
@@ -1144,7 +1146,7 @@ function ResumoValores({
                 onClick={() => setExplicando((v) => !v)}
                 aria-expanded={explicando}
                 aria-label="O que é a taxa abatida"
-                className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border border-ink-900/20 text-[11px] font-extrabold leading-none text-ink-600 transition-colors hover:border-action hover:text-action"
+                className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border border-ink-900/20 text-fs11 font-extrabold leading-none text-ink-600 transition-colors hover:border-action hover:text-action"
               >
                 ?
               </button>
@@ -1155,7 +1157,7 @@ function ResumoValores({
           </div>
 
           {explicando && (
-            <p className="rounded-md bg-surface-alt p-3 text-[13px] leading-[1.5] text-ink-600">
+            <p className="rounded-md bg-surface-alt p-3 text-fs13 leading-[1.5] text-ink-600">
               Essa é a taxa de processamento do pix que o {org.name} pagaria para
               receber sua doação. Ao manter marcado, o valor chega inteiro pra
               ajudar a salvar mais vidas!
@@ -1164,7 +1166,7 @@ function ResumoValores({
 
           <div className="flex items-baseline justify-between gap-3 border-t border-ink-900/10 pt-2">
             <dt className="font-extrabold text-ink-900">Valor total</dt>
-            <dd className="text-[19px] font-extrabold tabular-nums text-ink-900">
+            <dd className="text-fs19 font-extrabold tabular-nums text-ink-900">
               {formatBRLCurto(totalCents)}
             </dd>
           </div>
@@ -1227,7 +1229,7 @@ function TituloCartao({
       >
         <Icon size={18} />
       </span>
-      <span className="text-[15px] font-extrabold leading-tight text-action">
+      <span className="text-fs15 font-extrabold leading-tight text-action">
         {children}
       </span>
     </p>
@@ -1247,10 +1249,10 @@ function StepGerando() {
       aria-live="polite"
     >
       <span className="h-[50px] w-[50px] animate-spin rounded-full border-4 border-ink-900/10 border-t-donate" />
-      <p className="text-[15px] font-extrabold text-ink-900">
+      <p className="text-fs15 font-extrabold text-ink-900">
         Gerando seu QR Code Pix
       </p>
-      <p className="text-[13px] text-ink-600">
+      <p className="text-fs13 text-ink-600">
         Preparando o pagamento da sua doação…
       </p>
     </div>
@@ -1269,17 +1271,17 @@ function StepErro({
       <span className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-error/10 text-error">
         <IconClose size={26} />
       </span>
-      <p className="text-[16px] font-extrabold text-ink-900">
+      <p className="text-fs16 font-extrabold text-ink-900">
         Não foi possível gerar o Pix
       </p>
-      <p className="max-w-[40ch] text-[13px] leading-[1.5] text-ink-600">
+      <p className="max-w-[40ch] text-fs13 leading-[1.5] text-ink-600">
         {mensagem ?? "Tente novamente em alguns segundos."}
       </p>
       <button
         data-autofocus=""
         type="button"
         onClick={onTentarDeNovo}
-        className="mt-1 inline-flex min-h-[50px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-donate px-6 text-[15px] font-extrabold uppercase tracking-[0.03em] text-donate-ink transition-colors hover:bg-donate-hover"
+        className="mt-1 inline-flex min-h-[50px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-donate px-6 text-fs15 font-extrabold uppercase tracking-[0.03em] text-donate-ink transition-colors hover:bg-donate-hover"
       >
         Tentar de novo
       </button>
@@ -1308,10 +1310,10 @@ function StepPago({
       <span className="flex h-[64px] w-[64px] items-center justify-center rounded-full bg-donate/10 text-donate">
         <IconCheck size={34} />
       </span>
-      <p className="text-[19px] font-extrabold text-ink-900">
+      <p className="text-fs19 font-extrabold text-ink-900">
         {mensal ? "Doação mensal ativada!" : "Pagamento confirmado!"}
       </p>
-      <p className="max-w-[40ch] text-[14px] leading-[1.55] text-ink-600">
+      <p className="max-w-[40ch] text-fs14 leading-[1.55] text-ink-600">
         Sua doação de{" "}
         <strong className="font-semibold text-ink-900">
           {formatBRLCurto(totalCents)}
@@ -1322,7 +1324,7 @@ function StepPago({
           é automático, e quem não souber disso estranha o extrato do mês que
           vem. A data sai da mesma conta que foi ao gateway. */}
       {mensal && (
-        <p className="max-w-[40ch] text-[13px] leading-[1.55] text-ink-600">
+        <p className="max-w-[40ch] text-fs13 leading-[1.55] text-ink-600">
           A próxima cobrança sai sozinha em{" "}
           <strong className="font-semibold text-ink-900">
             {dataPorExtenso(recurrenceStartDate())}
@@ -1331,7 +1333,7 @@ function StepPago({
           banco, em Pix &rsaquo; Pix Automático.
         </p>
       )}
-      <p className="mt-1 flex items-center gap-1.5 text-[12px] font-semibold text-ink-600">
+      <p className="mt-1 flex items-center gap-1.5 text-fs12 font-semibold text-ink-600">
         <IconHeart size={14} className="shrink-0 text-donate" />
         Levando você para a página de confirmação…
       </p>
@@ -1419,10 +1421,10 @@ function StepPix({
       */}
       {mensal && (
         <div className="rounded-md border-2 border-donate/30 bg-donate/[.06] p-3.5">
-          <p className="text-[13px] font-extrabold leading-[1.45] text-ink-900">
+          <p className="text-fs13 font-extrabold leading-[1.45] text-ink-900">
             Um QR só, duas coisas
           </p>
-          <p className="mt-1 text-[13px] leading-[1.5] text-ink-600">
+          <p className="mt-1 text-fs13 leading-[1.5] text-ink-600">
             Ele paga{" "}
             <strong className="font-semibold text-ink-900">
               {formatBRLCurto(totalCents)} agora
@@ -1449,10 +1451,10 @@ function StepPix({
           continua no `title` e é o que vai para a área de transferência.
         */}
         <div className="flex flex-col gap-1 rounded-md border border-dashed border-ink-900/20 bg-surface-alt px-3.5 py-3">
-          <span className="text-[10px] font-extrabold uppercase tracking-[0.1em] text-ink-600">
+          <span className="text-fs10 font-extrabold uppercase tracking-[0.1em] text-ink-600">
             Pix copia e cola
           </span>
-          <p title={pixCode} className="truncate font-mono text-[13px] text-ink-900">
+          <p title={pixCode} className="truncate font-mono text-fs13 text-ink-900">
             {pixCode}
           </p>
         </div>
@@ -1461,7 +1463,7 @@ function StepPix({
           type="button"
           onClick={onCopiar}
           disabled={!pixCode}
-          className={`inline-flex min-h-[52px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-md px-5 text-[15px] font-extrabold uppercase tracking-[0.03em] transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+          className={`inline-flex min-h-[52px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-md px-5 text-fs15 font-extrabold uppercase tracking-[0.03em] transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
             copiado
               ? "bg-ink-900 text-white"
               : "bg-donate text-donate-ink shadow-[0_8px_20px_-8px_rgba(27,138,75,.7)] hover:bg-donate-hover"
@@ -1475,7 +1477,7 @@ function StepPix({
             clicar em nada depois de pagar. */}
         <p
           aria-live="polite"
-          className="flex items-center justify-center gap-1.5 text-center text-[12px] font-semibold text-ink-600"
+          className="flex items-center justify-center gap-1.5 text-center text-fs12 font-semibold text-ink-600"
         >
           <span className="relative flex h-[8px] w-[8px] shrink-0">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-donate opacity-60" />
@@ -1494,15 +1496,15 @@ function StepPix({
             <li key={passo.titulo} className="flex gap-3">
               <span
                 aria-hidden="true"
-                className="mt-0.5 flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full bg-action text-[12px] font-extrabold text-action-ink"
+                className="mt-0.5 flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full bg-action text-fs12 font-extrabold text-action-ink"
               >
                 {i + 1}
               </span>
               <span className="flex min-w-0 flex-col">
-                <span className="text-[10px] font-extrabold uppercase tracking-[0.1em] text-ink-600">
+                <span className="text-fs10 font-extrabold uppercase tracking-[0.1em] text-ink-600">
                   {passo.titulo}
                 </span>
-                <span className="text-[14px] leading-[1.45] text-ink-900">
+                <span className="text-fs14 leading-[1.45] text-ink-900">
                   {passo.texto}
                 </span>
               </span>
@@ -1517,7 +1519,7 @@ function StepPix({
           Ou escaneie o QR Code
         </TituloCartao>
 
-        <p className="text-[13px] leading-[1.45] text-ink-600">
+        <p className="text-fs13 leading-[1.45] text-ink-600">
           Use a câmera do celular para escanear e pagar diretamente
         </p>
 
@@ -1546,17 +1548,17 @@ function StepPix({
           <IconShield size={18} />
         </span>
         <span className="flex min-w-0 flex-1 flex-col">
-          <span className="text-[14px] font-extrabold leading-tight">
+          <span className="text-fs14 font-extrabold leading-tight">
             Pagamento 100% seguro
           </span>
-          <span className="text-[12px] leading-tight text-white/75">
+          <span className="text-fs12 leading-tight text-white/75">
             Verificado pela {pix.receiver}
           </span>
         </span>
         {/* Quanto tempo o código vale, tirado da própria configuração do
             gateway (`payments.expirationSeconds`) - um "24h" escrito à mão
             continuaria dizendo 24 no dia em que a validade mudasse. */}
-        <span className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-highlight px-2.5 py-1 text-[12px] font-extrabold text-ink-900">
+        <span className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-highlight px-2.5 py-1 text-fs12 font-extrabold text-ink-900">
           <IconClock size={14} />
           {VALIDADE_HORAS}h
         </span>

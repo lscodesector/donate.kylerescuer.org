@@ -50,11 +50,11 @@ export function Missao() {
             isso tirar o `p-6/sm:p-8/md:p-12` daqui não cola o texto na borda
             da tela nem encosta na seção de cima. */}
         <Reveal className="mx-auto flex max-w-[760px] flex-col items-center gap-5 text-center">
-          <p className="text-[13px] font-extrabold uppercase tracking-[0.12em] text-accent">
+          <p className="text-fs13 font-extrabold uppercase tracking-[0.12em] text-accent">
             {missao.eyebrow}
           </p>
 
-          <h2 className="max-w-[24ch] text-balance text-[clamp(1.375rem,1.05rem+1.3vw,2rem)] font-extrabold leading-[1.2] text-ink-900">
+          <h2 className="max-w-[24ch] text-balance text-[clamp(1.279rem,0.977rem+1.209vw,1.86rem)] font-extrabold leading-[1.2] text-ink-900">
             {missao.statement}
           </h2>
 
@@ -73,7 +73,7 @@ export function Missao() {
             {missao.paragraphs.map((paragraph) => (
               <p
                 key={paragraph}
-                className="text-[16px] leading-[1.65] text-ink-600"
+                className="text-fs16 leading-[1.65] text-ink-600"
               >
                 {comRealces(paragraph, missao.realces)}
               </p>
@@ -88,7 +88,7 @@ export function Missao() {
               com os seis realces dos parágrafos: numa seção em que vermelho
               significa "leia esta frase", um bloco inteiro vermelho tira o
               sentido da marcação. A moldura sozinha já destaca a citação. */}
-          <blockquote className="w-full max-w-[58ch] rounded-md border-l-4 border-action bg-action/[.06] p-4 text-left text-[15px] font-semibold leading-[1.6] text-ink-900 sm:p-5">
+          <blockquote className="w-full max-w-[58ch] rounded-md border-l-4 border-action bg-action/[.06] p-4 text-left text-fs15 font-semibold leading-[1.6] text-ink-900 sm:p-5">
             {missao.quote}
           </blockquote>
 
@@ -96,7 +96,7 @@ export function Missao() {
             {missao.paragraphsAfter.map((paragraph) => (
               <p
                 key={paragraph}
-                className="text-[16px] leading-[1.65] text-ink-600"
+                className="text-fs16 leading-[1.65] text-ink-600"
               >
                 {comRealces(paragraph, missao.realces)}
               </p>

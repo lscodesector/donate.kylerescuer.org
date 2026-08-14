@@ -62,7 +62,7 @@ export function DoarAgora() {
             página explicar. */}
         <div className="grid gap-4 sm:grid-cols-2">
           <Reveal className="flex h-full flex-col gap-3 rounded-md border border-ink-900/[.08] bg-ink-900/[.03] p-4">
-            <h3 className="flex items-center justify-center gap-2 text-[14px] font-extrabold text-ink-900 sm:justify-start">
+            <h3 className="flex items-center justify-center gap-2 text-fs14 font-extrabold text-ink-900 sm:justify-start">
               <span className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full bg-action text-action-ink">
                 <IconClose size={14} />
               </span>
@@ -75,7 +75,7 @@ export function DoarAgora() {
               {impactCompare.without.map((text) => (
                 <li
                   key={text}
-                  className="flex justify-center gap-2 text-center text-[14px] leading-[1.5] text-ink-600 sm:justify-start sm:text-left"
+                  className="flex justify-center gap-2 text-center text-fs14 leading-[1.5] text-ink-600 sm:justify-start sm:text-left"
                 >
                   <span
                     aria-hidden="true"
@@ -91,7 +91,7 @@ export function DoarAgora() {
             delay={1}
             className="flex h-full flex-col gap-3 rounded-md border border-donate/25 bg-donate/[.07] p-4"
           >
-            <h3 className="flex items-center justify-center gap-2 text-[14px] font-extrabold text-ink-900 sm:justify-start">
+            <h3 className="flex items-center justify-center gap-2 text-fs14 font-extrabold text-ink-900 sm:justify-start">
               <span className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full bg-donate text-donate-ink">
                 <IconCheck size={14} />
               </span>
@@ -101,7 +101,7 @@ export function DoarAgora() {
               {impactCompare.with.map((text) => (
                 <li
                   key={text}
-                  className="flex justify-center gap-2 text-center text-[14px] leading-[1.5] text-ink-600 sm:justify-start sm:text-left"
+                  className="flex justify-center gap-2 text-center text-fs14 leading-[1.5] text-ink-600 sm:justify-start sm:text-left"
                 >
                   <span
                     aria-hidden="true"
@@ -117,7 +117,7 @@ export function DoarAgora() {
         {/* A frase que fecha o argumento, e logo abaixo o único botão da
             seção. Juntos de propósito: é a frase que dá sentido ao clique. */}
         <Reveal delay={2} className="flex flex-col items-center gap-4 text-center">
-          <p className="max-w-[62ch] text-[15px] font-semibold leading-[1.6] text-ink-900">
+          <p className="max-w-[62ch] text-fs15 font-semibold leading-[1.6] text-ink-900">
             {impactCompare.closing}
           </p>
 
@@ -125,14 +125,14 @@ export function DoarAgora() {
               então o respiro lateral é o que decide se ele cabe numa tela de
               320px - com `px-8` fixo, "Quero ajudar agora" em maiúsculas
               estourava a largura em vez de descer para a segunda linha. */}
-          <DonateMenuButton className="inline-flex min-h-[60px] w-full items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-donate px-5 text-[clamp(1rem,0.95rem+0.3vw,1.125rem)] font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow-[0_12px_34px_-10px_rgba(27,138,75,.6)] transition-colors hover:bg-donate-hover sm:px-8">
+          <DonateMenuButton className="inline-flex min-h-[60px] w-full items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-donate px-5 text-[clamp(0.93rem,0.883rem+0.279vw,1.046rem)] font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow-[0_12px_34px_-10px_rgba(27,138,75,.6)] transition-colors hover:bg-donate-hover sm:px-8">
             <IconHeart size={20} />
             {copy.doar.cta}
           </DonateMenuButton>
 
           {/* Linha de confiança, não um segundo CTA: é a última objeção
               ("é seguro?") respondida no ponto em que ela aparece. */}
-          <p className="flex flex-wrap items-center justify-center gap-x-1.5 text-center text-[12px] font-semibold text-ink-600">
+          <p className="flex flex-wrap items-center justify-center gap-x-1.5 text-center text-fs12 font-semibold text-ink-600">
             <IconShield size={14} className="shrink-0 text-donate" />
             {copy.doar.seal}
           </p>

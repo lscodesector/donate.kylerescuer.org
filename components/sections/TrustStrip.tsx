@@ -28,7 +28,7 @@ export function TrustStrip() {
           baixa, e centralizados eles lêem como um bloco só. Alinhados à
           esquerda, a última linha sobrava no meio da faixa. */}
       <div className="container-narrow flex max-w-[660px] flex-col items-center gap-3 text-center">
-        <Reveal className="text-[15px] font-extrabold text-ink-900">{trustStrip.title}</Reveal>
+        <Reveal className="text-fs15 font-extrabold text-ink-900">{trustStrip.title}</Reveal>
 
         <ul className="flex flex-wrap justify-center gap-x-4 gap-y-2">
           {trustStrip.items.map((item) => {
@@ -36,7 +36,7 @@ export function TrustStrip() {
             return (
               <li
                 key={item.label}
-                className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-ink-600"
+                className="inline-flex items-center gap-1.5 text-fs13 font-semibold text-ink-600"
               >
                 <Icon size={15} className="shrink-0 text-donate" />
                 {item.label}

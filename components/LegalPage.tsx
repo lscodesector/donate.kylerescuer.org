@@ -33,24 +33,24 @@ export function LegalPage({ documento }: { documento: DocumentoLegal }) {
               `history.back()` que quebra quando a página é aberta direto. */}
           <Link
             href="/"
-            className="inline-flex w-fit items-center gap-1.5 text-[14px] font-extrabold text-ink-600 transition-colors hover:text-action"
+            className="inline-flex w-fit items-center gap-1.5 text-fs14 font-extrabold text-ink-600 transition-colors hover:text-action"
           >
             <IconArrowLeft size={16} />
             Voltar para a campanha
           </Link>
 
-          <p className="mt-6 text-[12px] font-extrabold uppercase tracking-[0.12em] text-accent">
+          <p className="mt-6 text-fs12 font-extrabold uppercase tracking-[0.12em] text-accent">
             Legal
           </p>
 
-          <h1 className="mt-1 text-[clamp(1.5rem,1.2rem+1.4vw,2.125rem)] font-extrabold leading-[1.15] text-ink-900">
+          <h1 className="mt-1 text-[clamp(1.395rem,1.116rem+1.302vw,1.976rem)] font-extrabold leading-[1.15] text-ink-900">
             {documento.titulo}
           </h1>
 
           {/* Quem responde pelo documento e desde quando ele vale. A data é
               parte do conteúdo jurídico, não enfeite: é ela que diz qual versão
               a pessoa está lendo. */}
-          <p className="mt-2 flex flex-wrap items-center gap-x-1.5 text-[13px] text-ink-600">
+          <p className="mt-2 flex flex-wrap items-center gap-x-1.5 text-fs13 text-ink-600">
             <IconShield size={15} className="shrink-0 text-donate" />
             {org.supporter} · CNPJ <span className="tabular-nums">{org.cnpj}</span> ·
             Atualizado em {documento.atualizado}
@@ -63,7 +63,7 @@ export function LegalPage({ documento }: { documento: DocumentoLegal }) {
                   return (
                     <h2
                       key={i}
-                      className="mt-8 text-[19px] font-extrabold leading-[1.3] text-ink-900 first:mt-0"
+                      className="mt-8 text-fs19 font-extrabold leading-[1.3] text-ink-900 first:mt-0"
                     >
                       {bloco.texto}
                     </h2>
@@ -73,7 +73,7 @@ export function LegalPage({ documento }: { documento: DocumentoLegal }) {
                   return (
                     <h3
                       key={i}
-                      className="mt-5 text-[15px] font-extrabold leading-[1.35] text-ink-900"
+                      className="mt-5 text-fs15 font-extrabold leading-[1.35] text-ink-900"
                     >
                       {bloco.texto}
                     </h3>
@@ -85,7 +85,7 @@ export function LegalPage({ documento }: { documento: DocumentoLegal }) {
                       {bloco.itens.map((item) => (
                         <li
                           key={item}
-                          className="flex gap-2.5 text-[15px] leading-[1.7] text-ink-600"
+                          className="flex gap-2.5 text-fs15 leading-[1.7] text-ink-600"
                         >
                           <span
                             aria-hidden="true"
@@ -101,7 +101,7 @@ export function LegalPage({ documento }: { documento: DocumentoLegal }) {
                   return (
                     <p
                       key={i}
-                      className="mt-4 break-words rounded-md border border-cp-borda bg-surface-alt p-4 text-[15px] font-semibold leading-[1.6] text-ink-900"
+                      className="mt-4 break-words rounded-md border border-cp-borda bg-surface-alt p-4 text-fs15 font-semibold leading-[1.6] text-ink-900"
                     >
                       {bloco.texto}
                     </p>
@@ -109,7 +109,7 @@ export function LegalPage({ documento }: { documento: DocumentoLegal }) {
 
                 default:
                   return (
-                    <p key={i} className="mt-4 text-[15px] leading-[1.7] text-ink-600">
+                    <p key={i} className="mt-4 text-fs15 leading-[1.7] text-ink-600">
                       {bloco.texto}
                     </p>
                   );
@@ -117,7 +117,7 @@ export function LegalPage({ documento }: { documento: DocumentoLegal }) {
             })}
           </div>
 
-          <p className="mt-8 border-t border-ink-900/10 pt-4 text-[13px] text-ink-600">
+          <p className="mt-8 border-t border-ink-900/10 pt-4 text-fs13 text-ink-600">
             Última atualização: {documento.atualizado}
           </p>
 
@@ -131,7 +131,7 @@ export function LegalPage({ documento }: { documento: DocumentoLegal }) {
                 <Link
                   key={outro.slug}
                   href={`/${outro.slug}`}
-                  className="inline-flex min-h-[44px] items-center gap-2 whitespace-nowrap rounded-full border border-cp-borda px-4 text-[14px] font-extrabold text-ink-900 transition-colors hover:border-action hover:text-action"
+                  className="inline-flex min-h-[44px] items-center gap-2 whitespace-nowrap rounded-full border border-cp-borda px-4 text-fs14 font-extrabold text-ink-900 transition-colors hover:border-action hover:text-action"
                 >
                   {outro.rotulo}
                 </Link>

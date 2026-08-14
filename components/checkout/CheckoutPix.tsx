@@ -105,7 +105,7 @@ export function CheckoutPix({
         <div className="flex flex-col gap-5 rounded-md border border-ink-900/10 bg-surface p-4 shadow sm:p-6">
           <Link
             href="/#doar"
-            className="inline-flex min-h-[44px] w-fit items-center gap-2 text-[14px] font-extrabold text-ink-900 transition-colors hover:text-action"
+            className="inline-flex min-h-[44px] w-fit items-center gap-2 text-fs14 font-extrabold text-ink-900 transition-colors hover:text-action"
           >
             <IconArrowLeft size={18} />
             Voltar
@@ -128,20 +128,20 @@ export function CheckoutPix({
                 ) : (
                   <div className="flex h-full w-full flex-col items-center justify-center gap-1 border-2 border-dashed border-ink-900/15 text-ink-300">
                     <IconBowl size={22} />
-                    <span className="text-[10px] font-semibold">{tier.kg}kg</span>
+                    <span className="text-fs10 font-semibold">{tier.kg}kg</span>
                   </div>
                 )}
               </div>
             )}
 
             <div className="flex min-w-0 flex-col gap-0.5">
-              <h1 className="text-[15px] font-extrabold uppercase tracking-[0.04em] text-ink-900">
+              <h1 className="text-fs15 font-extrabold uppercase tracking-[0.04em] text-ink-900">
                 {tier ? `${tier.kg}kg de ração` : titulo}
               </h1>
-              <p className="text-[clamp(1.375rem,1.2rem+0.8vw,1.75rem)] font-extrabold leading-tight text-donate">
+              <p className="text-[clamp(1.279rem,1.116rem+0.744vw,1.628rem)] font-extrabold leading-tight text-donate">
                 {price}
               </p>
-              <p className="text-[13px] leading-[1.45] text-ink-600">
+              <p className="text-fs13 leading-[1.45] text-ink-600">
                 {tier
                   ? `Alimenta aproximadamente ${tier.animals} animais por cerca de ${tier.days} dias.`
                   : descricao}
@@ -157,21 +157,21 @@ export function CheckoutPix({
                 aria-live="polite"
               >
                 <span className="h-[54px] w-[54px] animate-spin rounded-full border-4 border-ink-900/10 border-t-donate" />
-                <h2 className="text-[clamp(1.125rem,1rem+0.6vw,1.5rem)] font-extrabold text-ink-900">
+                <h2 className="text-[clamp(1.046rem,0.93rem+0.558vw,1.395rem)] font-extrabold text-ink-900">
                   Gerando seu QR Code Pix
                 </h2>
-                <p className="text-[13px] text-ink-600">
+                <p className="text-fs13 text-ink-600">
                   Preparando o pagamento da sua doação…
                 </p>
               </div>
             ) : (
               <div className="flex flex-col gap-4 anim-fade-up">
                 <div className="flex flex-col items-center gap-1 text-center">
-                  <p className="inline-flex items-center gap-2 text-[12px] font-extrabold uppercase tracking-[0.1em] text-donate">
+                  <p className="inline-flex items-center gap-2 text-fs12 font-extrabold uppercase tracking-[0.1em] text-donate">
                     <IconPixMark size={16} />
                     Pague com Pix
                   </p>
-                  <h2 className="text-[clamp(1.125rem,1rem+0.6vw,1.375rem)] font-extrabold text-ink-900">
+                  <h2 className="text-[clamp(1.046rem,0.93rem+0.558vw,1.279rem)] font-extrabold text-ink-900">
                     Escaneie o QR Code para doar {price}
                   </h2>
                 </div>
@@ -185,12 +185,12 @@ export function CheckoutPix({
                 />
 
                 <div className="flex flex-col gap-2">
-                  <span className="text-[12px] font-extrabold uppercase tracking-[0.06em] text-ink-600">
+                  <span className="text-fs12 font-extrabold uppercase tracking-[0.06em] text-ink-600">
                     Ou use o Pix copia e cola
                   </span>
                   <p
                     id="pix-copia-cola"
-                    className="max-h-[72px] overflow-y-auto break-all rounded-sm border border-ink-900/10 bg-surface-alt p-3 text-[11px] leading-[1.5] text-ink-600"
+                    className="max-h-[72px] overflow-y-auto break-all rounded-sm border border-ink-900/10 bg-surface-alt p-3 text-fs11 leading-[1.5] text-ink-600"
                   >
                     {copiaECola}
                   </p>
@@ -198,7 +198,7 @@ export function CheckoutPix({
                   <button
                     type="button"
                     onClick={copiar}
-                    className={`inline-flex min-h-[52px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full px-6 text-[15px] font-extrabold uppercase tracking-[0.03em] transition-colors ${
+                    className={`inline-flex min-h-[52px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full px-6 text-fs15 font-extrabold uppercase tracking-[0.03em] transition-colors ${
                       copiado
                         ? "bg-ink-900 text-white"
                         : "bg-donate text-donate-ink hover:bg-donate-hover"
@@ -209,7 +209,7 @@ export function CheckoutPix({
                   </button>
                 </div>
 
-                <div className="flex flex-col gap-1 rounded-sm bg-surface-alt p-3 text-[13px] leading-[1.5] text-ink-600">
+                <div className="flex flex-col gap-1 rounded-sm bg-surface-alt p-3 text-fs13 leading-[1.5] text-ink-600">
                   <span className="font-extrabold text-ink-900">Recebedor</span>
                   <span>
                     {pix.receiver} · CNPJ {org.cnpj}
@@ -231,7 +231,7 @@ export function CheckoutPix({
                 */}
                 <p
                   aria-live="polite"
-                  className="flex items-center justify-center gap-2 text-center text-[13px] font-semibold text-ink-600"
+                  className="flex items-center justify-center gap-2 text-center text-fs13 font-semibold text-ink-600"
                 >
                   <span className="relative flex h-[8px] w-[8px] shrink-0">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-donate opacity-60" />
@@ -243,7 +243,7 @@ export function CheckoutPix({
             )}
           </div>
 
-          <p className="flex items-center justify-center gap-1.5 border-t border-ink-900/10 pt-4 text-center text-[12px] font-semibold text-ink-600">
+          <p className="flex items-center justify-center gap-1.5 border-t border-ink-900/10 pt-4 text-center text-fs12 font-semibold text-ink-600">
             <IconShield size={14} className="shrink-0 text-donate" />
             Pagamento direto para a conta da organização · CNPJ verificável
           </p>

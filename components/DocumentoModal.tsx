@@ -117,7 +117,7 @@ export function DocumentoModal() {
           </button>
           <h2
             id="documento-titulo"
-            className="flex-1 truncate text-center text-[15px] font-extrabold leading-tight text-ink-900"
+            className="flex-1 truncate text-center text-fs15 font-extrabold leading-tight text-ink-900"
           >
             {documento.title}
           </h2>
@@ -146,7 +146,7 @@ export function DocumentoModal() {
           {/* Só quando o número é público: o cartão de quem recebe tem, os dos
               abrigos ainda não. Legenda vazia viraria uma linha em branco. */}
           {documento.caption && (
-            <p className="mt-3 text-center text-[13px] font-semibold tabular-nums text-ink-600">
+            <p className="mt-3 text-center text-fs13 font-semibold tabular-nums text-ink-600">
               {documento.caption}
             </p>
           )}

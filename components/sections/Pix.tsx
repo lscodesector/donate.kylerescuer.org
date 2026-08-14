@@ -46,30 +46,30 @@ export function Pix() {
             centralizada igual às outras. O losango do Pix fica: é a marca do
             meio de pagamento, e não um ícone decorativo de título. */}
         <div className="flex flex-col items-center gap-1 text-center">
-          <p className="flex items-center gap-2 text-[13px] font-extrabold uppercase tracking-[0.12em] text-white/80">
+          <p className="flex items-center gap-2 text-fs13 font-extrabold uppercase tracking-[0.12em] text-white/80">
             <IconPixMark size={18} />
             {texts.pix.eyebrow}
           </p>
-          <h2 className="text-[clamp(1.375rem,1.05rem+1.3vw,2.125rem)] font-extrabold leading-[1.15] text-white">
+          <h2 className="text-[clamp(1.279rem,0.977rem+1.209vw,1.976rem)] font-extrabold leading-[1.15] text-white">
             {texts.pix.title}
           </h2>
-          <p className="mx-auto max-w-[54ch] text-[15px] leading-[1.6] text-white/85">
+          <p className="mx-auto max-w-[54ch] text-fs15 leading-[1.6] text-white/85">
             {texts.pix.text}
           </p>
         </div>
 
         <div className="flex flex-col gap-3 rounded-md bg-white p-4 shadow sm:p-5">
           <div className="flex flex-col items-center gap-1 text-center sm:items-start sm:text-left">
-            <span className="text-[12px] font-extrabold uppercase tracking-[0.06em] text-ink-600">
+            <span className="text-fs12 font-extrabold uppercase tracking-[0.06em] text-ink-600">
               Chave {pix.keyType}
             </span>
             <span
               id="pix-key"
-              className="break-all text-[clamp(1rem,0.9rem+0.5vw,1.25rem)] font-extrabold text-ink-900"
+              className="break-all text-[clamp(0.93rem,0.837rem+0.465vw,1.163rem)] font-extrabold text-ink-900"
             >
               {pix.key}
             </span>
-            <span className="text-[13px] text-ink-600">
+            <span className="text-fs13 text-ink-600">
               Recebedor: <strong className="font-semibold text-ink-900">{pix.receiver}</strong>
             </span>
           </div>
@@ -77,7 +77,7 @@ export function Pix() {
           <button
             type="button"
             onClick={copiarChave}
-            className={`inline-flex min-h-[52px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full px-6 text-[15px] font-extrabold uppercase tracking-[0.03em] transition-colors ${
+            className={`inline-flex min-h-[52px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full px-6 text-fs15 font-extrabold uppercase tracking-[0.03em] transition-colors ${
               copied
                 ? "bg-ink-900 text-white"
                 : "bg-donate text-donate-ink hover:bg-donate-hover"
@@ -95,10 +95,10 @@ export function Pix() {
                empilhado no celular (bolinha em cima, texto embaixo), e ficava
                parecendo três blocos soltos em vez de uma lista de passos. */
             <li key={step} className="flex items-start gap-3 text-left">
-              <span className="flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-full bg-white/20 text-[13px] font-extrabold text-white">
+              <span className="flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-full bg-white/20 text-fs13 font-extrabold text-white">
                 {i + 1}
               </span>
-              <p className="pt-0.5 text-[14px] leading-[1.5] text-white/90 sm:text-[15px]">
+              <p className="pt-0.5 text-fs14 leading-[1.5] text-white/90 sm:text-fs15">
                 {step}
               </p>
             </li>

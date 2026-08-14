@@ -62,12 +62,12 @@ export function ImpactStats() {
             value={stat.value}
             prefix={stat.prefix}
             suffix={stat.suffix}
-            className="text-[clamp(1.625rem,1.3rem+1.2vw,2.25rem)] font-extrabold leading-none text-donate-text"
+            className="text-[clamp(1.511rem,1.209rem+1.116vw,2.093rem)] font-extrabold leading-none text-donate-text"
           />
-          <span className="text-[13px] font-extrabold leading-tight text-ink-900">
+          <span className="text-fs13 font-extrabold leading-tight text-ink-900">
             {stat.label}
           </span>
-          <span className="text-[12px] leading-[1.4] text-ink-600">{stat.note}</span>
+          <span className="text-fs12 leading-[1.4] text-ink-600">{stat.note}</span>
         </li>
       ))}
     </ul>

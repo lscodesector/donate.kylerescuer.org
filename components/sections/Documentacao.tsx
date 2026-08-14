@@ -39,15 +39,15 @@ export function Documentacao() {
             rel="noopener noreferrer"
             className="flex h-full flex-col items-center gap-1 rounded-md border border-ink-900/10 bg-surface p-4 text-center shadow transition-colors hover:border-donate/50 sm:items-start sm:text-left"
           >
-            <span className="flex items-center gap-2 text-[12px] font-extrabold uppercase tracking-[0.06em] text-accent">
+            <span className="flex items-center gap-2 text-fs12 font-extrabold uppercase tracking-[0.06em] text-accent">
               <IconWhatsApp size={16} />
               WhatsApp
             </span>
-            <span className="text-[14px] font-semibold text-ink-900">{org.whatsappDisplay}</span>
-            <span className="text-[12px] leading-[1.4] text-ink-600">
+            <span className="text-fs14 font-semibold text-ink-900">{org.whatsappDisplay}</span>
+            <span className="text-fs12 leading-[1.4] text-ink-600">
               Fale diretamente com nossa equipe.
             </span>
-            <span className="mt-auto pt-2 text-[13px] font-extrabold text-donate-text">
+            <span className="mt-auto pt-2 text-fs13 font-extrabold text-donate-text">
               Falar no WhatsApp
             </span>
           </a>
@@ -56,16 +56,16 @@ export function Documentacao() {
             href={`mailto:${org.email}`}
             className="flex h-full flex-col items-center gap-1 rounded-md border border-ink-900/10 bg-surface p-4 text-center shadow transition-colors hover:border-donate/50 sm:items-start sm:text-left"
           >
-            <span className="flex items-center gap-2 text-[12px] font-extrabold uppercase tracking-[0.06em] text-accent">
+            <span className="flex items-center gap-2 text-fs12 font-extrabold uppercase tracking-[0.06em] text-accent">
               <IconMail size={16} />
               E-mail
             </span>
             {/* `break-words` e não `break-all`: só quebra quando não cabe, e no
                 lugar certo. */}
-            <span className="break-words text-[13px] font-semibold leading-[1.35] text-ink-900">
+            <span className="break-words text-fs13 font-semibold leading-[1.35] text-ink-900">
               {org.email}
             </span>
-            <span className="text-[12px] leading-[1.4] text-ink-600">
+            <span className="text-fs12 leading-[1.4] text-ink-600">
               Dúvidas, informações e prestação de contas.
             </span>
             {/* O card inteiro já é o `mailto:`, mas sem esta linha ele era o
@@ -73,7 +73,7 @@ export function Documentacao() {
                 que se lê como informação e não como "clique aqui". `span`, e
                 não `button`: um botão de verdade dentro do link seria
                 interativo dentro de interativo. */}
-            <span className="mt-auto flex items-center gap-1.5 pt-2 text-[13px] font-extrabold text-donate-text">
+            <span className="mt-auto flex items-center gap-1.5 pt-2 text-fs13 font-extrabold text-donate-text">
               <IconMail size={15} className="shrink-0" />
               Enviar e-mail
             </span>
@@ -85,16 +85,16 @@ export function Documentacao() {
             rel="noopener noreferrer"
             className="flex h-full flex-col items-center gap-1 rounded-md border border-ink-900/10 bg-surface p-4 text-center shadow transition-colors hover:border-donate/50 sm:items-start sm:text-left sm:col-span-2"
           >
-            <span className="flex items-center gap-2 text-[12px] font-extrabold uppercase tracking-[0.06em] text-accent">
+            <span className="flex items-center gap-2 text-fs12 font-extrabold uppercase tracking-[0.06em] text-accent">
               <IconPin size={16} />
               Endereço
             </span>
-            <address className="text-[14px] not-italic leading-[1.5] text-ink-900">
+            <address className="text-fs14 not-italic leading-[1.5] text-ink-900">
               {org.address.line1}
               <br />
               {org.address.line2}, {org.address.city} · {org.address.zip}
             </address>
-            <span className="mt-auto pt-2 text-[13px] font-extrabold text-donate-text">
+            <span className="mt-auto pt-2 text-fs13 font-extrabold text-donate-text">
               Ver localização
             </span>
           </a>
@@ -107,11 +107,11 @@ export function Documentacao() {
               rel="noopener noreferrer"
               className="flex h-full flex-col items-center gap-1 rounded-md border border-ink-900/10 bg-surface p-4 text-center shadow transition-colors hover:border-donate/50 sm:items-start sm:text-left sm:col-span-2"
             >
-              <span className="flex items-center gap-2 text-[12px] font-extrabold uppercase tracking-[0.06em] text-accent">
+              <span className="flex items-center gap-2 text-fs12 font-extrabold uppercase tracking-[0.06em] text-accent">
                 <IconStar size={16} />
                 Avaliação no Google
               </span>
-              <span className="text-[14px] font-semibold text-ink-900">
+              <span className="text-fs14 font-semibold text-ink-900">
                 {googleReviews.rating.toFixed(1)} · {googleReviews.reviewCount} avaliações
               </span>
             </a>

@@ -35,16 +35,16 @@ export function ComoFunciona() {
     <section id="como-funciona" className="surface-alt py-[clamp(2.5rem,6vh,4.5rem)]">
       <div className="container-narrow flex max-w-[660px] flex-col gap-[clamp(1.25rem,3.5vh,2rem)]">
         <div className="flex flex-col items-center gap-2 text-center">
-          <p className="rule-accent text-[13px] font-extrabold uppercase tracking-[0.12em] text-accent">
+          <p className="rule-accent text-fs13 font-extrabold uppercase tracking-[0.12em] text-accent">
             {copy.comoFunciona.eyebrow}
           </p>
-          <h2 className="text-[clamp(1.375rem,1.05rem+1.3vw,2.125rem)] font-extrabold leading-[1.15] text-ink-900">
+          <h2 className="text-[clamp(1.279rem,0.977rem+1.209vw,1.976rem)] font-extrabold leading-[1.15] text-ink-900">
             {copy.comoFunciona.title}
           </h2>
 
           {/* Selo em pílula verde: é a objeção que este bloco responde, e ela
               vale mais lida de relance do que dentro de um parágrafo. */}
-          <p className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-donate/10 px-3 py-1.5 text-[13px] font-extrabold text-donate-text">
+          <p className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-donate/10 px-3 py-1.5 text-fs13 font-extrabold text-donate-text">
             <IconShield size={15} className="shrink-0" />
             {copy.comoFunciona.seal}
           </p>
@@ -67,17 +67,17 @@ export function ComoFunciona() {
                   <Icon size={24} />
                   <span
                     aria-hidden="true"
-                    className="absolute -right-1 -top-1 flex h-[20px] w-[20px] items-center justify-center rounded-full bg-donate text-[11px] font-extrabold text-donate-ink"
+                    className="absolute -right-1 -top-1 flex h-[20px] w-[20px] items-center justify-center rounded-full bg-donate text-fs11 font-extrabold text-donate-ink"
                   >
                     {i + 1}
                   </span>
                 </span>
 
                 <div className="flex flex-col gap-1">
-                  <h3 className="text-[15px] font-extrabold leading-tight text-ink-900">
+                  <h3 className="text-fs15 font-extrabold leading-tight text-ink-900">
                     {step.title}
                   </h3>
-                  <p className="text-[13px] leading-[1.5] text-ink-600">{step.text}</p>
+                  <p className="text-fs13 leading-[1.5] text-ink-600">{step.text}</p>
                 </div>
               </Reveal>
             );

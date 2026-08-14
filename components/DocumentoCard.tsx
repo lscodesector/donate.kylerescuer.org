@@ -19,9 +19,9 @@ export function DocumentoCard() {
       <div className="flex flex-col items-center gap-3 border-b border-ink-900/[.07] p-4 text-center sm:flex-row sm:items-start sm:text-left">
         <IconFile size={20} className="shrink-0 text-action sm:mt-0.5" />
         <div className="flex flex-col">
-          <span className="text-[14px] font-extrabold text-ink-900">{cnpjDocument.title}</span>
-          <span className="text-[12px] text-ink-600">{cnpjDocument.subtitle}</span>
-          <span className="mt-1 text-[13px] font-semibold tabular-nums text-ink-900">
+          <span className="text-fs14 font-extrabold text-ink-900">{cnpjDocument.title}</span>
+          <span className="text-fs12 text-ink-600">{cnpjDocument.subtitle}</span>
+          <span className="mt-1 text-fs13 font-semibold tabular-nums text-ink-900">
             CNPJ {org.cnpj}
           </span>
         </div>
@@ -51,7 +51,7 @@ export function DocumentoCard() {
           e.preventDefault();
           openDocumentoModal();
         }}
-        className="flex min-h-[48px] items-center justify-center gap-2 border-t border-ink-900/10 px-4 text-[13px] font-extrabold text-accent transition-colors hover:bg-surface-alt sm:justify-start"
+        className="flex min-h-[48px] items-center justify-center gap-2 border-t border-ink-900/10 px-4 text-fs13 font-extrabold text-accent transition-colors hover:bg-surface-alt sm:justify-start"
       >
         <IconFile size={15} />
         Ver documento

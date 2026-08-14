@@ -78,7 +78,7 @@ export function StickyDonateBar() {
             contador encolhe - e encolhe antes do botão, porque "Doar agora"
             não pode nunca quebrar linha ou sumir. */}
         <div className="flex w-full min-w-0 max-w-[520px] flex-col gap-1">
-          <div className="flex items-baseline justify-between gap-2 text-[13px] sm:text-[14px]">
+          <div className="flex items-baseline justify-between gap-2 text-fs13 sm:text-fs14">
             <span className="font-extrabold text-ink-900 tabular-nums">
               {estado ? brl(estado.raised) : "—"}
             </span>
@@ -105,7 +105,7 @@ export function StickyDonateBar() {
             />
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-[11px] font-semibold">
+          <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-fs11 font-semibold">
             <span className="text-donate-text">
               {estado ? `${estado.percent}% da meta` : " "}
             </span>
@@ -122,7 +122,7 @@ export function StickyDonateBar() {
         <button
           type="button"
           onClick={() => openDonationModal()}
-          className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-donate px-4 text-[13px] font-extrabold uppercase tracking-[0.02em] text-donate-ink shadow-[0_8px_20px_-8px_rgba(27,138,75,.6)] transition-colors hover:bg-donate-hover sm:min-h-[48px] sm:px-6 sm:text-[14px]"
+          className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-donate px-4 text-fs13 font-extrabold uppercase tracking-[0.02em] text-donate-ink shadow-[0_8px_20px_-8px_rgba(27,138,75,.6)] transition-colors hover:bg-donate-hover sm:min-h-[48px] sm:px-6 sm:text-fs14"
         >
           <IconHeart size={17} />
           Doar agora

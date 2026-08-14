@@ -133,15 +133,19 @@ export function Header() {
           `MonthlyDonateButton`). Quem quer doar uma vez tem o "doar agora" da
           barra fixa, do hero e do fim da página.
 
-          "Seja doador" e não "Doar todo mês": o convite é entrar para um grupo,
-          não fazer mais uma transação - e é a mesma frase em qualquer largura,
-          porque ela já é curta o bastante para o celular. O rótulo por extenso
-          da recorrência ("Seja doador mensal") fica no menu lateral, onde há
-          espaço para a linha inteira.
+          "Apadrinhe", uma palavra só: o convite é assumir um animal, não fazer
+          mais uma transação - e cabe em qualquer largura sem encolher a fonte.
+          O rótulo por extenso da recorrência ("Apadrinhe todo mês") fica no
+          menu lateral, onde há espaço para a linha inteira.
+
+          A cor é o amarelo `--sos-monthly` (#F3B639), e não o verde de doação:
+          o apadrinhamento é o único pedido que se repete todo mês, e agora ele
+          tem uma cor só dele em toda a página. Tinta preta por cima - branco
+          sobre este amarelo é ilegível (ver o token em `globals.css`).
         */}
-        <MonthlyDonateButton className="inline-flex h-[44px] shrink-0 items-center justify-center justify-self-end gap-2 whitespace-nowrap rounded-full bg-donate px-4 text-[14px] font-extrabold text-donate-ink shadow transition-colors hover:bg-donate-hover sm:px-5">
+        <MonthlyDonateButton className="inline-flex h-[44px] shrink-0 items-center justify-center justify-self-end gap-2 whitespace-nowrap rounded-full bg-monthly px-4 text-fs14 font-extrabold text-monthly-ink shadow transition-colors hover:bg-monthly-hover sm:px-5">
           <IconHeart size={16} />
-          Seja doador
+          Apadrinhe
         </MonthlyDonateButton>
       </div>
 
@@ -232,7 +236,7 @@ export function Header() {
                   <Link
                     href={href}
                     onClick={() => setMenuOpen(false)}
-                    className="relative flex min-h-[54px] items-center gap-3 px-4 text-[15px] font-extrabold text-ink-900 transition-colors before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:scale-y-0 before:bg-action before:transition-transform hover:bg-surface-alt hover:before:scale-y-100 focus-visible:bg-surface-alt"
+                    className="relative flex min-h-[54px] items-center gap-3 px-4 text-fs15 font-extrabold text-ink-900 transition-colors before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:scale-y-0 before:bg-action before:transition-transform hover:bg-surface-alt hover:before:scale-y-100 focus-visible:bg-surface-alt"
                   >
                     <Icon size={19} className="shrink-0 text-action" />
                     {label}
@@ -249,7 +253,7 @@ export function Header() {
                   aba de doação única. Aqui o `MonthlyDonateButton` não serve:
                   ele não tem como também fechar a gaveta.
 
-                  Aqui o rótulo diz "mensal" por extenso, e na barra não: este
+                  Aqui o rótulo diz "todo mês" por extenso, e na barra não: este
                   botão tem a largura da gaveta inteira, e quem abriu o menu
                   parou para escolher - vale gastar a palavra que promete
                   exatamente o que a próxima tela vai oferecer. */}
@@ -262,10 +266,10 @@ export function Header() {
                   e.preventDefault();
                   openDonationModal({ freq: "mensal", somenteMensal: true });
                 }}
-                className="inline-flex min-h-[46px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-donate px-5 text-[15px] font-extrabold text-donate-ink shadow transition-colors hover:bg-donate-hover"
+                className="inline-flex min-h-[46px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-monthly px-5 text-fs15 font-extrabold text-monthly-ink shadow transition-colors hover:bg-monthly-hover"
               >
                 <IconHeart size={18} />
-                Seja doador mensal
+                Apadrinhe todo mês
               </a>
 
               {/* O único destino fora desta página, e por isso ele fica depois
@@ -277,13 +281,13 @@ export function Header() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setMenuOpen(false)}
-                className="inline-flex min-h-[46px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full border-2 border-ink-900/[.12] bg-surface px-5 text-[15px] font-extrabold text-ink-900 transition-colors hover:border-action hover:text-action"
+                className="inline-flex min-h-[46px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full border-2 border-ink-900/[.12] bg-surface px-5 text-fs15 font-extrabold text-ink-900 transition-colors hover:border-action hover:text-action"
               >
                 {org.humanHelp.label}
                 <IconArrowUpRight size={16} className="shrink-0" />
               </a>
 
-              <p className="pt-1 text-[12px] leading-[1.4] text-ink-600">
+              <p className="pt-1 text-fs12 leading-[1.4] text-ink-600">
                 <span className="font-extrabold text-action">{org.name}</span>
                 <br />
                 Levando ajuda a quem não tem voz.

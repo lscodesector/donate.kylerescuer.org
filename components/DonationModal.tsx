@@ -232,7 +232,7 @@ export function DonationModal() {
    * 35%); a outra fica em contorno frio. Raio de 8px, como lá.
    */
   const aba = (destino: Freq) =>
-    `flex min-h-[42px] items-center justify-center rounded-[8px] px-3 text-[13px] font-bold transition-colors ${
+    `flex min-h-[42px] items-center justify-center rounded-[8px] px-3 text-fs13 font-bold transition-colors ${
       freq === destino
         ? "bg-action text-white shadow-[0_2px_8px_rgba(191,5,33,.35)]"
         : "border border-cp-borda bg-surface text-cp-legenda hover:border-action/40 hover:text-cp-titulo"
@@ -284,7 +284,7 @@ export function DonationModal() {
                   diz onde a doação vai cair. No caminho normal - que é o do
                   print - o título vem sozinho. */}
               {cause && (
-                <span className="truncate text-[12px] font-extrabold uppercase tracking-[0.08em] text-accent">
+                <span className="truncate text-fs12 font-extrabold uppercase tracking-[0.08em] text-accent">
                   {cause.title}
                 </span>
               )}
@@ -293,7 +293,7 @@ export function DonationModal() {
                   nos números - ver a paleta em `globals.css`. */}
               <h2
                 id="doacao-titulo"
-                className="text-[17px] font-extrabold leading-tight text-cp-titulo"
+                className="text-fs17 font-extrabold leading-tight text-cp-titulo"
               >
                 Qual valor deseja doar?
               </h2>
@@ -315,7 +315,7 @@ export function DonationModal() {
         {/* ── O miolo: a única parte que rola ─────────────────────────── */}
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-[clamp(0.75rem,2.2vh,1.25rem)] sm:px-6">
           {cause && (
-            <p className="mt-3 text-[14px] leading-[1.55] text-ink-600">{cause.text}</p>
+            <p className="mt-3 text-fs14 leading-[1.55] text-ink-600">{cause.text}</p>
           )}
 
           {/* ── A frequência, antes do valor ──────────────────────────────
@@ -398,7 +398,7 @@ export function DonationModal() {
                   /* Cartão do original: 48px de altura, cantos de 10px, borda
                      fria (`--cp-borda`) e o número em azul-ardósia. Marcado, a
                      borda e o texto viram o vermelho de marca. */
-                  className={`relative flex min-h-[48px] flex-col items-center justify-center rounded-[10px] border px-1 py-3 text-[15px] font-bold transition-colors ${
+                  className={`relative flex min-h-[48px] flex-col items-center justify-center rounded-[10px] border px-1 py-3 text-fs15 font-bold transition-colors ${
                     ativo
                       ? "border-action bg-action/[.06] text-action"
                       : "border-cp-borda bg-surface text-cp-numero hover:border-action/40"
@@ -422,7 +422,7 @@ export function DonationModal() {
                     passa a encostar no cartão de cima.
                   */}
                   {amount.popular && (
-                    <span className="absolute -top-[7px] right-1.5 whitespace-nowrap rounded-[4px] bg-[#f5a623] px-1.5 py-[3px] text-[9px] font-bold leading-none text-[#040404]">
+                    <span className="absolute -top-[7px] right-1.5 whitespace-nowrap rounded-[4px] bg-[#f5a623] px-1.5 py-[3px] text-fs9 font-bold leading-none text-[#040404]">
                       popular
                     </span>
                   )}
@@ -431,7 +431,7 @@ export function DonationModal() {
                       dentro de cada um dos nove cartões só engordava a grade. */}
                   {formatBRLCurto(amount.cents).replace(/\s/g, " ")}
                   {amount.teste && (
-                    <span className="block text-[10px] font-extrabold uppercase tracking-[0.06em] text-ink-300">
+                    <span className="block text-fs10 font-extrabold uppercase tracking-[0.06em] text-ink-300">
                       teste
                     </span>
                   )}
@@ -440,7 +440,7 @@ export function DonationModal() {
             })}
           </div>
 
-          <label className="mt-[clamp(0.75rem,2.2vh,1.25rem)] block text-[14px] font-semibold text-[#2c2c34]">
+          <label className="mt-[clamp(0.75rem,2.2vh,1.25rem)] block text-fs14 font-semibold text-[#2c2c34]">
             Ou o que o seu coração mandar ❤️:
             <div
               className={`mt-2 flex overflow-hidden rounded-[10px] border ${
@@ -451,7 +451,7 @@ export function DonationModal() {
             >
               {/* Prefixo em rosa muito claro com o "R$" no vermelho de marca -
                   é o bloco de 58px do checkout de referência. */}
-              <span className="flex w-[58px] shrink-0 items-center justify-center bg-cp-prefixo-bg text-[17px] font-bold text-action">
+              <span className="flex w-[58px] shrink-0 items-center justify-center bg-cp-prefixo-bg text-fs17 font-bold text-action">
                 R$
               </span>
               <input
@@ -467,11 +467,14 @@ export function DonationModal() {
                 onBlur={() => setMostrarMinimo(abaixoDoMinimo)}
                 aria-invalid={mostrarMinimo}
                 placeholder="Valor livre"
+                /* `text-[16px]` fixos, fora da escala fluida: abaixo disso o
+                   Safari do iPhone dá zoom ao focar o campo - ver o mesmo
+                   cuidado nos campos do `CheckoutModal`. */
                 className="min-h-[54px] w-full bg-surface px-3 text-[16px] font-semibold text-cp-numero outline-none placeholder:font-normal placeholder:text-cp-legenda/70"
               />
             </div>
             {mostrarMinimo && (
-              <span className="mt-1.5 block text-[12px] font-semibold text-error">
+              <span className="mt-1.5 block text-fs12 font-semibold text-error">
                 O valor mínimo para doação mensal é{" "}
                 {formatBRL(payments.recurring.minCents)}.
               </span>
@@ -491,13 +494,13 @@ export function DonationModal() {
             type="button"
             onClick={seguir}
             disabled={!podeSeguir}
-            className="inline-flex min-h-[56px] w-full items-center justify-center gap-2.5 whitespace-nowrap rounded-[14px] bg-highlight px-6 text-[16px] font-bold uppercase tracking-[0.03em] text-cp-titulo shadow-[0_0_10px_1px_rgba(243,182,57,.6)] transition hover:bg-highlight-hover disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
+            className="inline-flex min-h-[56px] w-full items-center justify-center gap-2.5 whitespace-nowrap rounded-[14px] bg-highlight px-6 text-fs16 font-bold uppercase tracking-[0.03em] text-cp-titulo shadow-[0_0_10px_1px_rgba(243,182,57,.6)] transition hover:bg-highlight-hover disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
           >
             Continuar
             <IconArrowRight size={18} />
           </button>
 
-          <p className="mt-2 hidden items-center justify-center gap-1.5 text-center text-[11.5px] font-medium text-cp-legenda [@media(min-height:620px)]:flex">
+          <p className="mt-2 hidden items-center justify-center gap-1.5 text-center text-fs11-5 font-medium text-cp-legenda [@media(min-height:620px)]:flex">
             <span aria-hidden="true" className="h-[7px] w-[7px] shrink-0 rounded-full bg-donate" />
             Pagamento 100% seguro e verificado
           </p>

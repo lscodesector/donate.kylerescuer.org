@@ -89,7 +89,7 @@ export function Hero() {
             No celular cada uma delas ainda quebra sozinha, porque lá não existe
             largura - e é o que já acontecia antes.
           */}
-          <h1 className="w-full text-balance text-[clamp(1.375rem,0.95rem+1.35vw+0.5vh,2.4rem)] font-extrabold leading-[1.12] text-ink-900">
+          <h1 className="w-full text-balance text-[clamp(1.279rem,0.883rem+1.256vw+0.465vh,2.232rem)] font-extrabold leading-[1.12] text-ink-900">
             <span className="block">{heroCopy.headline}</span>
             <span className="block text-action">{heroCopy.headlineAccent}</span>
           </h1>
@@ -101,7 +101,7 @@ export function Hero() {
               notebook de 768 - onde ela e o selo, somados, comiam 55px que
               faltavam justamente ao player. 820px é a altura a partir da qual
               a dobra comporta os dois sem apertar o vídeo. */}
-          <p className="hidden max-w-[46ch] text-[clamp(0.875rem,1.6vh,1rem)] leading-[1.5] text-ink-600 [@media(min-height:820px)]:block">
+          <p className="hidden max-w-[46ch] text-[clamp(0.814rem,1.488vh,0.93rem)] leading-[1.5] text-ink-600 [@media(min-height:820px)]:block">
             {heroCopy.lead}
           </p>
         </Reveal>
@@ -198,14 +198,14 @@ export function Hero() {
           <div className="flex w-full max-w-[var(--hero-col)] flex-col items-stretch gap-[clamp(0.5rem,1.2vh,0.75rem)] sm:flex-row">
             {/* Abre a tela de valor (`DonationModal`) direto; sem JavaScript
                 continua sendo um link para o bloco de doação. */}
-            <DonateMenuButton className="inline-flex min-h-[clamp(2.875rem,5.2vh,3.25rem)] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-donate px-5 text-[clamp(0.875rem,1.4vh,0.9375rem)] font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow-[0_10px_30px_-8px_rgba(27,138,75,.55)] transition-colors hover:bg-donate-hover">
+            <DonateMenuButton className="inline-flex min-h-[clamp(2.875rem,5.2vh,3.25rem)] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-donate px-5 text-[clamp(0.814rem,1.302vh,0.872rem)] font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow-[0_10px_30px_-8px_rgba(27,138,75,.55)] transition-colors hover:bg-donate-hover">
               <IconHeart size={17} />
               {heroCopy.ctaPrimary}
             </DonateMenuButton>
 
             <a
               href="#abrigos"
-              className="inline-flex min-h-[clamp(2.875rem,5.2vh,3.25rem)] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full border-2 border-ink-900/[.12] bg-surface px-5 text-[clamp(0.875rem,1.4vh,0.9375rem)] font-extrabold text-ink-900 transition-colors hover:border-action hover:text-action"
+              className="inline-flex min-h-[clamp(2.875rem,5.2vh,3.25rem)] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full border-2 border-ink-900/[.12] bg-surface px-5 text-[clamp(0.814rem,1.302vh,0.872rem)] font-extrabold text-ink-900 transition-colors hover:border-action hover:text-action"
             >
               {heroCopy.ctaSecondary}
               <IconArrowRight size={16} />
@@ -222,7 +222,7 @@ export function Hero() {
               desaparece justo onde ele é mais necessário. */}
           <span className="mt-[5px] hidden items-center gap-1.5 [@media(min-height:800px)]:inline-flex">
             <IconShield size={15} className="shrink-0 text-donate" />
-            <span className="text-[13px] font-semibold text-ink-600">
+            <span className="text-fs13 font-semibold text-ink-600">
               {heroCopy.seal}
             </span>
           </span>

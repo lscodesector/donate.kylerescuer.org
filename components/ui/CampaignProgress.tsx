@@ -54,15 +54,15 @@ export function CampaignProgress({ className = "" }: { className?: string }) {
       {/* Arrecadado à esquerda, meta à direita - a mesma leitura da barra que
           fica logo abaixo, para o olho ligar um ao outro sem esforço. */}
       <div className="flex items-baseline justify-between gap-3">
-        <span className="text-[clamp(1.125rem,1rem+0.7vw,1.5rem)] font-extrabold leading-none text-ink-900 tabular-nums">
+        <span className="text-[clamp(1.046rem,0.93rem+0.651vw,1.395rem)] font-extrabold leading-none text-ink-900 tabular-nums">
           {estado ? brl(estado.raised) : "—"}
         </span>
-        <span className="text-[clamp(0.875rem,0.8rem+0.3vw,1rem)] font-extrabold leading-none text-ink-600 tabular-nums">
+        <span className="text-[clamp(0.814rem,0.744rem+0.279vw,0.93rem)] font-extrabold leading-none text-ink-600 tabular-nums">
           {estado ? brl(estado.goal) : "—"}
         </span>
       </div>
 
-      <div className="flex items-baseline justify-between gap-3 text-[12px] font-semibold text-ink-600">
+      <div className="flex items-baseline justify-between gap-3 text-fs12 font-semibold text-ink-600">
         <span>Arrecadados</span>
         <span>Meta</span>
       </div>
@@ -89,7 +89,7 @@ export function CampaignProgress({ className = "" }: { className?: string }) {
         />
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-[12px] font-semibold">
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-fs12 font-semibold">
         <span className="text-donate-text">
           {estado ? `${estado.percent}% da meta atingida` : " "}
         </span>

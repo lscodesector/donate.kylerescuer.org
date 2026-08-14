@@ -103,16 +103,16 @@ export function AbrigosLista({
                 alinhar à esquerda, que é onde a leitura começa. */}
             <div className="flex flex-1 flex-col items-center gap-3 p-4 text-center sm:items-start sm:p-5 sm:text-left">
               <div className="flex flex-col gap-1">
-                <h3 className="text-[17px] font-extrabold leading-[1.25] text-ink-900 sm:text-[18px]">
+                <h3 className="text-fs17 font-extrabold leading-[1.25] text-ink-900 sm:text-fs18">
                   {shelter.name}
                 </h3>
 
-                <p className="flex items-center justify-center gap-1.5 text-[13px] font-semibold text-accent sm:justify-start">
+                <p className="flex items-center justify-center gap-1.5 text-fs13 font-semibold text-accent sm:justify-start">
                   <IconPin size={14} className="shrink-0" />
                   {shelter.location}
                 </p>
 
-                <p className="text-[14px] leading-[1.5] text-ink-600">
+                <p className="text-fs14 leading-[1.5] text-ink-600">
                   {shelter.description}
                 </p>
               </div>
@@ -121,7 +121,7 @@ export function AbrigosLista({
                   precisa alinhar na mesma base em toda a lista. */}
               <span
                 aria-hidden="true"
-                className="mt-auto inline-flex min-h-[44px] items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-action px-5 text-center text-[13px] font-extrabold uppercase tracking-[0.02em] text-action-ink"
+                className="mt-auto inline-flex min-h-[44px] items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-action px-5 text-center text-fs13 font-extrabold uppercase tracking-[0.02em] text-action-ink"
               >
                 {ctaProfile}
                 <IconArrowRight size={15} className="shrink-0" />
@@ -308,7 +308,7 @@ function FichaAbrigo({
           <button
             type="button"
             onClick={onClose}
-            className="absolute left-3 top-3 z-30 flex h-[40px] items-center gap-1.5 rounded-full bg-surface/90 px-3.5 text-[14px] font-extrabold text-ink-900 shadow backdrop-blur transition-colors hover:bg-surface"
+            className="absolute left-3 top-3 z-30 flex h-[40px] items-center gap-1.5 rounded-full bg-surface/90 px-3.5 text-fs14 font-extrabold text-ink-900 shadow backdrop-blur transition-colors hover:bg-surface"
           >
             <IconArrowLeft size={18} />
             Voltar
@@ -327,16 +327,16 @@ function FichaAbrigo({
 
         <div className="flex flex-col gap-4 p-5 sm:p-6">
           <div className="flex flex-col gap-1">
-            <span className="text-[12px] font-extrabold uppercase tracking-[0.08em] text-accent">
+            <span className="text-fs12 font-extrabold uppercase tracking-[0.08em] text-accent">
               {copy.abrigos.eyebrow}
             </span>
             <h2
               id="ficha-abrigo-titulo"
-              className="text-[21px] font-extrabold leading-[1.2] text-ink-900"
+              className="text-fs21 font-extrabold leading-[1.2] text-ink-900"
             >
               {shelter.name}
             </h2>
-            <p className="text-[14px] leading-[1.55] text-ink-600">
+            <p className="text-fs14 leading-[1.55] text-ink-600">
               {profile.about || shelter.description}
             </p>
           </div>
@@ -346,12 +346,12 @@ function FichaAbrigo({
               <div key={label} className="flex items-start gap-3 p-3.5">
                 <Icon size={17} className="mt-0.5 shrink-0 text-accent" />
                 <div className="flex min-w-0 flex-col">
-                  <dt className="text-[12px] font-extrabold uppercase tracking-[0.06em] text-ink-600">
+                  <dt className="text-fs12 font-extrabold uppercase tracking-[0.06em] text-ink-600">
                     {label}
                   </dt>
                   {/* `break-words`: CNPJ e nome comprido não podem estourar a
                       largura da ficha no celular. */}
-                  <dd className="break-words text-[14px] leading-[1.45] text-ink-900">
+                  <dd className="break-words text-fs14 leading-[1.45] text-ink-900">
                     {value}
                   </dd>
                 </div>
@@ -364,10 +364,10 @@ function FichaAbrigo({
             <div className="flex items-start gap-3 p-3.5">
               <IconPin size={17} className="mt-0.5 shrink-0 text-accent" />
               <div className="flex min-w-0 flex-col">
-                <dt className="text-[12px] font-extrabold uppercase tracking-[0.06em] text-ink-600">
+                <dt className="text-fs12 font-extrabold uppercase tracking-[0.06em] text-ink-600">
                   Endereço
                 </dt>
-                <dd className="break-words text-[14px] leading-[1.45] text-ink-900">
+                <dd className="break-words text-fs14 leading-[1.45] text-ink-900">
                   {endereco.length ? (
                     <address className="not-italic">
                       {endereco.map((linha) => (
@@ -385,7 +385,7 @@ function FichaAbrigo({
                       href={profile.mapsHref}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-1 flex items-center gap-1 text-[13px] font-extrabold text-action transition-colors hover:text-accent"
+                      className="mt-1 flex items-center gap-1 text-fs13 font-extrabold text-action transition-colors hover:text-accent"
                     >
                       Ver no mapa
                       <IconArrowRight size={14} className="shrink-0" />
@@ -397,7 +397,7 @@ function FichaAbrigo({
           </dl>
 
           {semCadastro && (
-            <p className="rounded-md bg-surface-alt p-3.5 text-[13px] leading-[1.5] text-ink-600">
+            <p className="rounded-md bg-surface-alt p-3.5 text-fs13 leading-[1.5] text-ink-600">
               {copy.abrigos.profileEmpty}
             </p>
           )}
@@ -416,7 +416,7 @@ function FichaAbrigo({
                 type="button"
                 aria-haspopup="dialog"
                 onClick={() => openDocumentoModal(cnpjDoc)}
-                className="inline-flex min-h-[48px] items-center justify-center gap-2 whitespace-nowrap rounded-md border border-action/30 px-4 text-center text-[14px] font-extrabold text-action transition-colors hover:bg-action/[.06]"
+                className="inline-flex min-h-[48px] items-center justify-center gap-2 whitespace-nowrap rounded-md border border-action/30 px-4 text-center text-fs14 font-extrabold text-action transition-colors hover:bg-action/[.06]"
               >
                 <IconFile size={17} className="shrink-0" />
                 {copy.abrigos.ctaCnpj}
@@ -433,7 +433,7 @@ function FichaAbrigo({
                 rel="noopener noreferrer"
                 /* Só o rótulo, numa linha: o @ do perfil é agora uma linha da
                    ficha, logo acima (ver `dados`). */
-                className="inline-flex min-h-[48px] items-center justify-center gap-2 whitespace-nowrap rounded-md border border-ink-900/10 px-4 text-center text-[14px] font-extrabold text-ink-900 transition-colors hover:border-accent/50 hover:text-accent"
+                className="inline-flex min-h-[48px] items-center justify-center gap-2 whitespace-nowrap rounded-md border border-ink-900/10 px-4 text-center text-fs14 font-extrabold text-ink-900 transition-colors hover:border-accent/50 hover:text-accent"
               >
                 <IconInstagram size={17} className="shrink-0" />
                 {copy.abrigos.ctaInstagram}
@@ -448,7 +448,7 @@ function FichaAbrigo({
               )}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-[48px] items-center justify-center gap-2 whitespace-nowrap rounded-md border border-donate/30 px-4 text-[14px] font-extrabold text-donate-text transition-colors hover:bg-donate/[.06]"
+              className="inline-flex min-h-[48px] items-center justify-center gap-2 whitespace-nowrap rounded-md border border-donate/30 px-4 text-fs14 font-extrabold text-donate-text transition-colors hover:bg-donate/[.06]"
             >
               <IconWhatsApp size={17} className="shrink-0" />
               {copy.abrigos.ctaWhatsapp}
@@ -457,7 +457,7 @@ function FichaAbrigo({
             <button
               type="button"
               onClick={doar}
-              className="mt-1 inline-flex min-h-[56px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-donate px-6 text-[15px] font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow transition-colors hover:bg-donate-hover"
+              className="mt-1 inline-flex min-h-[56px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-donate px-6 text-fs15 font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow transition-colors hover:bg-donate-hover"
             >
               {copy.abrigos.ctaShelter}
               <IconArrowRight size={17} />
@@ -466,7 +466,7 @@ function FichaAbrigo({
             {/* A doação é para a campanha, não para este abrigo - dizer isso
                 aqui, onde a pessoa acabou de se afeiçoar a um nome, evita a
                 promessa que a página não cumpre. */}
-            <p className="text-center text-[12px] leading-[1.5] text-ink-600">
+            <p className="text-center text-fs12 leading-[1.5] text-ink-600">
               A doação entra na campanha e o Caio direciona a ajuda conforme a
               necessidade de cada abrigo no mês.
             </p>

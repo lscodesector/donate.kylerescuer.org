@@ -35,7 +35,7 @@ export function Faq() {
               key={item.q}
               className="group rounded-md border border-ink-900/10 bg-surface open:shadow"
             >
-              <summary className="flex min-h-[56px] cursor-pointer list-none items-center justify-between gap-3 px-4 py-3.5 text-left text-[15px] font-extrabold leading-[1.35] text-ink-900">
+              <summary className="flex min-h-[56px] cursor-pointer list-none items-center justify-between gap-3 px-4 py-3.5 text-left text-fs15 font-extrabold leading-[1.35] text-ink-900">
                 <span className="flex-1">{item.q}</span>
                 <IconChevron
                   size={18}
@@ -44,7 +44,7 @@ export function Faq() {
               </summary>
               {/* `pt-0` com o respiro vindo do `pb` do `<summary>`: sem isso a
                   resposta abria colada na pergunta no celular. */}
-              <p className="px-4 pb-4 text-left text-[14px] leading-[1.6] text-ink-600">
+              <p className="px-4 pb-4 text-left text-fs14 leading-[1.6] text-ink-600">
                 {item.a}
               </p>
             </details>
@@ -56,12 +56,12 @@ export function Faq() {
             mesmo WhatsApp que a última pergunta cita - o botão flutuante saiu
             da página, então este é o caminho de contato no meio dela. */}
         <Reveal delay={1} className="flex flex-col items-center gap-3 pt-2 text-center">
-          <p className="text-[15px] text-ink-600">{copy.faq.help}</p>
+          <p className="text-fs15 text-ink-600">{copy.faq.help}</p>
           <a
             href={whatsappHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-[52px] items-center gap-2 whitespace-nowrap rounded-full bg-[#25D366] px-8 text-[15px] font-extrabold text-white shadow transition-[filter] hover:brightness-95"
+            className="inline-flex min-h-[52px] items-center gap-2 whitespace-nowrap rounded-full bg-[#25D366] px-8 text-fs15 font-extrabold text-white shadow transition-[filter] hover:brightness-95"
           >
             <IconWhatsApp size={21} />
             {copy.faq.ctaWhatsapp}

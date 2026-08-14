@@ -43,7 +43,7 @@ export function Transparencia() {
             <tbody>
               {monthlyCosts.items.map((item) => (
                 <tr key={item.label} className="border-b border-ink-900/[.07]">
-                  <th scope="row" className="px-4 py-3 text-[14px] font-normal text-ink-600">
+                  <th scope="row" className="px-4 py-3 text-fs14 font-normal text-ink-600">
                     <span className="flex items-center gap-2">
                       <span
                         aria-hidden="true"
@@ -52,17 +52,17 @@ export function Transparencia() {
                       {item.label}
                     </span>
                   </th>
-                  <td className="whitespace-nowrap px-4 py-3 text-right text-[14px] font-extrabold tabular-nums text-ink-900">
+                  <td className="whitespace-nowrap px-4 py-3 text-right text-fs14 font-extrabold tabular-nums text-ink-900">
                     {formatBRL(item.cents)}
                   </td>
                 </tr>
               ))}
 
               <tr className="bg-surface-alt">
-                <th scope="row" className="px-4 py-4 text-[14px] font-extrabold text-ink-900">
+                <th scope="row" className="px-4 py-4 text-fs14 font-extrabold text-ink-900">
                   {copy.transparencia.totalLabel}
                 </th>
-                <td className="whitespace-nowrap px-4 py-4 text-right text-[clamp(1rem,0.9rem+0.4vw,1.25rem)] font-extrabold tabular-nums text-action">
+                <td className="whitespace-nowrap px-4 py-4 text-right text-[clamp(0.93rem,0.837rem+0.372vw,1.163rem)] font-extrabold tabular-nums text-action">
                   {formatBRL(monthlyCostsTotal)}
                 </td>
               </tr>

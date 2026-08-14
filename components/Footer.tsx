@@ -135,7 +135,7 @@ export function Footer() {
               className="h-[72px] w-auto object-contain"
             />
 
-            <p className="max-w-[42ch] text-[15px] leading-[1.65] text-white/60">
+            <p className="max-w-[42ch] text-fs15 leading-[1.65] text-white/60">
               {copy.footerAbout}
             </p>
 
@@ -163,7 +163,7 @@ export function Footer() {
               ))}
             </ul>
 
-            <div className="flex flex-col items-start gap-2 text-[14px] text-white/60">
+            <div className="flex flex-col items-start gap-2 text-fs14 text-white/60">
               {/* O CNPJ é o de quem **recebe** - a SOS Animal Help -, e é por
                   isso que o nome dela aparece escrito ao lado dele. O Caio é
                   protetor independente e não tem CNPJ próprio nesta campanha. */}
@@ -199,13 +199,13 @@ export function Footer() {
           <div className="grid content-start gap-8 sm:grid-cols-2 sm:gap-x-6">
             {COLUMNS.map((column) => (
               <nav key={column.label} aria-label={column.label}>
-                <p className="mb-4 text-[12px] font-extrabold uppercase tracking-[0.14em] text-white">
+                <p className="mb-4 text-fs12 font-extrabold uppercase tracking-[0.14em] text-white">
                   {column.label}
                 </p>
                 <ul className="flex flex-col gap-2">
                   {column.links.map((link) => {
                     const estilo =
-                      "block py-1 text-left text-[15px] leading-[1.4] text-white/65 transition-colors hover:text-white";
+                      "block py-1 text-left text-fs15 leading-[1.4] text-white/65 transition-colors hover:text-white";
 
                     /* O item que abre modal em vez de navegar - hoje só o
                        "Doar todo mês" (ver o comentário em `COLUMNS`). */
@@ -244,7 +244,7 @@ export function Footer() {
         </div>
 
         {/* À esquerda em qualquer largura, como o resto do rodapé. */}
-        <div className="border-t border-white/10 pt-6 text-left text-[13px] leading-[1.6] text-white/50">
+        <div className="border-t border-white/10 pt-6 text-left text-fs13 leading-[1.6] text-white/50">
           {/* Os links legais já estão na coluna "Legal" - repetir aqui só
               duplicaria o mesmo destino duas vezes na mesma tela. */}
           <p>

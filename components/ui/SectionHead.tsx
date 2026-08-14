@@ -53,11 +53,11 @@ export function SectionHead({
 
         <div className={`flex flex-col gap-1 ${centered ? "items-center" : ""}`}>
           {eyebrow && (
-            <p className="text-[13px] font-extrabold uppercase tracking-[0.12em] text-accent">
+            <p className="text-fs13 font-extrabold uppercase tracking-[0.12em] text-accent">
               {eyebrow}
             </p>
           )}
-          <h2 className="text-[clamp(1.375rem,1.05rem+1.3vw,2.125rem)] font-extrabold leading-[1.15] text-ink-900">
+          <h2 className="text-[clamp(1.279rem,0.977rem+1.209vw,1.976rem)] font-extrabold leading-[1.15] text-ink-900">
             {title}
           </h2>
         </div>
@@ -65,7 +65,7 @@ export function SectionHead({
 
       {lead && (
         <p
-          className={`max-w-[62ch] text-[16px] leading-[1.6] text-ink-600 ${centered ? "mx-auto" : ""}`}
+          className={`max-w-[62ch] text-fs16 leading-[1.6] text-ink-600 ${centered ? "mx-auto" : ""}`}
         >
           {lead}
         </p>

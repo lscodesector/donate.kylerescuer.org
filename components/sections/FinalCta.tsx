@@ -24,8 +24,9 @@ import { Reveal } from "../ui/Reveal";
  *
  * O mensal não é o "menor" dos dois: ele tem o mesmo tamanho, o mesmo peso e
  * cor cheia. O que os separa no fundo branco é a pintura - o "escolher um
- * valor" sai em contorno verde (a cor de doação da página) e o mensal em
- * vermelho cheio, que é o par de cores da marca.
+ * valor" sai em contorno verde (a cor de doação da página) e o mensal no
+ * amarelo cheio do apadrinhamento (`--sos-monthly`), o mesmo dos botões do
+ * cabeçalho: onde quer que a doação que se repete seja pedida, é esta a cor.
  */
 export function FinalCta() {
   return (
@@ -35,7 +36,7 @@ export function FinalCta() {
             seção. `max-w` em `ch` para a frase quebrar em duas linhas curtas no
             desktop em vez de atravessar a coluna inteira. */}
         <Reveal className="flex flex-col gap-4 text-center">
-          <h2 className="mx-auto max-w-[24ch] text-balance text-[clamp(1.5rem,1rem+2vw,2.375rem)] font-extrabold leading-[1.15] text-ink-900">
+          <h2 className="mx-auto max-w-[24ch] text-balance text-[clamp(1.395rem,0.93rem+1.86vw,2.209rem)] font-extrabold leading-[1.15] text-ink-900">
             {copy.final.title}
           </h2>
 
@@ -52,7 +53,7 @@ export function FinalCta() {
           <div className="flex flex-col gap-3 md:flex-row">
             {/* Abre a tela de valor direto - é o que o rótulo promete. Sem
                 JavaScript ele continua sendo um link para o bloco de doação. */}
-            <DonateMenuButton className="inline-flex min-h-[56px] flex-1 basis-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border-2 border-donate bg-surface px-6 text-center text-[clamp(0.9375rem,1.6vh,1.0625rem)] font-extrabold uppercase tracking-[0.03em] text-donate transition-colors hover:bg-donate hover:text-donate-ink">
+            <DonateMenuButton className="inline-flex min-h-[56px] flex-1 basis-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border-2 border-donate bg-surface px-6 text-center text-[clamp(0.872rem,1.488vh,0.988rem)] font-extrabold uppercase tracking-[0.03em] text-donate transition-colors hover:bg-donate hover:text-donate-ink">
               {copy.final.ctaPrimary}
               <IconArrowRight size={20} className="shrink-0" />
             </DonateMenuButton>
@@ -60,7 +61,7 @@ export function FinalCta() {
             {/* Este abre a tela de valor travada na mensal: sem as abas de
                 frequência e terminando no checkout de recorrência - ver
                 `MonthlyDonateButton`. */}
-            <MonthlyDonateButton className="inline-flex min-h-[56px] flex-1 basis-0 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-action px-6 text-center text-[clamp(0.9375rem,1.6vh,1.0625rem)] font-extrabold uppercase tracking-[0.03em] text-action-ink shadow-[0_10px_30px_-10px_rgba(191,5,33,.5)] transition-colors hover:bg-action-hover">
+            <MonthlyDonateButton className="inline-flex min-h-[56px] flex-1 basis-0 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-monthly px-6 text-center text-[clamp(0.872rem,1.488vh,0.988rem)] font-extrabold uppercase tracking-[0.03em] text-monthly-ink shadow-[0_10px_30px_-10px_rgba(243,182,57,.6)] transition-colors hover:bg-monthly-hover">
               <IconHeart size={20} className="shrink-0" />
               {copy.final.ctaSecondary}
             </MonthlyDonateButton>
@@ -69,7 +70,7 @@ export function FinalCta() {
           {/* A mesma linha de confiança que fecha a seção "Como ajudar", agora
               na pintura do fundo claro: cinza com o escudo verde, em vez do
               branco translúcido que ela usava sobre a foto. */}
-          <p className="flex flex-wrap items-center justify-center gap-x-1.5 text-center text-[12px] font-semibold text-ink-600">
+          <p className="flex flex-wrap items-center justify-center gap-x-1.5 text-center text-fs12 font-semibold text-ink-600">
             <IconShield size={15} className="shrink-0 text-donate" />
             {copy.final.seal}
           </p>

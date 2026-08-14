@@ -72,13 +72,13 @@ export function Atualizacoes() {
                 className={`absolute -left-[7px] top-[6px] h-3 w-3 rounded-full ${MARCADOR[item.tone]}`}
               />
 
-              <p className="text-[12px] font-extrabold uppercase tracking-[0.08em] text-accent">
+              <p className="text-fs12 font-extrabold uppercase tracking-[0.08em] text-accent">
                 {item.date}
               </p>
-              <h3 className="mt-1 text-[16px] font-extrabold leading-[1.3] text-ink-900">
+              <h3 className="mt-1 text-fs16 font-extrabold leading-[1.3] text-ink-900">
                 {item.title}
               </h3>
-              <p className="mt-1.5 text-[14px] leading-[1.6] text-ink-600">
+              <p className="mt-1.5 text-fs14 leading-[1.6] text-ink-600">
                 {item.text}
               </p>
             </Reveal>

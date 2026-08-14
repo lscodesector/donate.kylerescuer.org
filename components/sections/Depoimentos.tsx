@@ -117,13 +117,13 @@ export function Depoimentos() {
                 </div>
 
                 <div className="flex flex-col gap-0.5 p-4">
-                  <p className="text-[15px] font-extrabold leading-tight text-ink-900">
+                  <p className="text-fs15 font-extrabold leading-tight text-ink-900">
                     {item.name}
                   </p>
-                  <p className="text-[13px] font-semibold text-accent">
+                  <p className="text-fs13 font-semibold text-accent">
                     {item.shelter}
                   </p>
-                  <p className="text-[12px] leading-[1.4] text-ink-600">
+                  <p className="text-fs12 leading-[1.4] text-ink-600">
                     {item.detail}
                   </p>
                 </div>

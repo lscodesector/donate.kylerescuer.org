@@ -102,6 +102,25 @@
   --sos-donate-ink: rgb(var(--sos-donate-ink-c));
 
   /*
+   * Amarelo do apadrinhamento - #F3B639.
+   *
+   * É a cor **só** dos botões que pedem a doação que se repete (o "Apadrinhe"
+   * da barra fixa, o da gaveta do menu e o do fechamento). O verde continua
+   * respondendo pela doação em geral e o vermelho pela marca: quem vira
+   * padrinho agora tem uma cor própria, que não se confunde com "doar agora".
+   *
+   * A tinta por cima é o preto da página, e não branco: branco sobre este
+   * amarelo dá 1,9:1 - ilegível. Com o #14110F são 10,9:1.
+   */
+  --sos-monthly-c: 243 182 57;
+  --sos-monthly-hover-c: 224 161 33;
+  --sos-monthly-ink-c: 20 17 15;
+
+  --sos-monthly: rgb(var(--sos-monthly-c));
+  --sos-monthly-hover: rgb(var(--sos-monthly-hover-c));
+  --sos-monthly-ink: rgb(var(--sos-monthly-ink-c));
+
+  /*
    * ╔════════════════════════════════════════════════════════════════════╗
    * ║  A paleta do checkout de `doe.caioprotetor.org`                     ║
    * ╚════════════════════════════════════════════════════════════════════╝
@@ -217,6 +236,10 @@
   --color-donate-ink: var(--sos-donate-ink);
   --color-donate-text: var(--sos-donate-text);
 
+  --color-monthly: var(--sos-monthly);
+  --color-monthly-hover: var(--sos-monthly-hover);
+  --color-monthly-ink: var(--sos-monthly-ink);
+
   --color-action-deep: var(--sos-action-deep);
 
   --color-highlight: var(--sos-highlight);
@@ -239,32 +262,69 @@
 
   --shadow-DEFAULT: var(--shadow);
 
-  --text-small: 14px;
+  /*
+   * ╔════════════════════════════════════════════════════════════════════╗
+   * ║  A escala de texto: fluida, e um degrau mais baixa                  ║
+   * ╚════════════════════════════════════════════════════════════════════╝
+   *
+   * Nenhum tamanho da página é mais um número fixo. Cada um é um `clamp` que
+   * sai do piso a 360px de tela e chega ao teto a 1280px - entre as duas, o
+   * texto acompanha a largura em vez de pular de valor em pontos de quebra.
+   *
+   * Os tetos também desceram cerca de um pixel em relação aos números antigos
+   * (o corpo era 17px fixos e agora vai a 16px; a manchete grande era 64 e vai
+   * a 59): a página inteira lê um pouco menor, que era o pedido, e no celular
+   * ela desce mais um degrau em vez de manter o tamanho de desktop.
+   *
+   * ⚠️ A conta de cada linha é sempre a mesma: com o piso em 360px e o teto em
+   * 1280px, o termo do meio é `piso + (teto − piso) ÷ 9,2 × 1vw` - 9,2 é
+   * quanto 1vw cresce em pixels entre as duas larguras. Mexer no piso ou no
+   * teto sem refazer o termo do meio quebra o encontro nas pontas.
+   *
+   * A escala numerada (`text-fs13`, `text-fs14`...) substitui os antigos
+   * `text-[13px]` espalhados pelos componentes: o nome guarda o tamanho que a
+   * peça tinha, e o valor é o `clamp` que ela ganhou.
+   */
+  --text-fs9: 0.563rem;
+  --text-fs10: clamp(0.594rem, 0.581rem + 0.054vw, 0.625rem);
+  --text-fs11: clamp(0.625rem, 0.613rem + 0.054vw, 0.656rem);
+  --text-fs11-5: clamp(0.656rem, 0.644rem + 0.054vw, 0.688rem);
+  --text-fs12: clamp(0.688rem, 0.675rem + 0.054vw, 0.719rem);
+  --text-fs13: clamp(0.719rem, 0.694rem + 0.109vw, 0.781rem);
+  --text-fs14: clamp(0.781rem, 0.757rem + 0.109vw, 0.844rem);
+  --text-fs15: clamp(0.813rem, 0.782rem + 0.136vw, 0.891rem);
+  --text-fs16: clamp(0.875rem, 0.851rem + 0.109vw, 0.938rem);
+  --text-fs17: clamp(0.906rem, 0.87rem + 0.163vw, 1rem);
+  --text-fs18: clamp(0.938rem, 0.889rem + 0.217vw, 1.063rem);
+  --text-fs19: clamp(0.969rem, 0.908rem + 0.272vw, 1.125rem);
+  --text-fs21: clamp(1.063rem, 1rem + 0.272vw, 1.219rem);
+
+  --text-small: clamp(0.781rem, 0.757rem + 0.109vw, 0.844rem);
   --text-small--line-height: 1.5;
-  --text-body: 17px;
+  --text-body: clamp(0.938rem, 0.913rem + 0.109vw, 1rem);
   --text-body--line-height: var(--lh-body);
-  --text-h3: 19px;
+  --text-h3: clamp(1.031rem, 0.995rem + 0.163vw, 1.125rem);
   --text-h3--line-height: 1.3;
   --text-h3--font-weight: 600;
-  --text-h3-lg: 22px;
+  --text-h3-lg: clamp(1.156rem, 1.107rem + 0.217vw, 1.281rem);
   --text-h3-lg--line-height: 1.3;
   --text-h3-lg--font-weight: 600;
-  --text-h2: 24px;
+  --text-h2: clamp(1.25rem, 1.189rem + 0.272vw, 1.406rem);
   --text-h2--line-height: 1.2;
   --text-h2--font-weight: 800;
-  --text-h2-lg: 34px;
+  --text-h2-lg: clamp(1.625rem, 1.491rem + 0.598vw, 1.969rem);
   --text-h2-lg--line-height: 1.2;
   --text-h2-lg--font-weight: 800;
-  --text-h1: 30px;
+  --text-h1: clamp(1.469rem, 1.359rem + 0.489vw, 1.75rem);
   --text-h1--line-height: 1.15;
   --text-h1--font-weight: 800;
-  --text-h1-lg: 46px;
+  --text-h1-lg: clamp(2rem, 1.743rem + 1.141vw, 2.656rem);
   --text-h1-lg--line-height: 1.15;
   --text-h1-lg--font-weight: 800;
-  --text-display: 38px;
+  --text-display: clamp(1.75rem, 1.579rem + 0.761vw, 2.188rem);
   --text-display--line-height: 1.06;
   --text-display--font-weight: 800;
-  --text-display-lg: 64px;
+  --text-display-lg: clamp(2.625rem, 2.209rem + 1.848vw, 3.688rem);
   --text-display-lg--line-height: 1.04;
   --text-display-lg--font-weight: 800;
 
@@ -282,7 +342,11 @@
     background-color: var(--sos-surface);
     color: var(--sos-ink-900);
     font-family: var(--font-body);
-    font-size: 17px;
+    /* O mesmo `clamp` do `--text-body`, escrito por extenso: 15px a 360px de
+       tela, 16px de 1280px para cima. Era 17px fixos. Tudo que não declara
+       tamanho próprio herda daqui - e é o que faz a página inteira descer um
+       degrau e acompanhar a largura. */
+    font-size: clamp(0.938rem, 0.913rem + 0.109vw, 1rem);
     line-height: var(--lh-body);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;

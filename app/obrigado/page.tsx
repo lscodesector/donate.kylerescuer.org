@@ -44,10 +44,10 @@ export default function ObrigadoPage() {
           </span>
 
           <div className="flex flex-col gap-2">
-            <h1 className="text-[clamp(1.5rem,1.2rem+1.2vw,2rem)] font-extrabold leading-[1.15] text-ink-900">
+            <h1 className="text-[clamp(1.395rem,1.116rem+1.116vw,1.86rem)] font-extrabold leading-[1.15] text-ink-900">
               Obrigado. Sua doação chega até os animais.
             </h1>
-            <p className="mx-auto max-w-[46ch] text-[15px] leading-[1.6] text-ink-600">
+            <p className="mx-auto max-w-[46ch] text-fs15 leading-[1.6] text-ink-600">
               Seu Pix foi confirmado. O Caio leva o valor em ração, remédio e
               veterinário para o abrigo que estiver mais apertado no mês.
             </p>
@@ -83,13 +83,13 @@ export default function ObrigadoPage() {
         {/* O pedido da recorrência - o motivo desta tela existir. */}
         <div className="flex flex-col gap-4 rounded-md border-2 border-donate bg-donate/[.06] p-5 sm:p-6">
           <div className="flex flex-col gap-2">
-            <p className="text-[12px] font-extrabold uppercase tracking-[0.1em] text-donate">
+            <p className="text-fs12 font-extrabold uppercase tracking-[0.1em] text-donate">
               Ajude todo mês
             </p>
-            <h2 className="text-[clamp(1.125rem,1rem+0.7vw,1.5rem)] font-extrabold leading-[1.2] text-ink-900">
+            <h2 className="text-[clamp(1.046rem,0.93rem+0.651vw,1.395rem)] font-extrabold leading-[1.2] text-ink-900">
               A fome dos animais é mensal. A ajuda também pode ser.
             </h2>
-            <p className="text-[14px] leading-[1.6] text-ink-600">
+            <p className="text-fs14 leading-[1.6] text-ink-600">
               Doações pontuais salvam um mês. Doações recorrentes permitem que o Caio
               planeje a compra de ração com antecedência, compre em maior quantidade e
               pare de depender de campanha em campanha.
@@ -100,23 +100,23 @@ export default function ObrigadoPage() {
             href={recurringHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-[54px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-donate px-6 text-[15px] font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow-[0_10px_30px_-8px_rgba(27,138,75,.5)] transition-colors hover:bg-donate-hover"
+            className="inline-flex min-h-[54px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-donate px-6 text-fs15 font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow-[0_10px_30px_-8px_rgba(27,138,75,.5)] transition-colors hover:bg-donate-hover"
           >
             <IconWhatsApp size={18} />
             Quero doar todo mês
           </a>
 
-          <p className="text-center text-[12px] text-ink-600">
+          <p className="text-center text-fs12 text-ink-600">
             A equipe combina o valor e a melhor data com você. Sem compromisso e você pode
             cancelar quando quiser.
           </p>
         </div>
 
         <div className="flex flex-col gap-3 rounded-md border border-ink-900/10 bg-surface p-5">
-          <h2 className="text-[16px] font-extrabold text-ink-900">
+          <h2 className="text-fs16 font-extrabold text-ink-900">
             Outra forma de ajudar: contar para alguém
           </h2>
-          <p className="text-[14px] leading-[1.55] text-ink-600">
+          <p className="text-fs14 leading-[1.55] text-ink-600">
             Uma indicação sua alcança pessoas que a campanha sozinha não alcança.
           </p>
 
@@ -127,7 +127,7 @@ export default function ObrigadoPage() {
               )}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full border-2 border-ink-900/12 px-5 text-[14px] font-extrabold text-ink-900 transition-colors hover:border-ink-900/30"
+              className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full border-2 border-ink-900/12 px-5 text-fs14 font-extrabold text-ink-900 transition-colors hover:border-ink-900/30"
             >
               <IconShare size={16} />
               Compartilhar a campanha
@@ -135,7 +135,7 @@ export default function ObrigadoPage() {
 
             <Link
               href="/#doar"
-              className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full border-2 border-ink-900/12 px-5 text-[14px] font-extrabold text-ink-900 transition-colors hover:border-ink-900/30"
+              className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full border-2 border-ink-900/12 px-5 text-fs14 font-extrabold text-ink-900 transition-colors hover:border-ink-900/30"
             >
               <IconHeart size={16} />
               Doar novamente
@@ -146,13 +146,13 @@ export default function ObrigadoPage() {
         <div className="flex flex-col items-center gap-2 text-center">
           <Link
             href="/"
-            className="inline-flex min-h-[44px] items-center gap-1.5 text-[14px] font-extrabold text-ink-600 transition-colors hover:text-action"
+            className="inline-flex min-h-[44px] items-center gap-1.5 text-fs14 font-extrabold text-ink-600 transition-colors hover:text-action"
           >
             Voltar para a campanha
             <IconArrowRight size={15} />
           </Link>
 
-          <p className="text-[12px] text-ink-600">
+          <p className="text-fs12 text-ink-600">
             Dúvidas sobre a sua doação?{" "}
             <a
               href={whatsappHref}
