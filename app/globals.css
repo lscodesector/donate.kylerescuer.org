@@ -102,25 +102,6 @@
   --sos-donate-ink: rgb(var(--sos-donate-ink-c));
 
   /*
-   * Amarelo do apadrinhamento - #F3B639.
-   *
-   * É a cor **só** dos botões que pedem a doação que se repete (o "Apadrinhe"
-   * da barra fixa, o da gaveta do menu e o do fechamento). O verde continua
-   * respondendo pela doação em geral e o vermelho pela marca: quem vira
-   * padrinho agora tem uma cor própria, que não se confunde com "doar agora".
-   *
-   * A tinta por cima é o preto da página, e não branco: branco sobre este
-   * amarelo dá 1,9:1 - ilegível. Com o #14110F são 10,9:1.
-   */
-  --sos-monthly-c: 243 182 57;
-  --sos-monthly-hover-c: 224 161 33;
-  --sos-monthly-ink-c: 20 17 15;
-
-  --sos-monthly: rgb(var(--sos-monthly-c));
-  --sos-monthly-hover: rgb(var(--sos-monthly-hover-c));
-  --sos-monthly-ink: rgb(var(--sos-monthly-ink-c));
-
-  /*
    * ╔════════════════════════════════════════════════════════════════════╗
    * ║  A paleta do checkout de `doe.caioprotetor.org`                     ║
    * ╚════════════════════════════════════════════════════════════════════╝
@@ -235,10 +216,6 @@
   --color-donate-hover: var(--sos-donate-hover);
   --color-donate-ink: var(--sos-donate-ink);
   --color-donate-text: var(--sos-donate-text);
-
-  --color-monthly: var(--sos-monthly);
-  --color-monthly-hover: var(--sos-monthly-hover);
-  --color-monthly-ink: var(--sos-monthly-ink);
 
   --color-action-deep: var(--sos-action-deep);
 

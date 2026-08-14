@@ -24,9 +24,8 @@ import { Reveal } from "../ui/Reveal";
  *
  * O mensal não é o "menor" dos dois: ele tem o mesmo tamanho, o mesmo peso e
  * cor cheia. O que os separa no fundo branco é a pintura - o "escolher um
- * valor" sai em contorno verde (a cor de doação da página) e o mensal no
- * amarelo cheio do apadrinhamento (`--sos-monthly`), o mesmo dos botões do
- * cabeçalho: onde quer que a doação que se repete seja pedida, é esta a cor.
+ * valor" sai em contorno verde (a cor de doação da página) e o mensal em
+ * vermelho cheio, que é o par de cores da marca.
  */
 export function FinalCta() {
   return (
@@ -61,7 +60,7 @@ export function FinalCta() {
             {/* Este abre a tela de valor travada na mensal: sem as abas de
                 frequência e terminando no checkout de recorrência - ver
                 `MonthlyDonateButton`. */}
-            <MonthlyDonateButton className="inline-flex min-h-[56px] flex-1 basis-0 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-monthly px-6 text-center text-[clamp(0.872rem,1.488vh,0.988rem)] font-extrabold uppercase tracking-[0.03em] text-monthly-ink shadow-[0_10px_30px_-10px_rgba(243,182,57,.6)] transition-colors hover:bg-monthly-hover">
+            <MonthlyDonateButton className="inline-flex min-h-[56px] flex-1 basis-0 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-action px-6 text-center text-[clamp(0.872rem,1.488vh,0.988rem)] font-extrabold uppercase tracking-[0.03em] text-action-ink shadow-[0_10px_30px_-10px_rgba(191,5,33,.5)] transition-colors hover:bg-action-hover">
               <IconHeart size={20} className="shrink-0" />
               {copy.final.ctaSecondary}
             </MonthlyDonateButton>

@@ -4,7 +4,7 @@ import { Img as Image } from "@/components/ui/Img";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { DOAR_HREF, org } from "@/content/landing";
-import { MonthlyDonateButton } from "./MonthlyDonateButton";
+import { ShareButton } from "./ShareButton";
 import { openDonationModal } from "./DonationModal";
 import { useScrollLock } from "@/lib/scroll-lock";
 import {
@@ -124,29 +124,19 @@ export function Header() {
         </Link>
 
         {/*
-          ── O botão fixo da barra chama a **mensal** ────────────────────────
-          Ele é o CTA que acompanha a pessoa a página inteira, e a doação que
-          sustenta os abrigos é a que se repete: sabendo com quanto contar, a
-          organização compra ração em quantidade em vez de esperar a próxima
-          campanha. Abre a tela de valor **travada** na mensal - sem a aba da
-          doação única, que o rótulo aqui não prometeu (ver
-          `MonthlyDonateButton`). Quem quer doar uma vez tem o "doar agora" da
-          barra fixa, do hero e do fim da página.
+          ── O botão fixo da barra convida a **compartilhar** ────────────────
+          Era o pedido da doação mensal, e ele saiu daqui: dinheiro a campanha
+          já pede na dobra, na barra da base (`StickyDonateBar`), na seção de
+          doação e no fechamento - e continua pedindo dentro desta gaveta, no
+          botão verde logo abaixo. O que não existia em canto nenhum era o
+          convite para levar a campanha adiante, que é o que traz gente nova.
 
-          "Apadrinhe", uma palavra só: o convite é assumir um animal, não fazer
-          mais uma transação - e cabe em qualquer largura sem encolher a fonte.
-          O rótulo por extenso da recorrência ("Apadrinhe todo mês") fica no
-          menu lateral, onde há espaço para a linha inteira.
-
-          A cor é o amarelo `--sos-monthly` (#F3B639), e não o verde de doação:
-          o apadrinhamento é o único pedido que se repete todo mês, e agora ele
-          tem uma cor só dele em toda a página. Tinta preta por cima - branco
-          sobre este amarelo é ilegível (ver o token em `globals.css`).
+          Em contorno, e não em cor cheia: compartilhar não disputa com doar. É
+          a mesma pintura do "SOS Animal Help" da gaveta - borda fina, texto
+          preto e o vermelho de marca só no hover. Ver `ShareButton` para os
+          três caminhos que ele tenta (folha nativa, copiar o link, WhatsApp).
         */}
-        <MonthlyDonateButton className="inline-flex h-[44px] shrink-0 items-center justify-center justify-self-end gap-2 whitespace-nowrap rounded-full bg-monthly px-4 text-fs14 font-extrabold text-monthly-ink shadow transition-colors hover:bg-monthly-hover sm:px-5">
-          <IconHeart size={16} />
-          Apadrinhe
-        </MonthlyDonateButton>
+        <ShareButton className="inline-flex h-[44px] shrink-0 items-center justify-center justify-self-end gap-2 whitespace-nowrap rounded-full border-2 border-ink-900/[.12] bg-surface px-4 text-fs14 font-extrabold text-ink-900 transition-colors hover:border-action hover:text-action sm:px-5" />
       </div>
 
     </header>
@@ -248,15 +238,17 @@ export function Header() {
             {/* Os dois botões e a assinatura ficam colados na base, fora da
                 rolagem: são eles que a gaveta existe para oferecer. */}
             <div className="flex shrink-0 flex-col gap-2 border-t border-ink-900/10 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3">
-              {/* O mesmo pedido do botão da barra e, como ele, **só** a mensal:
-                  a tela abre travada na recorrência (`somenteMensal`), sem a
-                  aba de doação única. Aqui o `MonthlyDonateButton` não serve:
-                  ele não tem como também fechar a gaveta.
+              {/* Com o botão da barra virando "compartilhar", este é o único
+                  pedido de doação do cabeçalho - e ele pede **só** a mensal: a
+                  tela abre travada na recorrência (`somenteMensal`), sem a aba
+                  de doação única. Aqui o `MonthlyDonateButton` não serve: ele
+                  não tem como também fechar a gaveta.
 
-                  Aqui o rótulo diz "todo mês" por extenso, e na barra não: este
-                  botão tem a largura da gaveta inteira, e quem abriu o menu
-                  parou para escolher - vale gastar a palavra que promete
-                  exatamente o que a próxima tela vai oferecer. */}
+                  O rótulo gasta a palavra "todo mês" porque este botão tem a
+                  largura da gaveta inteira, e quem abriu o menu parou para
+                  escolher: vale prometer exatamente o que a próxima tela vai
+                  oferecer. Quem quer doar uma vez tem o "Doar agora" da lista
+                  logo acima, o do hero e o da barra da base. */}
               <a
                 href={DOAR_HREF}
                 onClick={(e) => {
@@ -266,7 +258,7 @@ export function Header() {
                   e.preventDefault();
                   openDonationModal({ freq: "mensal", somenteMensal: true });
                 }}
-                className="inline-flex min-h-[46px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-monthly px-5 text-fs15 font-extrabold text-monthly-ink shadow transition-colors hover:bg-monthly-hover"
+                className="inline-flex min-h-[46px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-donate px-5 text-fs15 font-extrabold text-donate-ink shadow transition-colors hover:bg-donate-hover"
               >
                 <IconHeart size={18} />
                 Apadrinhe todo mês
