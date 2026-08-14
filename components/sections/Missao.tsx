@@ -7,10 +7,17 @@ import { Reveal } from "../ui/Reveal";
  * "Quem é o Caio" - a história, logo depois da dobra.
  *
  * É a pergunta que uma campanha pessoal responde antes de qualquer pedido:
- * quem está pedindo, e por quê. A ordem dentro do cartão é rótulo → frase →
- * fotos → história → citação → desfecho. Sem botão no fim: o CTA verde já
- * está na dobra acima e no botão flutuante, e "Conheça os abrigos" competia
- * com os dois por um clique que este cartão não precisa pedir.
+ * quem está pedindo, e por quê. A ordem é rótulo → frase → fotos → história →
+ * citação → desfecho. Sem botão no fim: o CTA verde já está na dobra acima e no
+ * botão flutuante, e "Conheça os abrigos" competia com os dois por um clique que
+ * esta seção não precisa pedir.
+ *
+ * ── Não é um cartão ───────────────────────────────────────────────────────
+ * Já foi: bloco creme (`bg-surface-alt`) com cantos arredondados e preenchimento
+ * generoso, desenhado como um cartão sobre o branco da página. O fundo saiu -
+ * a história do Caio é o corpo da página, não um aparte dentro dela, e a moldura
+ * a empurrava para longe do texto que vem antes e depois. O único bloco com
+ * moldura própria aqui passa a ser a citação, e é isso que a destaca.
  *
  * ── Por que as fotos vêm antes do texto ───────────────────────────────────
  * Porque a história é dele, e ver o rosto de quem pede muda o que se lê depois.
@@ -37,7 +44,12 @@ export function Missao() {
   return (
     <section id="missao" className="py-[clamp(2.5rem,6vh,4.5rem)]">
       <div className="container-narrow">
-        <Reveal className="mx-auto flex max-w-[760px] flex-col items-center gap-5 rounded-md bg-surface-alt p-6 text-center sm:p-8 md:p-12">
+        {/* Sem fundo e sem preenchimento próprios: a seção assenta direto no
+            branco da página. O respiro lateral já vem do `container-narrow`
+            (20px, 32px no desktop) e o vertical do `py` da `<section>` - por
+            isso tirar o `p-6/sm:p-8/md:p-12` daqui não cola o texto na borda
+            da tela nem encosta na seção de cima. */}
+        <Reveal className="mx-auto flex max-w-[760px] flex-col items-center gap-5 text-center">
           <p className="text-[13px] font-extrabold uppercase tracking-[0.12em] text-accent">
             {missao.eyebrow}
           </p>
