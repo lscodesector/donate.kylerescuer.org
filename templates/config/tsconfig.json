@@ -30,11 +30,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": [
-    "node_modules",
-    /* A biblioteca de templates é material de consulta, não código deste
-       site: ela tem um `app/layout.tsx` e um `app/page.tsx` próprios, que o
-       Next tentaria tratar como rotas se estivessem no escopo. */
-    "templates"
-  ]
+  "exclude": ["node_modules"]
 }

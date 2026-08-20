@@ -7,7 +7,7 @@
  * este gancho, testar `lib/payments/lusa.ts` exigiria duplicar as funções no
  * teste, que é o contrário do que um teste serve.
  */
-const RAIZ = new URL("../", import.meta.url);
+const RAIZ = new URL("../src/", import.meta.url);
 
 export async function resolve(especificador, contexto, proximo) {
   if (!especificador.startsWith("@/")) return proximo(especificador, contexto);

@@ -16,10 +16,10 @@ import { register } from "node:module";
 register("./alias-hook.mjs", import.meta.url);
 
 const { recurrenceStartDate, buildContrato, payments } = await import(
-  "../lib/payments/lusa.ts"
+  "../src/lib/payments/lusa.ts"
 );
 const { isValidCpf, maskCpf, maskBRL, centsFromBRL } = await import(
-  "../lib/format.ts"
+  "../src/lib/format.ts"
 );
 
 let falhas = 0;

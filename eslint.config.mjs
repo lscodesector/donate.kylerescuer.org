@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // A biblioteca de templates é material de consulta, não código deste site.
+    "templates/**",
   ]),
 ]);
 

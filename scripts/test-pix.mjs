@@ -7,7 +7,7 @@
  */
 // O Node 24 remove os tipos do TypeScript sozinho, então o módulo real é
 // importado direto - sem cópia da lógica e sem etapa de build no meio.
-import { crc16, gerarPixCopiaECola } from "../lib/pix.ts";
+import { crc16, gerarPixCopiaECola } from "../src/lib/pix.ts";
 
 let falhas = 0;
 function checa(nome, real, esperado) {
