@@ -314,7 +314,7 @@ function SectionHead({
  */
 function DocumentoCard() {
   return (
-    <div className="overflow-hidden rounded-md border border-ink-900/10 bg-surface shadow">
+    <div className="relative overflow-hidden rounded-md border border-ink-900/10 bg-surface shadow">
       <div className="flex flex-col items-center gap-3 border-b border-ink-900/[.07] p-4 text-center sm:items-start sm:text-left">
         <div className="flex flex-col">
           <span className="text-fs14 font-extrabold text-ink-900">{cnpjDocument.title}</span>
@@ -354,6 +354,19 @@ function DocumentoCard() {
         <IconFile size={15} />
         Ver documento
       </a>
+
+      <a
+        href={withBasePath(cnpjDocument.src)}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={(e) => {
+          if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+          e.preventDefault();
+          openDocumentoModal();
+        }}
+        aria-label="Ver documento do cartão CNPJ"
+        className="absolute inset-0 z-10 cursor-pointer focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent"
+      />
     </div>
   );
 }

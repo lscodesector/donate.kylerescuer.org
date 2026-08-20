@@ -141,7 +141,7 @@ export default function Flutuante() {
           onClick={() => openDonationModal()}
           className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-donate px-4 text-fs13 font-extrabold uppercase tracking-[0.02em] text-donate-ink shadow-[0_8px_20px_-8px_rgba(27,138,75,.6)] transition-colors hover:bg-donate-hover sm:min-h-[48px] sm:px-6 sm:text-fs14"
         >
-          <IconHeart size={17} />
+          <IconHeart size={17} fill="currentColor" stroke="none" />
           Doar agora
         </button>
       </div>

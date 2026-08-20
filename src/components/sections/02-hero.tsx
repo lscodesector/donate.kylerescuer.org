@@ -1329,7 +1329,7 @@ export default function Hero() {
             {/* Abre a tela de valor (`DonationModal`) direto; sem JavaScript
                 continua sendo um link para o bloco de doação. */}
             <DonateMenuButton className="inline-flex min-h-[clamp(2.875rem,5.2vh,3.25rem)] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-donate px-5 text-[clamp(0.814rem,1.302vh,0.872rem)] font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow-[0_10px_30px_-8px_rgba(27,138,75,.55)] transition-colors hover:bg-donate-hover">
-              <IconHeart size={17} />
+              <IconHeart size={17} fill="currentColor" stroke="none" />
               {heroCopy.ctaPrimary}
             </DonateMenuButton>
 

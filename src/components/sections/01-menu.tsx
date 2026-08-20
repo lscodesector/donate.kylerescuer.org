@@ -72,7 +72,7 @@ const IconFile = (p: IconProps) => (
 );
 
 const IconHeart = (p: IconProps) => (
-  <svg {...base(p)}>
+  <svg {...base(p)} fill="currentColor" stroke="none">
     <path d="M20.8 5.6a5.5 5.5 0 0 0-7.8 0L12 6.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l8.8 8.8 8.8-8.8a5.5 5.5 0 0 0 0-7.8Z" />
   </svg>
 );

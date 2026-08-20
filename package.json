@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3020",
     "lint": "eslint",
     "test:pix": "node --disable-warning=ExperimentalWarning scripts/test-pix.mjs",
     "test:recorrencia": "node --disable-warning=ExperimentalWarning scripts/test-recorrencia.mjs"

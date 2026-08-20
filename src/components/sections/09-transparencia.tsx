@@ -496,7 +496,6 @@ export default function Transparencia() {
       {/* #ui:transparencia */}
       <div className="container-narrow flex max-w-[660px] flex-col gap-5">
         <SectionHead
-          icon={IconDollar}
           eyebrow={copyTransparencia.eyebrow}
           title={copyTransparencia.title}
           lead={copyTransparencia.lead}

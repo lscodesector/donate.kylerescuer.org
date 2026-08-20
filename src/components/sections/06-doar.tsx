@@ -455,7 +455,7 @@ export default function Doar() {
               320px - com `px-8` fixo, "Quero ajudar agora" em maiúsculas
               estourava a largura em vez de descer para a segunda linha. */}
           <DonateMenuButton className="inline-flex min-h-[60px] w-full items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-donate px-5 text-[clamp(0.93rem,0.883rem+0.279vw,1.046rem)] font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow-[0_12px_34px_-10px_rgba(27,138,75,.6)] transition-colors hover:bg-donate-hover sm:px-8">
-            <IconHeart size={20} />
+            <IconHeart size={20} fill="currentColor" stroke="none" />
             {copyDoar.cta}
           </DonateMenuButton>
 

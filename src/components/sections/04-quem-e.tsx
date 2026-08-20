@@ -698,7 +698,7 @@ export default function QuemE() {
             className="aspect-[4/3] w-full max-w-[640px] rounded-md border border-ink-900/10 shadow"
           />
 
-          <div className="flex max-w-[58ch] flex-col gap-3">
+          <div className="flex w-full max-w-[640px] flex-col gap-3">
             {missao.paragraphs.map((paragraph) => (
               <p
                 key={paragraph}
@@ -717,11 +717,11 @@ export default function QuemE() {
               com os seis realces dos parágrafos: numa seção em que vermelho
               significa "leia esta frase", um bloco inteiro vermelho tira o
               sentido da marcação. A moldura sozinha já destaca a citação. */}
-          <blockquote className="w-full max-w-[58ch] rounded-md border-l-4 border-action bg-action/[.06] p-4 text-left text-fs15 font-semibold leading-[1.6] text-ink-900 sm:p-5">
+          <blockquote className="w-full max-w-[640px] rounded-md border-l-4 border-action bg-action/[.06] p-4 text-left text-fs15 font-semibold leading-[1.6] text-ink-900 sm:p-5">
             {missao.quote}
           </blockquote>
 
-          <div className="flex max-w-[58ch] flex-col gap-3">
+          <div className="flex w-full max-w-[640px] flex-col gap-3">
             {missao.paragraphsAfter.map((paragraph) => (
               <p
                 key={paragraph}

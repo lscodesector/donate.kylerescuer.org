@@ -437,25 +437,17 @@ export default function ModalDoacao() {
                   }`}
                 >
                   {/*
-                    A pílula âmbar pendurada no canto de cima, como no checkout
-                    de referência: `#F5A623`, texto quase preto, cantos de 4px -
-                    um retângulo pequeno, não uma cápsula.
+                    A pílula âmbar centralizada no topo do cartão, como no
+                    checkout de referência: `#F5A623`, texto quase preto,
+                    cantos de 4px, numa linha só (`whitespace-nowrap`).
 
-                    "Mais escolhido" quebra em duas linhas dentro da pílula
-                    (sem `whitespace-nowrap`, `leading-[1.1]` e `w-[52px]` para
-                    a quebra cair sempre entre as duas palavras) - por isso ela
-                    cabe na largura do cartão, ao contrário de escrita numa
-                    linha só, que passava das duas bordas e encostava no
-                    vizinho.
-
-                    ⚠️ Ela sobe para fora do cartão (`-top-2`, um pouco mais que
-                    antes por causa da segunda linha), então só funciona na
-                    **primeira fileira** da grade - hoje é onde o R$ 30 está. Se
-                    o destaque mudar para um valor de outra fileira, a pílula
-                    passa a encostar no cartão de cima.
+                    ⚠️ Ela sobe para fora do cartão (`-top-2`), então só
+                    funciona na **primeira fileira** da grade - hoje é onde o
+                    R$ 30 está. Se o destaque mudar para um valor de outra
+                    fileira, a pílula passa a encostar no cartão de cima.
                   */}
                   {amount.popular && (
-                    <span className="absolute -top-2 right-1.5 w-[52px] rounded-[4px] bg-[#f5a623] px-1 py-[3px] text-center text-fs9 font-bold leading-[1.1] text-[#181818]">
+                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-[4px] bg-[#f5a623] px-1.5 py-[3px] text-center text-fs9 font-bold text-[#181818]">
                       Mais escolhido
                     </span>
                   )}
