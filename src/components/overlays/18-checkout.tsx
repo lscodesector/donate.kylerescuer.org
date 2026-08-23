@@ -1183,7 +1183,10 @@ function PainelTaxa({
   if (!checkoutFee.enabled) return null;
 
   return (
-    <div className="flex flex-col gap-2.5 rounded-md border border-donate/20 bg-donate/[.07] p-3.5">
+    <label
+      htmlFor={id}
+      className="flex cursor-pointer flex-col gap-2.5 rounded-md border border-donate/20 bg-donate/[.07] p-3.5"
+    >
       <div className="flex items-start gap-2.5">
         <span
           aria-hidden="true"
@@ -1202,10 +1205,7 @@ function PainelTaxa({
         </div>
       </div>
 
-      <label
-        htmlFor={id}
-        className="flex cursor-pointer items-center gap-2.5 text-fs14 font-extrabold text-ink-900"
-      >
+      <div className="flex items-center gap-2.5 text-fs14 font-extrabold text-ink-900">
         <input
           id={id}
           type="checkbox"
@@ -1217,8 +1217,8 @@ function PainelTaxa({
         <span className="whitespace-nowrap text-donate-text tabular-nums">
           (+ {formatBRLCurto(taxaCents)})
         </span>
-      </label>
-    </div>
+      </div>
+    </label>
   );
 }
 
