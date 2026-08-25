@@ -13,6 +13,7 @@ import {
 } from "react";
 import { withBasePath } from "@/lib/base-path";
 import { whatsappWith, type Documento } from "@/lib/config";
+import { useShelterPhone } from "@/lib/hooks/use-shelter-phone";
 import { openDocumentoModal, openDonationModal } from "@/lib/modais";
 import { useScrollLock } from "@/lib/scroll-lock";
 
@@ -1169,6 +1170,7 @@ function FichaAbrigo({
   onClose: () => void;
 }) {
   const fecharRef = useRef<HTMLButtonElement>(null);
+  const phone = useShelterPhone();
 
   /* A mesma trava do checkout e do popup de documento, e não mais um
      `overflow: hidden` local: ela conta quantos modais estão abertos, o que
@@ -1433,6 +1435,7 @@ function FichaAbrigo({
             <a
               href={whatsappWith(
                 `Olá! Queria saber mais sobre o abrigo ${shelter.name}, que aparece na campanha do Caio Protetor.`,
+                phone,
               )}
               target="_blank"
               rel="noopener noreferrer"

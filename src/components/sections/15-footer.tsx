@@ -4,7 +4,8 @@ import NextImage, { type ImageProps } from "next/image";
 import Link from "next/link";
 import { type ReactNode, type SVGProps } from "react";
 import { withBasePath } from "@/lib/base-path";
-import { DOAR_HREF, org, showPixSection, whatsappHref } from "@/lib/config";
+import { DOAR_HREF, org, showPixSection, whatsappHref, whatsappWith } from "@/lib/config";
+import { useShelterPhone } from "@/lib/hooks/use-shelter-phone";
 import { openDonationModal, type DonationIntent } from "@/lib/modais";
 
 /**
@@ -272,6 +273,13 @@ const SOCIALS = [
  * da página: as listas e as fichas já leem alinhadas à esquerda.
  */
 export default function Footer() {
+  const phone = useShelterPhone();
+  const socials = SOCIALS.map((social) =>
+    social.label === "WhatsApp"
+      ? { ...social, href: whatsappWith(org.whatsappMessage, phone) }
+      : social,
+  );
+
   return (
     /* `pb` reservado para a barra fixa de doação, que fica ancorada no rodapé
        da janela e cobriria as últimas linhas daqui. Encolheu quando o botão
@@ -305,7 +313,7 @@ export default function Footer() {
               agora ela tem o que uma barra precisa para existir.
             */}
             <ul className="flex items-center gap-3">
-              {SOCIALS.map(({ label, href, Icon }) => (
+              {socials.map(({ label, href, Icon }) => (
                 <li key={label}>
                   <a
                     href={href}

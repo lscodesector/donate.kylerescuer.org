@@ -9,7 +9,8 @@ import {
   type ReactNode,
   type SVGProps,
 } from "react";
-import { whatsappHref } from "@/lib/config";
+import { org, whatsappWith } from "@/lib/config";
+import { useShelterPhone } from "@/lib/hooks/use-shelter-phone";
 
 /**
  * ╔══════════════════════════════════════════════════════════════════════╗
@@ -291,6 +292,9 @@ function SectionHead({
  * fantasma saiu e a seta é o único elemento à direita.
  */
 export default function Faq() {
+  const phone = useShelterPhone();
+  const whatsappHref = whatsappWith(org.whatsappMessage, phone);
+
   return (
     <section id="duvidas" className="py-[clamp(2.5rem,6vh,4.5rem)]">
       {/* #ui:faq */}

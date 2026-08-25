@@ -2,14 +2,23 @@ import type { NextConfig } from "next";
 
 /**
  * ╔══════════════════════════════════════════════════════════════════════╗
- * ║  SERVIDOR NODE (PM2) - `next build` + `next start`, sem export        ║
+ * ║  EXPORT ESTÁTICO - sem PM2, sem processo Node em pé                   ║
  * ╚══════════════════════════════════════════════════════════════════════╝
  *
- * Existe um processo Next rodando (PM2 atrás de nginx/aaPanel), então rotas
- * de servidor (Route Handlers, Server Actions, `redirect()`/`rewrites`)
- * voltam a ser possíveis - mas nada disso foi adicionado nesta mudança, só
- * removido o que impedia. O gateway de Pix continua chamado direto do
- * navegador (ver `lib/payments/lusa.ts`), sem depender do servidor.
+ * `next build` gera `out/`, que é publicado como arquivo estático puro
+ * (nginx serve direto, sem proxy pra porta nenhuma) - é assim que
+ * `doe-caio-next` está publicado hoje em produção. Um commit anterior
+ * ("deploy", 20/08) tentou trocar para modo servidor (PM2 atrás de
+ * nginx/aaPanel) mas o processo/vhost nunca foram criados no servidor - o
+ * `output: "export"` volta porque nada no código usa Route Handler, Server
+ * Action ou `redirect()` de servidor: não há razão pra exigir um processo
+ * Node rodando. O gateway de Pix é chamado direto do navegador (ver
+ * `lib/payments/lusa.ts`), sem depender do servidor.
+ *
+ * Quando este Next passar a viver dentro de `doe.caioprotetor.org` (as
+ * páginas WordPress migrando pra cá), decidir de novo se export estático
+ * ainda basta ou se alguma rota nova vai pedir servidor - ver skill
+ * `configurar-next-aapanel` se for esse o caminho.
  *
  * O endereço público entra por `NEXT_PUBLIC_SITE_URL` **no momento do build**
  * - é ele que vira a base das URLs de metadata (`app/layout.tsx`). Buildar sem
@@ -27,6 +36,7 @@ import type { NextConfig } from "next";
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || undefined;
 
 const nextConfig: NextConfig = {
+  output: "export",
   basePath,
 
   experimental: {

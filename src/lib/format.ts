@@ -34,6 +34,18 @@ export function phoneDigits(input: string): string {
 }
 
 /**
+ * O número completo com DDI (`5585997934599`, formato que a API do painel
+ * devolve e que o `wa.me` espera) para a máscara de exibição
+ * (`(85) 99793-4599`) - `maskPhoneBR` sozinha cortaria nos 11 primeiros
+ * dígitos e pegaria o "55" do DDI como se fosse DDD.
+ */
+export function formatPhoneDisplayBR(fullPhoneWithDDI: string): string {
+  const d = phoneDigits(fullPhoneWithDDI);
+  const local = d.length > 11 && d.startsWith("55") ? d.slice(2) : d;
+  return maskPhoneBR(local);
+}
+
+/**
  * Telefone válido é o que tem DDD + 8 ou 9 dígitos. Campo vazio é válido:
  * o WhatsApp do checkout é opcional, e barrar quem não quer dar o número
  * seria transformar um campo opcional em obrigatório.
