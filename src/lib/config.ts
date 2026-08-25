@@ -226,28 +226,37 @@ export const org = {
   instagramHref: "https://www.instagram.com/caio.protetor/",
   facebookHref: "https://www.facebook.com/caioprotetor",
   /**
-   * As três políticas, **nesta página**.
+   * As três políticas, no site institucional.
    *
-   * Eram links para `caioprotetor.org`, o site institucional - um destino fora
-   * daqui para um documento que fala das doações feitas aqui. Agora cada uma é
-   * uma rota própria (`app/politica-*`), com o texto em `content/legal.ts`.
-   *
-   * ⚠️ Caminho relativo, sem domínio: quem monta o `<Link>` é o Next, que
-   * prefixa o `basePath` sozinho (o site é publicado em `/v2`). Escrever a URL
-   * inteira aqui quebraria os três links no dia em que o caminho mudasse.
+   * Não são rota própria aqui - o texto legal completo mora em
+   * `caioprotetor.org` (WordPress), não nesta campanha. Link absoluto e
+   * externo: o `Footer` já abre em aba nova (`target="_blank"`) qualquer
+   * `href` que comece com `http`.
    */
   policies: [
-    { label: "Política de Privacidade", href: "/politica-de-privacidade" },
-    { label: "Termos de Uso", href: "/termos-de-uso" },
-    { label: "Política de Doação", href: "/politica-de-doacao" },
+    {
+      label: "Política de Privacidade",
+      href: "https://caioprotetor.org/politica-de-privacidade/",
+    },
+    { label: "Termos de Uso", href: "https://caioprotetor.org/termos-de-uso/" },
+    {
+      label: "Política de Doação",
+      href: "https://caioprotetor.org/politica-de-doacao/",
+    },
   ],
 };
 
 export const whatsappHref = `https://wa.me/${org.whatsapp}?text=${encodeURIComponent(org.whatsappMessage)}`;
 
-/** Monta um link de WhatsApp com mensagem própria. */
-export function whatsappWith(message: string) {
-  return `https://wa.me/${org.whatsapp}?text=${encodeURIComponent(message)}`;
+/**
+ * Monta um link de WhatsApp com mensagem própria.
+ *
+ * `phone` é opcional e existe para quem já buscou o número atual do abrigo
+ * (ver `useShelterPhone`, em `lib/hooks/`) - sem ele, cai no `org.whatsapp`
+ * fixo, como sempre foi.
+ */
+export function whatsappWith(message: string, phone: string = org.whatsapp) {
+  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 }
 
 /**

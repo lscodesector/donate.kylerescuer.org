@@ -11,7 +11,9 @@ import {
   type SVGProps,
 } from "react";
 import { withBasePath } from "@/lib/base-path";
-import { cnpjDocument, org, whatsappHref } from "@/lib/config";
+import { cnpjDocument, org, whatsappWith } from "@/lib/config";
+import { formatPhoneDisplayBR } from "@/lib/format";
+import { useShelterPhone } from "@/lib/hooks/use-shelter-phone";
 import { openDocumentoModal } from "@/lib/modais";
 
 /**
@@ -382,6 +384,9 @@ function DocumentoCard() {
  * doa, e não é algo que se conserta depois.
  */
 export default function Documentacao() {
+  const phone = useShelterPhone();
+  const whatsappHref = whatsappWith(org.whatsappMessage, phone);
+
   return (
     <section id="documentacao" className="surface-alt py-[clamp(2.5rem,6vh,4.5rem)]">
       {/* #ui:documentacao */}
@@ -413,7 +418,7 @@ export default function Documentacao() {
               <IconWhatsApp size={16} />
               WhatsApp
             </span>
-            <span className="text-fs14 font-semibold text-ink-900">{org.whatsappDisplay}</span>
+            <span className="text-fs14 font-semibold text-ink-900">{formatPhoneDisplayBR(phone)}</span>
             <span className="text-fs12 leading-[1.4] text-ink-600">
               Fale diretamente com nossa equipe.
             </span>
