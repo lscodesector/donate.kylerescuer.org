@@ -206,7 +206,8 @@ export default function ModalDoacao() {
    * HTML pré-gerado com o centavo dentro nem divergência de hidratação.
    */
   const escada = mensal ? donationAmountsMensal : donationAmountsUnica;
-  const valores = isLocalhost() ? [testAmount, ...escada] : escada;
+  const modoTeste = isLocalhost();
+  const valores = modoTeste ? [testAmount, ...escada] : escada;
 
   const cents = centsFromBRL(valor);
 
@@ -216,8 +217,18 @@ export default function ModalDoacao() {
    * escada da mensal já começa em R$ 15 - quem esbarra nisso é sempre o campo
    * livre, e barrar aqui é melhor do que deixar a pessoa preencher nome, CPF e
    * WhatsApp para receber a recusa do gateway no fim.
+   *
+   * ⚠️ Em `localhost` o piso cai para R$ 0,01 - o mesmo `testAmount` que entra
+   * na grade. É o único jeito de digitar um centavo no campo livre e fechar o
+   * fluxo da mensal sem cadastrar um mandato de valor real. Fora de
+   * `localhost` a conta nem passa por aqui: `modoTeste` é falso e o piso é o
+   * do gateway.
    */
-  const minimoCents = mensal ? payments.recurring.minCents : 0;
+  const minimoCents = mensal
+    ? modoTeste
+      ? testAmount.cents
+      : payments.recurring.minCents
+    : 0;
   const temValor = cents > 0;
   const abaixoDoMinimo = temValor && cents < minimoCents;
 
@@ -500,8 +511,7 @@ export default function ModalDoacao() {
             </div>
             {mostrarMinimo && (
               <span className="mt-1.5 block text-fs12 font-semibold text-error">
-                O valor mínimo para doação mensal é{" "}
-                {formatBRL(payments.recurring.minCents)}.
+                O valor mínimo para doação mensal é {formatBRL(minimoCents)}.
               </span>
             )}
           </label>

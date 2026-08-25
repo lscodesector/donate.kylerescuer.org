@@ -7,6 +7,7 @@ import { CheckoutPix } from "./CheckoutPix";
 import { org, pix } from "@/lib/config";
 import { formatBRLCurto } from "@/lib/format";
 import { gerarPixCopiaECola } from "@/lib/pix";
+import { isLocalhost } from "@/lib/test-mode";
 
 /**
  * O checkout de valor livre, montado no navegador.
@@ -32,8 +33,15 @@ import { gerarPixCopiaECola } from "@/lib/pix";
  * `app/doar/valor/CheckoutPix.tsx`.
  */
 
-/** Piso e teto de sanidade: a URL é editável por quem quiser. */
-const MIN_CENTS = 100;
+/**
+ * Piso e teto de sanidade: a URL é editável por quem quiser.
+ *
+ * O piso é R$ 1,00 no site publicado e R$ 0,01 em `localhost` - ver
+ * `lib/test-mode.ts`. Sem a exceção, o degrau de teste da grade morria aqui:
+ * o modal manda `?cents=1` e esta tela devolvia a pessoa para `/#doar`.
+ */
+const MIN_CENTS_PUBLICADO = 100;
+const MIN_CENTS_TESTE = 1;
 const MAX_CENTS = 100_000_00;
 
 type Pagamento = { copiaECola: string; qrSvg: string };
@@ -45,8 +53,9 @@ export function CheckoutValor() {
 
   const cents = Number(searchParams.get("cents"));
   const mensal = searchParams.get("freq") === "mensal";
+  const minCents = isLocalhost() ? MIN_CENTS_TESTE : MIN_CENTS_PUBLICADO;
   const valorValido =
-    Number.isInteger(cents) && cents >= MIN_CENTS && cents <= MAX_CENTS;
+    Number.isInteger(cents) && cents >= minCents && cents <= MAX_CENTS;
 
   // Valor inválido volta para a seção de doação, em vez de gerar um Pix quebrado.
   useEffect(() => {

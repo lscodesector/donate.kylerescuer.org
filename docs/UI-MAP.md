@@ -19,10 +19,10 @@ compartilhada (ela não existe mais). O que ele pode importar é `@/lib`.
 | 02 | `#ui:hero`            | `src/components/sections/02-hero.tsx`            |
 | 03 | `#ui:prova`           | `src/components/sections/03-prova.tsx`           |
 | 04 | `#ui:quem-e`          | `src/components/sections/04-quem-e.tsx`          |
-| 05 | `#ui:abrigos`         | `src/components/sections/05-abrigos.tsx`         |
-| 06 | `#ui:doar`            | `src/components/sections/06-doar.tsx`            |
-| 07 | `#ui:como-funciona`   | `src/components/sections/07-como-funciona.tsx`   |
-| 08 | `#ui:pix-direto`      | `src/components/sections/08-pix-direto.tsx`      |
+| 05 | `#ui:pix-direto`      | `src/components/sections/05-pix-direto.tsx`      |
+| 06 | `#ui:abrigos`         | `src/components/sections/06-abrigos.tsx`         |
+| 07 | `#ui:doar`            | `src/components/sections/07-doar.tsx`            |
+| 08 | `#ui:como-funciona`   | `src/components/sections/08-como-funciona.tsx`   |
 | 09 | `#ui:transparencia`   | `src/components/sections/09-transparencia.tsx`   |
 | 10 | `#ui:atualizacoes`    | `src/components/sections/10-atualizacoes.tsx`    |
 | 11 | `#ui:depoimentos`     | `src/components/sections/11-depoimentos.tsx`     |

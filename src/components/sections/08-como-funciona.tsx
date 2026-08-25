@@ -11,7 +11,7 @@ import {
 
 /**
  * ╔══════════════════════════════════════════════════════════════════════╗
- * ║  07 · COMO FUNCIONA - os três passos                                  ║
+ * ║  08 · COMO FUNCIONA - os três passos                                  ║
  * ╚══════════════════════════════════════════════════════════════════════╝
  *
  * Bloco isolado: os três passos, o selo e os ícones moram aqui. Não importa

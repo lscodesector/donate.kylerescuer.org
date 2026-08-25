@@ -2,10 +2,10 @@ import Menu from "@/components/sections/01-menu";
 import Hero from "@/components/sections/02-hero";
 import Prova from "@/components/sections/03-prova";
 import QuemE from "@/components/sections/04-quem-e";
-import Abrigos from "@/components/sections/05-abrigos";
-import Doar from "@/components/sections/06-doar";
-import ComoFunciona from "@/components/sections/07-como-funciona";
-import PixDireto from "@/components/sections/08-pix-direto";
+import PixDireto from "@/components/sections/05-pix-direto";
+import Abrigos from "@/components/sections/06-abrigos";
+import Doar from "@/components/sections/07-doar";
+import ComoFunciona from "@/components/sections/08-como-funciona";
 import Transparencia from "@/components/sections/09-transparencia";
 import Atualizacoes from "@/components/sections/10-atualizacoes";
 import Depoimentos from "@/components/sections/11-depoimentos";
@@ -47,11 +47,13 @@ import type { Metadata } from "next";
  *  02 Hero          quem está pedindo e por quê - o VSL da campanha
  *  03 Prova         prova rápida de confiança, antes que a objeção apareça
  *  04 QuemE         "quem é o Caio" - a história, com as fotos dele
- *  05 Abrigos       quem recebe a ajuda, com nome, endereço e perfil
- *  06 Doar          o argumento (o contraste) e o pedido, num botão só
- *  07 ComoFunciona  os três passos, para quem chegou ao fim do pedido sem
+ *  05 PixDireto     a chave da campanha, para quem prefere o app do banco -
+ *                   antes de "quem recebe", para quem já decidiu doar e não
+ *                   quer passar por formulário nenhum
+ *  06 Abrigos       quem recebe a ajuda, com nome, endereço e perfil
+ *  07 Doar          o argumento (o contraste) e o pedido, num botão só
+ *  08 ComoFunciona  os três passos, para quem chegou ao fim do pedido sem
  *                   clicar - o que acontece depois do botão
- *  08 PixDireto     a chave da campanha, para quem prefere o app do banco
  *  09 Transparencia a conta mensal dos abrigos e os números da campanha
  *  10 Atualizacoes  a linha do tempo - inclusive o que deu errado
  *  11 Depoimentos   os cinco protetores falando por si, em vídeo
@@ -90,10 +92,10 @@ export default function DonationPage() {
         <Hero />
         <Prova />
         <QuemE />
+        {showPixSection && <PixDireto />}
         <Abrigos />
         <Doar />
         <ComoFunciona />
-        {showPixSection && <PixDireto />}
         <Transparencia />
         <Atualizacoes />
         <Depoimentos />

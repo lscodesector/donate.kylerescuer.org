@@ -18,7 +18,7 @@ import { useScrollLock } from "@/lib/scroll-lock";
 
 /**
  * ╔══════════════════════════════════════════════════════════════════════╗
- * ║  05 · ABRIGOS - quem recebe a ajuda                                   ║
+ * ║  06 · ABRIGOS - quem recebe a ajuda                                   ║
  * ╚══════════════════════════════════════════════════════════════════════╝
  *
  * Bloco isolado: os cinco abrigos, a ficha que abre no clique, o slide de

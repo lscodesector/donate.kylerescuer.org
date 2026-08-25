@@ -5,7 +5,7 @@ import { pix } from "@/lib/config";
 
 /**
  * ╔══════════════════════════════════════════════════════════════════════╗
- * ║  08 · PIX DIRETO - a chave da campanha                                ║
+ * ║  05 · PIX DIRETO - a chave da campanha                                ║
  * ╚══════════════════════════════════════════════════════════════════════╝
  *
  * Bloco isolado: o texto e os ícones moram aqui.

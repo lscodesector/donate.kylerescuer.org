@@ -26,7 +26,7 @@ const copyFooterAbout =
  * Os abrigos, **só nome e link** - a lista do rodapé.
  *
  * ⚠️ É uma segunda cópia: a lista de verdade, com fotos, endereço, CNPJ e
- * ficha, é conteúdo do bloco 05 (`sections/05-abrigos.tsx`). O rodapé não a
+ * ficha, é conteúdo do bloco 06 (`sections/06-abrigos.tsx`). O rodapé não a
  * importa porque bloco não importa bloco - então **abrigo novo entra nos dois
  * arquivos**, e abrigo que sai também. Se as duas listas divergirem, o rodapé
  * é quem fica publicando link para abrigo que a página não mostra mais.

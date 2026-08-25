@@ -16,7 +16,7 @@ import { openDonationModal } from "@/lib/modais";
 
 /**
  * ╔══════════════════════════════════════════════════════════════════════╗
- * ║  06 · DOAR - o argumento e o pedido                                   ║
+ * ║  07 · DOAR - o argumento e o pedido                                   ║
  * ╚══════════════════════════════════════════════════════════════════════╝
  *
  * Bloco isolado: o contraste ("sem apoio" × "com você"), o botão e os ícones
