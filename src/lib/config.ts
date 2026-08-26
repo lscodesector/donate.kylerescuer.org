@@ -96,6 +96,18 @@ export const testAmount: DonationAmount = {
   teste: true,
 };
 
+/**
+ * Piso do **valor livre da doação única**, em centavos - R$ 10,00.
+ *
+ * A grade da única começa em R$ 20, mas o campo de valor livre aceita qualquer
+ * número: sem este piso, quem digita "0,01" fecha uma doação de um centavo. É o
+ * equivalente, na única, ao `payments.recurring.minCents` da mensal.
+ *
+ * ⚠️ Em `localhost` quem manda é o `testAmount` (R$ 0,01) - ver
+ * `DonationModal`. Fora de `localhost` este é o piso, sempre.
+ */
+export const donationMinCentsUnica = 1000;
+
 /** Doação **única** - R$ 20 a R$ 1.000. */
 export const donationAmountsUnica: readonly DonationAmount[] = [
   { cents: 2000, popular: false },

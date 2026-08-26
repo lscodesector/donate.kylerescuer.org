@@ -4,7 +4,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import QRCode from "qrcode";
 import { useEffect, useState } from "react";
 import { CheckoutPix } from "./CheckoutPix";
-import { org, pix } from "@/lib/config";
+import { donationMinCentsUnica, org, pix } from "@/lib/config";
+import { payments } from "@/lib/payments/lusa";
 import { formatBRLCurto } from "@/lib/format";
 import { gerarPixCopiaECola } from "@/lib/pix";
 import { isLocalhost } from "@/lib/test-mode";
@@ -36,11 +37,12 @@ import { isLocalhost } from "@/lib/test-mode";
 /**
  * Piso e teto de sanidade: a URL é editável por quem quiser.
  *
- * O piso é R$ 1,00 no site publicado e R$ 0,01 em `localhost` - ver
- * `lib/test-mode.ts`. Sem a exceção, o degrau de teste da grade morria aqui:
+ * O piso publicado é o mesmo do modal - R$ 10,00 na única
+ * (`donationMinCentsUnica`) e o piso da recorrência na mensal
+ * (`payments.recurring.minCents`) - e R$ 0,01 em `localhost` (ver
+ * `lib/test-mode.ts`). Sem a exceção, o degrau de teste da grade morria aqui:
  * o modal manda `?cents=1` e esta tela devolvia a pessoa para `/#doar`.
  */
-const MIN_CENTS_PUBLICADO = 100;
 const MIN_CENTS_TESTE = 1;
 const MAX_CENTS = 100_000_00;
 
@@ -53,7 +55,11 @@ export function CheckoutValor() {
 
   const cents = Number(searchParams.get("cents"));
   const mensal = searchParams.get("freq") === "mensal";
-  const minCents = isLocalhost() ? MIN_CENTS_TESTE : MIN_CENTS_PUBLICADO;
+  const minCents = isLocalhost()
+    ? MIN_CENTS_TESTE
+    : mensal
+      ? payments.recurring.minCents
+      : donationMinCentsUnica;
   const valorValido =
     Number.isInteger(cents) && cents >= minCents && cents <= MAX_CENTS;
 

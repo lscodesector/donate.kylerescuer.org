@@ -6,6 +6,7 @@ import {
   causeById,
   donationAmountsMensal,
   donationAmountsUnica,
+  donationMinCentsUnica,
   testAmount,
   type Cause,
 } from "@/lib/config";
@@ -212,23 +213,24 @@ export default function ModalDoacao() {
   const cents = centsFromBRL(valor);
 
   /*
-   * O piso da mensal não é escolha de campanha: abaixo de R$ 10 a ONZ/Infopago
-   * recusa a criação do mandato de recorrência (ver `payments.recurring`). A
-   * escada da mensal já começa em R$ 15 - quem esbarra nisso é sempre o campo
-   * livre, e barrar aqui é melhor do que deixar a pessoa preencher nome, CPF e
-   * WhatsApp para receber a recusa do gateway no fim.
+   * As duas frequências têm piso no campo de valor livre - a grade já começa
+   * acima dele, quem esbarra é sempre quem digita à mão. Barrar aqui é melhor
+   * do que deixar a pessoa preencher nome, CPF e WhatsApp para só então
+   * descobrir o mínimo (mensal) ou fechar uma doação simbólica (única).
    *
-   * ⚠️ Em `localhost` o piso cai para R$ 0,01 - o mesmo `testAmount` que entra
-   * na grade. É o único jeito de digitar um centavo no campo livre e fechar o
-   * fluxo da mensal sem cadastrar um mandato de valor real. Fora de
-   * `localhost` a conta nem passa por aqui: `modoTeste` é falso e o piso é o
-   * do gateway.
+   * - mensal: `payments.recurring.minCents` (ver `payments.recurring`).
+   * - única: `donationMinCentsUnica` (ver `lib/config.ts`).
+   *
+   * ⚠️ Em `localhost` o piso cai para R$ 0,01 nas duas - o mesmo `testAmount`
+   * que entra na grade. É o único jeito de digitar um centavo no campo livre e
+   * fechar o fluxo sem gastar um valor real. Fora de `localhost` a conta usa o
+   * piso de cada frequência.
    */
-  const minimoCents = mensal
-    ? modoTeste
-      ? testAmount.cents
-      : payments.recurring.minCents
-    : 0;
+  const minimoCents = modoTeste
+    ? testAmount.cents
+    : mensal
+      ? payments.recurring.minCents
+      : donationMinCentsUnica;
   const temValor = cents > 0;
   const abaixoDoMinimo = temValor && cents < minimoCents;
 
@@ -511,7 +513,8 @@ export default function ModalDoacao() {
             </div>
             {mostrarMinimo && (
               <span className="mt-1.5 block text-fs12 font-semibold text-error">
-                O valor mínimo para doação mensal é {formatBRL(minimoCents)}.
+                O valor mínimo para {mensal ? "doação mensal" : "doação"} é{" "}
+                {formatBRL(minimoCents)}.
               </span>
             )}
           </label>

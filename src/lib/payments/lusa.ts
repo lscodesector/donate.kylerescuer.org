@@ -227,21 +227,20 @@ export const payments = {
     startMonthsAhead: 1,
 
     /**
-     * Piso do valor livre da mensal, em centavos.
+     * Piso do valor livre da mensal, em centavos - R$ 5,00.
      *
-     * R$ 10,00, o mesmo que a página em WordPress do Caio pratica hoje: lá o
-     * par é `FORM_ENV = 'prod'` → `MIN_CENTS = 1000` (conferido no HTML
-     * publicado de `doe.caioprotetor.org` em 13/08/2026), e é o piso das
-     * campanhas irmãs (Adrielly, SOS Animal Help).
+     * ⚠️ Já esteve em `1000` (R$ 10,00), que era o que a página em WordPress do
+     * Caio praticava e o piso das campanhas irmãs (Adrielly, SOS Animal Help).
+     * O histórico registrava que **abaixo de R$ 10 a ONZ/Infopago recusava a
+     * criação do mandato de recorrência**; se a criação da recorrência começar
+     * a falhar para valores entre R$ 5 e R$ 10, é aqui que se volta para
+     * `1000`.
      *
      * ⚠️ Esteve em `1` durante o desenvolvimento, para conferir o fluxo do
      * mandato pagando de verdade - esta integração não tem sandbox e o bind só
      * funciona no domínio publicado (CORS), então cada teste custa dinheiro.
-     * Se precisar testar de novo, baixe **temporariamente** e volte para
-     * `1000` antes de publicar: com o piso em um centavo, quem digita no campo
-     * de valor livre cadastra um débito automático de R$ 0,01 por mês.
      */
-    minCents: 1000,
+    minCents: 500,
 
     /**
      * Prefixo do `contrato` - o identificador do vínculo, no máximo 35
