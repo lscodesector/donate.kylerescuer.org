@@ -174,9 +174,13 @@ export const payments = {
    * ⚠️ O slug do fim do caminho é o mesmo `recurring.funnelSlug`, repetido
    * porque um literal não consegue se referenciar. Mudou lá, muda aqui.
    */
+  // Ponte temporaria via Laravel/Cloudways (SSH tunnel), enquanto o aaPanel
+  // estiver com bloqueio de rede da DigitalOcean. Reverter para
+  // 'https://track.lusapayments.com/api/funnels/cp-caio-protetor/web-pixels'
+  // quando o bloqueio for removido.
   webPixelsUrl:
     process.env.NEXT_PUBLIC_NEST_WEB_PIXELS_URL ??
-    "https://track.lusapayments.com/api/funnels/cp-caio-protetor/web-pixels",
+    "https://lusapayments.com/api/funnels/cp-caio-protetor/web-pixels",
 
   /**
    * ╔════════════════════════════════════════════════════════════════════╗
@@ -272,18 +276,23 @@ export const payments = {
      */
     funnelSlug: process.env.NEXT_PUBLIC_NEST_FUNNEL_SLUG ?? "cp-caio-protetor",
 
-    /** Onde o mandato é amarrado ao lead. Ver `bindRecurringAuthorization`. */
+    /** Onde o mandato é amarrado ao lead. Ver `bindRecurringAuthorization`.
+     * Ponte temporaria via Laravel/Cloudways (SSH tunnel), enquanto o aaPanel
+     * estiver com bloqueio de rede da DigitalOcean. Reverter para
+     * 'https://track.lusapayments.com/api/wh/pixauto/bind' quando resolvido. */
     bindUrl:
       process.env.NEXT_PUBLIC_NEST_PIXAUTO_BIND_URL ??
-      "https://track.lusapayments.com/api/wh/pixauto/bind",
+      "https://lusapayments.com/api/wh-relay/pixauto/bind",
 
     /**
      * Onde o InitiateCheckout é gravado. **O bind depende disto**: sem o lead
      * na tabela de IC do funil, ele não tem onde pendurar o mandato.
-     */
+     * Ponte temporaria via Laravel/Cloudways (SSH tunnel), enquanto o aaPanel
+     * estiver com bloqueio de rede da DigitalOcean. Reverter para
+     * 'https://track.lusapayments.com/api/ic/cp-caio-protetor' quando resolvido. */
     icUrl:
       process.env.NEXT_PUBLIC_NEST_IC_URL ??
-      "https://track.lusapayments.com/api/ic/cp-caio-protetor",
+      "https://lusapayments.com/api/ic-relay/cp-caio-protetor",
   },
 } as const;
 
