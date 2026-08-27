@@ -51,6 +51,25 @@ const heroCopy = {
   /** Linha de apoio, logo abaixo da manchete. */
   lead: "Ajude o Caio a levar ajuda antes que seja tarde.",
   ctaPrimary: "Quero ajudar agora",
+  /**
+   * O pedido mensal na **página raiz**, onde ele é o segundo botão da dobra e
+   * divide a linha com o "Quero ajudar agora". Aqui a frase precisa gastar a
+   * palavra "todo mês": é ela que diferencia os dois botões um do outro, e é
+   * a mesma frase do menu e do fechamento.
+   */
+  ctaMensal: "Quero ajudar todo mês",
+  /**
+   * O mesmo pedido em `/ajude-sempre`, onde ele é o **único** botão da dobra.
+   *
+   * ⚠️ Este rótulo **não diz a frequência**, e a tela que ele abre está
+   * travada na mensal. Sem o irmão ao lado ele não precisa se diferenciar de
+   * ninguém - mas ele também deixou de anunciar o que vem depois do clique.
+   * Quem sustenta isso ali é o resto da dobra, não o botão: se a manchete ou
+   * a linha de apoio daquela página deixarem de falar em "todo mês", esta
+   * frase passa a ser a única coisa entre a pessoa e uma recorrência que ela
+   * não viu chegar.
+   */
+  ctaMensalSozinho: "Faça a diferença",
   seal: "Projeto 100% seguro e verificado",
 };
 
@@ -1197,7 +1216,21 @@ function DonateMenuButton({
  * player) e a própria proporção do vídeo decide a altura dele - sem
  * depender da altura da seção em nenhum momento.
  */
-export default function Hero() {
+export default function Hero({
+  /**
+   * A página é a de doação mensal (`/ajude-sempre`): a dobra fica com **um
+   * botão só**, o da recorrência.
+   *
+   * O "Quero ajudar agora" some porque nesta página ele seria a oferta que a
+   * página não faz - e porque dois botões com o mesmo pedido, um do lado do
+   * outro, transformam a decisão que a dobra pede numa escolha entre iguais.
+   * A manchete, o vídeo e a barra de meta são os mesmos: a história do Caio
+   * não muda com a frequência da doação.
+   */
+  mensal = false,
+}: {
+  mensal?: boolean;
+}) {
   const { vturb } = heroVideo;
 
   return (
@@ -1327,11 +1360,16 @@ export default function Hero() {
           */}
           <div className="flex w-full max-w-[var(--hero-col)] flex-col items-stretch gap-[clamp(0.5rem,1.2vh,0.75rem)] sm:flex-row">
             {/* Abre a tela de valor (`DonationModal`) direto; sem JavaScript
-                continua sendo um link para o bloco de doação. */}
-            <DonateMenuButton className="inline-flex min-h-[clamp(2.875rem,5.2vh,3.25rem)] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-donate px-5 text-[clamp(0.814rem,1.302vh,0.872rem)] font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow-[0_10px_30px_-8px_rgba(27,138,75,.55)] transition-colors hover:bg-donate-hover">
-              <IconHeart size={17} fill="currentColor" stroke="none" />
-              {heroCopy.ctaPrimary}
-            </DonateMenuButton>
+                continua sendo um link para o bloco de doação.
+
+                Na página da mensal ele não existe: lá a dobra tem um botão só
+                - ver `Hero({ mensal })`. */}
+            {!mensal && (
+              <DonateMenuButton className="inline-flex min-h-[clamp(2.875rem,5.2vh,3.25rem)] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-donate px-5 text-[clamp(0.814rem,1.302vh,0.872rem)] font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow-[0_10px_30px_-8px_rgba(27,138,75,.55)] transition-colors hover:bg-donate-hover">
+                <IconHeart size={17} fill="currentColor" stroke="none" />
+                {heroCopy.ctaPrimary}
+              </DonateMenuButton>
+            )}
 
             {/* Mesma identidade do "Quero ajudar todo mês" da gaveta do menu
                 e do fechamento (`CtaFinal`): vermelho cheio (`bg-action`) e
@@ -1348,7 +1386,7 @@ export default function Hero() {
               className="inline-flex min-h-[clamp(2.875rem,5.2vh,3.25rem)] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-action px-5 text-[clamp(0.814rem,1.302vh,0.872rem)] font-extrabold uppercase tracking-[0.03em] text-action-ink shadow-[0_10px_30px_-10px_rgba(191,5,33,.5)] transition-colors hover:bg-action-hover"
             >
               <IconPaw size={17} />
-              Quero ajudar todo mês
+              {mensal ? heroCopy.ctaMensalSozinho : heroCopy.ctaMensal}
             </button>
           </div>
 

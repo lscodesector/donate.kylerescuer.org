@@ -50,6 +50,30 @@ const IconHeart = (p: IconProps) => (
   </svg>
 );
 
+/**
+ * A patinha branca do pedido mensal - mesmo desenho de `IconPaw` em
+ * `01-menu.tsx`, `02-hero.tsx` e `14-cta-final.tsx`. `fill="currentColor"`
+ * herda o branco de `text-action-ink` sozinho, sem precisar de `className`.
+ */
+const IconPaw = ({ size = 20, ...rest }: IconProps) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    aria-hidden="true"
+    focusable={false}
+    {...rest}
+  >
+    <ellipse cx="7" cy="8.2" rx="2.1" ry="2.7" />
+    <ellipse cx="12" cy="6.4" rx="2.1" ry="2.8" />
+    <ellipse cx="17" cy="8.2" rx="2.1" ry="2.7" />
+    <ellipse cx="19.6" cy="13.2" rx="1.9" ry="2.3" />
+    <ellipse cx="4.4" cy="13.2" rx="1.9" ry="2.3" />
+    <path d="M12 12.2c2.8 0 5.2 2 5.2 4.4 0 2-1.6 3.2-3.4 3.2-.8 0-1.3-.3-1.8-.3s-1 .3-1.8.3c-1.8 0-3.4-1.2-3.4-3.2 0-2.4 2.4-4.4 5.2-4.4Z" />
+  </svg>
+);
+
 /* ──────────────────────────────────────────────────────────── o bloco ──── */
 
 /**
@@ -75,7 +99,20 @@ const IconHeart = (p: IconProps) => (
  * "● N apoiadores" na direita - as duas linhas alinhadas verticalmente com
  * o par de cima. O botão fica fora dessa coluna, ao lado.
  */
-export default function Flutuante() {
+export default function Flutuante({
+  /**
+   * A página é a de doação mensal (`/ajude-sempre`): o botão pede a
+   * recorrência e abre a tela travada nela, sem a aba de doação única.
+   *
+   * A prop existe para o **rótulo** - o comportamento já viria do padrão da
+   * página (`setDonationDefaults`, ver `lib/modais.ts`). Como esta barra é
+   * montada pela própria `page.tsx`, o texto certo pode sair já no HTML
+   * estático, sem esperar a hidratação para trocar de palavra.
+   */
+  mensal = false,
+}: {
+  mensal?: boolean;
+}) {
   const [visible, setVisible] = useState(false);
   const state = useSyncExternalStore(
     subscribeCampaign,
@@ -136,13 +173,38 @@ export default function Flutuante() {
           </div>
         </div>
 
+        {/*
+          ⚠️ Na mensal o rótulo **não diz a frequência**, e esta barra é o
+          único CTA da página que não tem texto em volta para dizê-la por ele:
+          ela flutua sobre o bloco que a pessoa estiver lendo. O que sobra
+          apontando para a recorrência é a pintura - vermelho de marca e
+          patinha, o mesmo par do pedido mensal em todo o resto do site.
+
+          `px-3 sm:px-5` na mensal, contra `px-4 sm:px-6`: o rótulo em
+          maiúsculas não quebra linha (`whitespace-nowrap`), e "FAÇA A
+          DIFERENÇA" é três caracteres mais largo que o "DOAR AGORA" da raiz -
+          num aparelho de 320px o respiro lateral é o que decide se a coluna
+          da meta, ao lado, ainda tem largura para o valor caber.
+        */}
         <button
           type="button"
-          onClick={() => openDonationModal()}
-          className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-donate px-4 text-fs13 font-extrabold uppercase tracking-[0.02em] text-donate-ink shadow-[0_8px_20px_-8px_rgba(27,138,75,.6)] transition-colors hover:bg-donate-hover sm:min-h-[48px] sm:px-6 sm:text-fs14"
+          onClick={() =>
+            openDonationModal(
+              mensal ? { freq: "mensal", somenteMensal: true } : {},
+            )
+          }
+          className={`inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full text-fs13 font-extrabold uppercase tracking-[0.02em] shadow-[0_8px_20px_-8px_rgba(27,138,75,.6)] transition-colors sm:min-h-[48px] sm:text-fs14 ${
+            mensal
+              ? "bg-action px-3 text-action-ink shadow-[0_8px_20px_-8px_rgba(191,5,33,.6)] hover:bg-action-hover sm:px-5"
+              : "bg-donate px-4 text-donate-ink hover:bg-donate-hover sm:px-6"
+          }`}
         >
-          <IconHeart size={17} fill="currentColor" stroke="none" />
-          Doar agora
+          {mensal ? (
+            <IconPaw size={17} />
+          ) : (
+            <IconHeart size={17} fill="currentColor" stroke="none" />
+          )}
+          {mensal ? "Faça a diferença" : "Doar agora"}
         </button>
       </div>
     </div>

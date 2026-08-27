@@ -39,6 +39,23 @@ const copyFinal = {
   seal: "Doação segura · CNPJ verificado",
 };
 
+/**
+ * O mesmo fechamento, na página de doação mensal (`/ajude-sempre`).
+ *
+ * Um botão só, e é o da recorrência: a página inteira pediu uma coisa, e
+ * oferecer a doação única no último bloco é abrir uma porta menor bem na
+ * frente da que a pessoa veio atravessar. O selo ganha o "cancele quando
+ * quiser" porque essa é a última objeção que sobra no fim de uma página de
+ * recorrência - e ela some se não for respondida onde o dedo já está.
+ */
+const copyFinalMensal = {
+  title: "R$ 30 por mês é o que mantém a ração chegando. Comece hoje.",
+  /* Não diz a frequência: quem diz é o título logo acima ("R$ 30 por mês") e
+     o selo logo abaixo ("Cancele quando quiser"). O botão fica entre os dois. */
+  cta: "Faça a diferença",
+  seal: "Doação segura · Cancele quando quiser · CNPJ verificado",
+};
+
 /* ─────────────────────────────────────────────────────────── ícones ──── */
 
 type IconProps = SVGProps<SVGSVGElement> & { size?: number };
@@ -293,7 +310,16 @@ function MonthlyDonateButton({
  * valor" sai em contorno verde (a cor de doação da página) e o mensal em
  * vermelho cheio, que é o par de cores da marca.
  */
-export default function CtaFinal() {
+export default function CtaFinal({
+  /**
+   * A página é a de doação mensal (`/ajude-sempre`): o fechamento fica com
+   * **um botão só**, o da recorrência (`copyFinalMensal`) - ver o comentário
+   * lá em cima.
+   */
+  mensal = false,
+}: {
+  mensal?: boolean;
+}) {
   return (
     <section className="bg-surface py-[clamp(3rem,7vh,5rem)]">
       {/* #ui:cta-final */}
@@ -303,7 +329,7 @@ export default function CtaFinal() {
             desktop em vez de atravessar a coluna inteira. */}
         <Reveal className="flex flex-col gap-4 text-center">
           <h2 className="mx-auto max-w-[24ch] text-balance text-[clamp(1.395rem,0.93rem+1.86vw,2.209rem)] font-extrabold leading-[1.15] text-ink-900">
-            {copyFinal.title}
+            {mensal ? copyFinalMensal.title : copyFinal.title}
           </h2>
 
           {/*
@@ -318,18 +344,24 @@ export default function CtaFinal() {
           */}
           <div className="flex flex-col gap-3 md:flex-row">
             {/* Abre a tela de valor direto - é o que o rótulo promete. Sem
-                JavaScript ele continua sendo um link para o bloco de doação. */}
-            <DonateMenuButton className="inline-flex min-h-[56px] flex-1 basis-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border-2 border-donate bg-surface px-6 text-center text-[clamp(0.872rem,1.488vh,0.988rem)] font-extrabold uppercase tracking-[0.03em] text-donate transition-colors hover:bg-donate hover:text-donate-ink">
-              {copyFinal.ctaPrimary}
-              <IconArrowRight size={20} className="shrink-0" />
-            </DonateMenuButton>
+                JavaScript ele continua sendo um link para o bloco de doação.
+
+                Na página da mensal ele não existe - ver `CtaFinal({ mensal })`. */}
+            {!mensal && (
+              <DonateMenuButton className="inline-flex min-h-[56px] flex-1 basis-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border-2 border-donate bg-surface px-6 text-center text-[clamp(0.872rem,1.488vh,0.988rem)] font-extrabold uppercase tracking-[0.03em] text-donate transition-colors hover:bg-donate hover:text-donate-ink">
+                {copyFinal.ctaPrimary}
+                <IconArrowRight size={20} className="shrink-0" />
+              </DonateMenuButton>
+            )}
 
             {/* Este abre a tela de valor travada na mensal: sem as abas de
                 frequência e terminando no checkout de recorrência - ver
-                `MonthlyDonateButton`. */}
+                `MonthlyDonateButton`. Sozinho, ele toma a linha inteira: o
+                `flex-1 basis-0` que dividia a medida com o irmão continua
+                valendo, e sem irmão a medida é a coluna toda. */}
             <MonthlyDonateButton className="inline-flex min-h-[56px] flex-1 basis-0 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-action px-6 text-center text-[clamp(0.872rem,1.488vh,0.988rem)] font-extrabold uppercase tracking-[0.03em] text-action-ink shadow-[0_10px_30px_-10px_rgba(191,5,33,.5)] transition-colors hover:bg-action-hover">
               <IconPaw size={20} className="shrink-0" />
-              {copyFinal.ctaSecondary}
+              {mensal ? copyFinalMensal.cta : copyFinal.ctaSecondary}
             </MonthlyDonateButton>
           </div>
 
@@ -338,7 +370,7 @@ export default function CtaFinal() {
               branco translúcido que ela usava sobre a foto. */}
           <p className="flex flex-wrap items-center justify-center gap-x-1.5 text-center text-fs12 font-semibold text-ink-600">
             <IconShield size={15} className="shrink-0 text-donate" />
-            {copyFinal.seal}
+            {mensal ? copyFinalMensal.seal : copyFinal.seal}
           </p>
         </Reveal>
       </div>

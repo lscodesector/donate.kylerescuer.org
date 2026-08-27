@@ -51,9 +51,53 @@ export type DonationIntent = {
   somenteMensal?: boolean;
 };
 
+/**
+ * ╔══════════════════════════════════════════════════════════════════════╗
+ * ║  O MODO DA PÁGINA - o que abre quando ninguém disse nada              ║
+ * ╚══════════════════════════════════════════════════════════════════════╝
+ *
+ * A campanha tem duas páginas com os mesmos blocos e pedidos diferentes: a
+ * raiz (`/`) pede a doação **única** por padrão, e `/ajude-sempre` pede a
+ * **mensal** - mesma história, mesma prova, mesmo checkout, outro compromisso.
+ *
+ * O que muda entre elas é só isto: qual intenção vale quando o gatilho não diz.
+ * Os blocos que a página monta recebem `mensal` por prop e trocam o rótulo do
+ * botão (é o que garante que o HTML estático já saia com a palavra certa); os
+ * gatilhos que moram fundo demais para receber prop - a ficha de abrigo, o
+ * "voltar" do checkout, qualquer botão novo - caem aqui e herdam o padrão da
+ * página em que estão.
+ *
+ * ⚠️ Quem abre **manda**: o que o chamador passa em `intent` sobrescreve o
+ * padrão, campo a campo. Um botão que já sabe a frequência que quer continua
+ * mandando nela, em qualquer página.
+ *
+ * ── Por que uma variável de módulo, e não contexto React ─────────────────
+ * Pelo mesmo motivo de o gatilho ser evento de janela: quem dispara está
+ * espalhado por quinze blocos, e nenhum deles deveria precisar de um provider
+ * em volta para pedir uma doação. O valor é armado por `ModoMensal`
+ * (`app/ajude-sempre/`) no `useEffect` de montagem e desarmado na saída - o
+ * site é exportado estático, então cada página começa com o módulo zerado.
+ */
+let padraoDaPagina: DonationIntent = {};
+
+/**
+ * Arma o padrão de doação da página. Devolve a função que o desarma - é o que
+ * o `useEffect` de quem chama retorna, para a página seguinte não herdar o
+ * modo da anterior numa navegação de cliente.
+ */
+export function setDonationDefaults(padrao: DonationIntent) {
+  padraoDaPagina = padrao;
+  return () => {
+    padraoDaPagina = {};
+  };
+}
+
 export function openDonationModal(intent: DonationIntent = {}) {
   window.dispatchEvent(
-    new CustomEvent<DonationIntent>(DONATION_MODAL_EVENT, { detail: intent }),
+    new CustomEvent<DonationIntent>(DONATION_MODAL_EVENT, {
+      /* O padrão da página primeiro, o que o gatilho pediu por cima. */
+      detail: { ...padraoDaPagina, ...intent },
+    }),
   );
 }
 

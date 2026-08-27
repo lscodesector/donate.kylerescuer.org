@@ -1,13 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type SVGProps } from "react";
-import { CHECKOUT_EVENT, openCheckout } from "@/lib/checkout-bus";
+import {
+  CHECKOUT_EVENT,
+  checkoutItemFor,
+  openCheckout,
+} from "@/lib/checkout-bus";
 import {
   causeById,
   donationAmountsMensal,
   donationAmountsUnica,
   testAmount,
-  type Cause,
 } from "@/lib/config";
 import {
   centsFromBRL,
@@ -255,17 +258,23 @@ export default function ModalDoacao() {
       setMostrarMinimo(true);
       return;
     }
-    openCheckout({
-      kind: mensal ? "mensal" : "causa",
-      amountCents: cents,
-      title: tituloDoItem(cause, mensal),
-      impact: impactoDoItem(cause, mensal),
-      image: null,
-      txid: `${cause?.txid ?? "DOACAO"}${mensal ? "MENSAL" : "UNICA"}`,
-      /* Vai junto só para o "Voltar" do checkout devolver a pessoa para a
-         mesma tela de onde ela saiu - travada, se travada estava. */
-      somenteMensal,
-    });
+    /* Título, linha de apoio e `txid` saem de `checkoutItemFor` - esta tela
+       não é mais a única que abre o checkout, e os degraus de `/ajude-sempre`
+       precisam montar exatamente o mesmo item. Ver o comentário lá.
+
+       Sem `valorDireto`: quem chegou aqui **viu** a tela de valores, então o
+       checkout não repete o número nem oferece o botão de aumentar - o
+       "Voltar" devolve para esta mesma grade. */
+    openCheckout(
+      checkoutItemFor({
+        amountCents: cents,
+        mensal,
+        cause,
+        /* Vai junto só para o "Voltar" do checkout devolver a pessoa para a
+           mesma tela de onde ela saiu - travada, se travada estava. */
+        somenteMensal,
+      }),
+    );
   };
 
   /*
@@ -543,28 +552,4 @@ export default function ModalDoacao() {
       </div>
     </div>
   );
-}
-
-/* ------------------------------------------------------------------ */
-
-/**
- * O nome do item como ele aparece no checkout e é conciliado no gateway.
- *
- * Curto de propósito: o checkout mostra este texto numa linha só, com o valor
- * embaixo, e o gateway recebe a versão em maiúsculas como nome do produto.
- */
-function tituloDoItem(cause: Cause | null, mensal: boolean) {
-  if (!cause) return mensal ? "Doação mensal" : "Doação única";
-  return mensal ? `${cause.title} (mensal)` : cause.title;
-}
-
-/** A linha de apoio do item, dentro do checkout. */
-function impactoDoItem(cause: Cause | null, mensal: boolean) {
-  /* Curto de propósito: esta linha vive na faixa do item, no topo do checkout,
-     e cada linha que ela quebra empurra o formulário para fora da tela. O
-     detalhe do débito automático está inteiro na etapa do Pix. */
-  if (mensal) {
-    return "Cobrado todo mês. Cancele quando quiser pelo app.";
-  }
-  return cause?.text ?? "Sua doação vai direto para os abrigos que apoiamos.";
 }

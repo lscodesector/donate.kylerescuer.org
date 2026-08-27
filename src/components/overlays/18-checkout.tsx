@@ -16,7 +16,14 @@ import {
   suppressNextBackIntercept,
   type CheckoutItem,
 } from "@/lib/checkout-bus";
-import { checkoutFee, feeCentsFor, org, pix } from "@/lib/config";
+import {
+  checkoutFee,
+  donationAmountsMensal,
+  donationAmountsUnica,
+  feeCentsFor,
+  org,
+  pix,
+} from "@/lib/config";
 import {
   cpfDigits,
   formatBRLCurto,
@@ -90,6 +97,14 @@ const IconArrowLeft = (p: IconProps) => (
   <svg {...base(p)}>
     <path d="M19 12H5" />
     <path d="m12 19-7-7 7-7" />
+  </svg>
+);
+
+/** A seta do "aumentar para R$ X", na faixa do valor da etapa de dados. */
+const IconArrowUp = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M12 19V5" />
+    <path d="m5 12 7-7 7 7" />
   </svg>
 );
 
@@ -427,6 +442,47 @@ export default function Checkout() {
     item && dados.cobrirTaxa && !mensal ? feeCentsFor(item.amountCents) : 0;
   const totalCents = (item?.amountCents ?? 0) + taxaCents;
 
+  /*
+   * ── Aumentar a doação, sem sair do checkout ─────────────────────────────
+   *
+   * Só existe para quem entrou por um degrau da escada (`valorDireto`): essa
+   * pessoa escolheu o valor num toque, na página, e não tem a grade atrás de
+   * si para trocar de ideia. O botão oferece **o degrau seguinte da mesma
+   * escada**, com o número escrito no rótulo - e não um "+" mudo, que faz a
+   * pessoa apertar para descobrir quanto virou.
+   *
+   * ⚠️ A escada é a de `lib/config.ts`, a mesma que o modal desenha. Um
+   * incremento fixo escrito aqui ("+ R$ 10") passaria por cima dos degraus que
+   * a campanha pratica, e num degrau alto ele viraria um aumento sem sentido.
+   *
+   * No topo da escada não há botão: `find` não acha nada e o valor fica como
+   * está. Quem quiser mais do que o último degrau usa o campo livre da tela de
+   * valores, que continua a um clique em "outros valores", na página.
+   *
+   * A conta é feita no corpo do componente, e não em `useMemo`: é um `find`
+   * numa lista de nove itens, e ele custa menos que a comparação de
+   * dependências que o `useMemo` faria para evitá-lo.
+   */
+  const escada = mensal ? donationAmountsMensal : donationAmountsUnica;
+  const proximoDegrau =
+    item?.valorDireto === true
+      ? (escada.find((a) => a.cents > item.amountCents)?.cents ?? null)
+      : null;
+
+  /*
+   * Trocar o valor **da doação**, não o do formulário.
+   *
+   * Mexer em `item.amountCents` é seguro em qualquer momento da etapa de
+   * dados: `taxaCents` e `totalCents` saem dele a cada renderização, e tanto o
+   * `trackInitiateCheckout` quanto a criação da cobrança só acontecem na etapa
+   * seguinte ("gerando"), lendo o `totalCents` daquele instante. Não há
+   * nenhum número congelado no meio do caminho para ficar para trás.
+   */
+  const aumentarDoacao = () => {
+    if (proximoDegrau === null) return;
+    setItem((atual) => (atual ? { ...atual, amountCents: proximoDegrau } : atual));
+  };
+
   /* --- confirmação de pagamento ------------------------------------------ */
   const confirmarPagamento = useCallback((data: ChargeResponse) => {
     if (pagoRef.current) return;
@@ -744,6 +800,15 @@ export default function Checkout() {
 
   const voltar = () => {
     if (etapa === "dados") {
+      /* Quem entrou por um degrau da escada (`valorDireto`) nunca passou pela
+         tela de valores - o passo anterior dela é a página, não uma grade que
+         ela não viu. Abrir a grade aqui seria mandar a pessoa "de volta" para
+         um lugar onde ela nunca esteve, com os nove degraus que este caminho
+         existe justamente para poupar. */
+      if (item.valorDireto) {
+        fechar();
+        return;
+      }
       setItem(null);
       openDonationModal({
         freq: mensal ? "mensal" : "unica",
@@ -877,6 +942,11 @@ export default function Checkout() {
               whatsappInvalido={whatsappInvalido}
               cpfInvalido={cpfInvalido}
               amountCents={item.amountCents}
+              /* Só quem entrou direto vê o valor e o botão de aumentá-lo -
+                 ver `CheckoutItem.valorDireto`. */
+              mostrarValor={item.valorDireto === true}
+              proximoDegrau={proximoDegrau}
+              onAumentar={aumentarDoacao}
               onSubmit={enviarDados}
             />
           )}
@@ -967,6 +1037,9 @@ function StepDados({
   whatsappInvalido,
   cpfInvalido,
   amountCents,
+  mostrarValor,
+  proximoDegrau,
+  onAumentar,
   onSubmit,
 }: {
   dados: Dados;
@@ -976,6 +1049,11 @@ function StepDados({
   whatsappInvalido: boolean;
   cpfInvalido: boolean;
   amountCents: number;
+  /** A faixa do valor - só para quem entrou sem passar pela tela de valores. */
+  mostrarValor: boolean;
+  /** O degrau seguinte da escada, em centavos. `null` no topo dela. */
+  proximoDegrau: number | null;
+  onAumentar: () => void;
   onSubmit: () => void;
 }) {
   const taxaPreview = feeCentsFor(amountCents);
@@ -1007,6 +1085,46 @@ function StepDados({
       */
       className="flex flex-col gap-3"
     >
+      {/*
+        ── A faixa do valor ────────────────────────────────────────────────
+        Ela **não** é a faixa que saiu daqui: aquela era fixa, aparecia em
+        todo checkout e era a maior peça da etapa. Esta só existe para quem
+        entrou por um degrau da escada e nunca viu uma tela de conferência do
+        valor (ver `CheckoutItem.valorDireto`) - e ela é uma linha, não um
+        cartão, justamente para não voltar a empurrar o formulário para fora
+        da janela de um notebook.
+
+        O valor à esquerda, o aumento à direita. O botão diz o número para o
+        qual ele leva: "Aumentar para R$ 35" resolve num rótulo o que um "+"
+        mudo só responderia depois do toque.
+      */}
+      {mostrarValor && (
+        <div className="flex items-center justify-between gap-3 rounded-md border border-donate/25 bg-donate/[.07] px-3.5 py-2.5">
+          <span className="flex min-w-0 flex-col">
+            <span className="text-fs12 font-semibold text-ink-600">
+              {mensal ? "Sua doação mensal" : "Sua doação"}
+            </span>
+            <span className="text-fs19 font-extrabold leading-tight text-ink-900 tabular-nums">
+              {formatBRLCurto(amountCents)}
+              {mensal && (
+                <span className="text-fs13 font-semibold text-ink-600">/mês</span>
+              )}
+            </span>
+          </span>
+
+          {proximoDegrau !== null && (
+            <button
+              type="button"
+              onClick={onAumentar}
+              className="inline-flex min-h-[38px] shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-donate bg-surface px-3 text-fs12 font-extrabold text-donate transition-colors hover:bg-donate hover:text-donate-ink"
+            >
+              <IconArrowUp size={14} className="shrink-0" />
+              Aumentar para {formatBRLCurto(proximoDegrau)}
+            </button>
+          )}
+        </div>
+      )}
+
       <label className="flex flex-col gap-1.5">
         <span className="text-fs13 font-extrabold text-ink-900">Nome</span>
         <input

@@ -39,6 +39,11 @@ const copyAbrigos = {
   ctaProfile: "Saiba mais",
   ctaCnpj: "Ver o cartão CNPJ do abrigo",
   ctaShelter: "Doar agora",
+  /* O mesmo botão na página de doação mensal (`/ajude-sempre`), onde a ficha
+     abre a tela travada na recorrência. Não diz a frequência - mas também não
+     promete a doação de uma vez, que é o que "Doar agora" faria ali. A linha
+     logo abaixo do botão continua explicando para onde a doação vai. */
+  ctaShelterMensal: "Faça a diferença",
   ctaInstagram: "Ver o dia a dia no Instagram",
   ctaWhatsapp: "Pedir os dados no WhatsApp",
   profileEmpty:
@@ -993,7 +998,20 @@ function PhotoSlideshow({
  * `AbrigosLista` porque é ela que precisa de estado; esta seção continua sendo
  * Server Component.
  */
-export default function Abrigos() {
+export default function Abrigos({
+  /**
+   * A página é a de doação mensal (`/ajude-sempre`): o botão de doar da ficha
+   * pede a recorrência e abre a tela travada nela.
+   *
+   * A prop desce até `FichaAbrigo` porque é lá que o botão vive - dois saltos.
+   * O que ela carrega é o **rótulo**: o comportamento já viria do padrão da
+   * página (`setDonationDefaults`, ver `lib/modais.ts`), e é justamente por
+   * ele existir que o rótulo precisa acompanhar.
+   */
+  mensal = false,
+}: {
+  mensal?: boolean;
+} = {}) {
   return (
     <section id="abrigos" className="surface-alt py-[clamp(2.5rem,6vh,4.5rem)]">
       {/* #ui:abrigos */}
@@ -1003,7 +1021,7 @@ export default function Abrigos() {
             card. Ler a promessa antes de ver a prova só adiava a prova. */}
         <SectionHead eyebrow={copyAbrigos.eyebrow} title={copyAbrigos.title} />
 
-        <AbrigosLista />
+        <AbrigosLista mensal={mensal} />
       </div>
     </section>
   );
@@ -1038,8 +1056,11 @@ function AbrigosLista({
    * fronteira do servidor para o cliente.
    */
   ctaLabels,
+  /** Repassada para a ficha - ver `Abrigos({ mensal })`. */
+  mensal = false,
 }: {
   ctaLabels?: Record<string, string>;
+  mensal?: boolean;
 } = {}) {
   const [aberto, setAberto] = useState<Shelter | null>(null);
 
@@ -1143,7 +1164,7 @@ function AbrigosLista({
         })}
       </ul>
 
-      {aberto && <FichaAbrigo shelter={aberto} onClose={fechar} />}
+      {aberto && <FichaAbrigo shelter={aberto} onClose={fechar} mensal={mensal} />}
     </>
   );
 }
@@ -1165,9 +1186,12 @@ function AbrigosLista({
 function FichaAbrigo({
   shelter,
   onClose,
+  /** Página de doação mensal - ver `Abrigos({ mensal })`. */
+  mensal = false,
 }: {
   shelter: Shelter;
   onClose: () => void;
+  mensal?: boolean;
 }) {
   const fecharRef = useRef<HTMLButtonElement>(null);
   const phone = useShelterPhone();
@@ -1238,7 +1262,7 @@ function FichaAbrigo({
    */
   const doar = () => {
     onClose();
-    openDonationModal();
+    openDonationModal(mensal ? { freq: "mensal", somenteMensal: true } : {});
   };
 
   return (
@@ -1450,7 +1474,7 @@ function FichaAbrigo({
               onClick={doar}
               className="mt-1 inline-flex min-h-[56px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-donate px-6 text-fs15 font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow transition-colors hover:bg-donate-hover"
             >
-              {copyAbrigos.ctaShelter}
+              {mensal ? copyAbrigos.ctaShelterMensal : copyAbrigos.ctaShelter}
               <IconArrowRight size={17} />
             </button>
 

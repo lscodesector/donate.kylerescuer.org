@@ -39,6 +39,31 @@ const copyDoar = {
 };
 
 /**
+ * O mesmo bloco, na página de doação mensal (`/ajude-sempre`).
+ *
+ * Só o que muda de sentido tem linha própria aqui - título, botão e selo. O
+ * contraste ("sem apoio" × "com você") é o mesmo argumento nas duas páginas:
+ * o que ele descreve é o que acontece nos abrigos, e isso não depende de a
+ * doação ser uma vez ou todo mês.
+ *
+ * O título troca "cada doação" por "todo mês" porque é essa a promessa da
+ * página: o problema dos abrigos não é um mês ruim, é a conta que volta em
+ * trinta dias. E o selo perde o "Pix na hora" - na recorrência o primeiro Pix
+ * é na hora, mas o que a pessoa está contratando é o mandato - e ganha a
+ * resposta da única objeção que a mensal cria e a única não: dá para parar.
+ */
+const copyDoarMensal = {
+  eyebrow: "Como ajudar todo mês",
+  title:
+    "Todo mês a conta volta - e é a doação que se repete que mantém os abrigos de pé",
+  /* Não diz a frequência, e a tela que ele abre está travada na mensal - quem
+     diz são o eyebrow ("Como ajudar todo mês"), o título e o selo logo abaixo,
+     que cercam o botão dos dois lados. */
+  cta: "Faça a diferença",
+  seal: "Doação mensal segura · Cancele quando quiser · CNPJ verificado",
+};
+
+/**
  * O contraste que dá urgência: o que acontece sem apoio, e o que muda com você.
  *
  * São os seis cards da seção "O impacto da sua doação" da campanha, divididos
@@ -64,6 +89,11 @@ const impactCompare = {
   ],
   closing:
     "Cada doação, por menor que seja, é a diferença entre um animal ter ou não ter uma chance. O Caio não consegue fazer isso sozinho.",
+  /* A mesma frase, do lado da mensal: o que ela troca é "por menor que seja"
+     por "que se repete" - numa página que pede recorrência, o que fecha o
+     argumento não é o tamanho da doação, é ela voltar no mês seguinte. */
+  closingMensal:
+    "Uma doação que se repete, por menor que seja, é o que tira o abrigo do improviso do mês que vem. O Caio não consegue fazer isso sozinho.",
 };
 
 /* ─────────────────────────────────────────────────────────── ícones ──── */
@@ -312,9 +342,12 @@ function SectionHead({
 function DonateMenuButton({
   className,
   children,
+  /** Abre a tela travada na mensal - ver `Doar({ mensal })`. */
+  mensal = false,
 }: {
   className?: string;
   children: ReactNode;
+  mensal?: boolean;
 }) {
   return (
     <a
@@ -322,7 +355,7 @@ function DonateMenuButton({
       onClick={(e) => {
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
         e.preventDefault();
-        openDonationModal();
+        openDonationModal(mensal ? { freq: "mensal", somenteMensal: true } : {});
       }}
       className={className}
     >
@@ -355,7 +388,21 @@ function DonateMenuButton({
  * O id é `doar` porque é o destino de `DOAR_HREF` - cabeçalho, hero, rodapé,
  * fechamento e o checkout sem JavaScript apontam todos para cá.
  */
-export default function Doar() {
+export default function Doar({
+  /**
+   * A página é a de doação mensal (`/ajude-sempre`): o bloco pede a
+   * recorrência - outro eyebrow, outro título, outro rótulo de botão e outro
+   * selo (`copyDoarMensal`) - e o botão abre a tela travada nela.
+   *
+   * O argumento do meio não muda: os seis itens do contraste descrevem o que
+   * acontece nos abrigos, e isso vale igual nas duas páginas.
+   */
+  mensal = false,
+}: {
+  mensal?: boolean;
+}) {
+  const copy = mensal ? copyDoarMensal : copyDoar;
+
   return (
     <section id="doar" className="relative overflow-hidden py-[clamp(2.5rem,6vh,4.5rem)]">
       {/* #ui:doar */}
@@ -373,7 +420,7 @@ export default function Doar() {
       </div>
 
       <div className="container-narrow relative flex max-w-[660px] flex-col gap-[clamp(1.5rem,4vh,2.25rem)]">
-        <SectionHead eyebrow={copyDoar.eyebrow} title={copyDoar.title} />
+        <SectionHead eyebrow={copy.eyebrow} title={copy.title} />
 
         {/* ── O contraste ──────────────────────────────────────────────
             Sem cabeçalho próprio: o título e a frase de abertura que abriam
@@ -447,23 +494,26 @@ export default function Doar() {
             seção. Juntos de propósito: é a frase que dá sentido ao clique. */}
         <Reveal delay={2} className="flex flex-col items-center gap-4 text-center">
           <p className="max-w-[62ch] text-fs15 font-semibold leading-[1.6] text-ink-900">
-            {impactCompare.closing}
+            {mensal ? impactCompare.closingMensal : impactCompare.closing}
           </p>
 
           {/* `px-5` no celular: o rótulo nunca quebra linha (`whitespace-nowrap`),
               então o respiro lateral é o que decide se ele cabe numa tela de
               320px - com `px-8` fixo, "Quero ajudar agora" em maiúsculas
               estourava a largura em vez de descer para a segunda linha. */}
-          <DonateMenuButton className="inline-flex min-h-[60px] w-full items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-donate px-5 text-[clamp(0.93rem,0.883rem+0.279vw,1.046rem)] font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow-[0_12px_34px_-10px_rgba(27,138,75,.6)] transition-colors hover:bg-donate-hover sm:px-8">
+          <DonateMenuButton
+            mensal={mensal}
+            className="inline-flex min-h-[60px] w-full items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-donate px-5 text-[clamp(0.93rem,0.883rem+0.279vw,1.046rem)] font-extrabold uppercase tracking-[0.03em] text-donate-ink shadow-[0_12px_34px_-10px_rgba(27,138,75,.6)] transition-colors hover:bg-donate-hover sm:px-8"
+          >
             <IconHeart size={20} fill="currentColor" stroke="none" />
-            {copyDoar.cta}
+            {copy.cta}
           </DonateMenuButton>
 
           {/* Linha de confiança, não um segundo CTA: é a última objeção
               ("é seguro?") respondida no ponto em que ela aparece. */}
           <p className="flex flex-wrap items-center justify-center gap-x-1.5 text-center text-fs12 font-semibold text-ink-600">
             <IconShield size={14} className="shrink-0 text-donate" />
-            {copyDoar.seal}
+            {copy.seal}
           </p>
         </Reveal>
       </div>

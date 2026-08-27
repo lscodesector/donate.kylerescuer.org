@@ -1,6 +1,8 @@
 # UI-MAP
 
 Rota principal: `/` → `src/app/page.tsx`
+Rota irmã: `/ajude-sempre` → `src/app/ajude-sempre/page.tsx` (a mesma campanha,
+pedindo a **doação mensal** — ver "As duas páginas da campanha", abaixo)
 
 ## A regra do bloco
 
@@ -70,6 +72,90 @@ outro, e não mudou na reestrutura:
 Todo item do menu (bloco 01) aponta para um desses. Item de menu que rola para
 lugar nenhum é o defeito que ninguém testa e todo mundo encontra.
 
+## As duas páginas da campanha
+
+`/` e `/ajude-sempre` montam **os mesmos blocos**, na mesma ordem. Nenhum
+arquivo de seção é duplicado: a história, os abrigos, a tabela de custos, os
+depoimentos e a documentação não mudam com a frequência da doação.
+
+O que muda é o pedido, e ele muda em três lugares:
+
+| onde | como |
+|---|---|
+| o **rótulo** do botão | prop `mensal` nos blocos que têm CTA de doação: 02 hero, 06 abrigos, 07 doar, 14 fechamento, 16 barra fixa. É prop (e não estado de cliente) para o HTML estático já sair com a palavra certa |
+| o **comportamento** de todo gatilho | `ModoMensal` (`app/ajude-sempre/`) arma `setDonationDefaults` em `lib/modais.ts`: o que não disser o contrário abre a tela travada na mensal — inclusive a ficha de abrigo e o "voltar" do checkout, que não recebem prop |
+| a **estrutura** | o bloco `TodoMes` (`app/ajude-sempre/`) entra onde a raiz põe o "Pix direto" (bloco 05), que **não** é montado na mensal — chave Pix estática é pagamento de uma vez |
+
+### Os degraus pulam a tela de valores
+
+Os três degraus do bloco `TodoMes` chamam `openCheckout` direto, com
+`valorDireto: true` — o valor já estava escrito no botão, e abrir a grade de
+nove degraus depois disso pede de novo uma decisão já tomada. O botão logo
+abaixo deles ("Faça a diferença com outros valores") é o que abre a grade.
+
+`valorDireto` muda duas coisas **dentro do checkout compartilhado**:
+
+- a etapa de dados mostra o valor, com um botão que sobe para o degrau seguinte
+  da escada de `lib/config.ts`. Fora deste caminho o valor não aparece ali de
+  propósito — quem veio pela grade acabou de escolhê-lo;
+- o "Voltar" da etapa de dados **fecha** o checkout, em vez de abrir a grade:
+  para essa pessoa, o passo anterior é a página.
+
+⚠️ Título, linha de apoio e `txid` do item saem de `checkoutItemFor`
+(`lib/checkout-bus.ts`), e não do chamador — há dois caminhos abrindo o
+checkout agora, e o `txid` é o que separa uma frente da outra no extrato do
+Pix: ele diverge em silêncio.
+
+⚠️ **Botão de doação novo numa seção compartilhada** herda o modo da página
+sozinho (é o que `setDonationDefaults` faz). O que ele não herda é o texto: se
+o rótulo disser "agora", ele precisa de uma variante `mensal`, ou a mensal vai
+prometer uma coisa e abrir outra.
+
+O bloco novo é o único que mora na pasta da página, e não em
+`components/sections/`: ele existe numa rota só.
+
+| # | Âncora | Arquivo |
+|---|---|---|
+| M | `#ui:todo-mes` | `src/app/ajude-sempre/TodoMes.tsx` (`id` no DOM: `#todo-mes`) |
+| S | `#ui:oferta-saida` | `src/app/ajude-sempre/OfertaDeSaida.tsx` (overlay, z-55) |
+
+### A leitura por dia, e a oferta de saída
+
+A faixa vermelha dentro de `TodoMes` (`FaixaPorDia`) é o mesmo R$ 30 do degrau
+do meio, dividido por 30 dias. `OfertaDeSaida` é o degrau mais baixo (R$ 15)
+lido do mesmo jeito, mostrado **uma vez** quando a pessoa aperta "voltar".
+
+Os dois valores saem de `donationAmountsMensal` e a divisão é feita na
+renderização — nenhum dos dois escreve "R$ 1" ou "R$ 0,50" no código.
+
+⚠️ **A cifra mensal ("R$ 30 por mês") fica na tela nos dois.** Ela já foi um
+parágrafo explicando a divisão e saiu por ser prosa demais; o que não sai é o
+número. Sem ele a peça anuncia um preço por dia para uma cobrança que é mensal
+— a pessoa lê "R$ 1" e autoriza um débito de R$ 30, e surpresa em recorrência
+volta como contestação, não como cancelamento.
+
+⚠️ **`OfertaDeSaida` mostra uma vez e não reempurra a entrada do histórico.**
+O "voltar" seguinte sai da página de verdade. Reempurrar transforma a oferta em
+armadilha; numa página que pede dinheiro, prender o botão de sair é o que faz a
+pessoa fechar a aba e não voltar.
+
+⚠️ **Duas armadilhas do `history` que já foram pagas, e estão comentadas no
+arquivo:**
+
+- `history.pushState({ ...history.state, ... })` — sem espalhar o estado do
+  App Router, o Next não reconhece a entrada no "voltar" e faz **navegação
+  dura**: a página recarrega e o `popstate` nunca chega ao componente.
+- a entrada é empurrada **uma vez por carregamento**, com uma variável de
+  módulo — em desenvolvimento o StrictMode remonta o efeito, um `useRef`
+  nasceria zerado e a segunda entrada prenderia a pessoa na página.
+
+`OfertaDeSaida` é o consumidor do contrato que já morava em
+`lib/checkout-bus.ts` (`isCheckoutOpen`, `consumeBackInterceptSuppression`) e
+que o bloco 18 já alimentava — os comentários de lá o chamam de
+`BackIntercept`.
+
+`DOAR_HREF` (`#doar`) continua sendo o bloco 07 nas duas páginas.
+
 ## O que **não** mora nos blocos
 
 `src/lib/` é o que os blocos podem importar. É onde está tudo que, copiado,
@@ -78,8 +164,8 @@ divergiria — e divergir aqui significa dinheiro na conta errada.
 | arquivo | o que guarda |
 |---|---|
 | `lib/config.ts` | chave Pix, CNPJ, contatos, taxa do checkout, grade de valores, frentes, `DOAR_HREF`, `showPixSection` |
-| `lib/modais.ts` | `openDonationModal`, `openDocumentoModal` e os eventos — é o canal entre um bloco e um overlay |
-| `lib/checkout-bus.ts` | o canal entre o bloco 17 e o 18 |
+| `lib/modais.ts` | `openDonationModal`, `openDocumentoModal` e os eventos — é o canal entre um bloco e um overlay; e `setDonationDefaults`, o padrão de doação da página |
+| `lib/checkout-bus.ts` | o canal até o bloco 18, e `checkoutItemFor` — título, impacto e `txid` do item, num lugar só |
 | `lib/format.ts` | `formatBRL`, `formatBRLCurto` e as máscaras de CPF, telefone e valor |
 | `lib/payments/` | gateway, cobrança, recorrência, eventos de conversão |
 | `lib/campaign.ts` | arrecadado, meta, apoiadores — a **mesma** fonte para a dobra e a barra fixa |
@@ -97,6 +183,7 @@ divergiria — e divergir aqui significa dinheiro na conta errada.
 | `src/content/legal.ts` | o texto dos três documentos |
 | `src/app/doar/valor/` | o checkout de valor livre para quem está **sem JavaScript** — rota própria, componentes próprios |
 | `src/app/obrigado/` | a tela de agradecimento; só o checkout manda para cá |
+| `src/app/ajude-sempre/` | a página da doação mensal — `ModoMensal` (o padrão de doação) e `TodoMes` (o bloco M) |
 
 ## Duas cópias que precisam andar juntas
 
