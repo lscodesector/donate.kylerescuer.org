@@ -5,7 +5,10 @@ import Link from "next/link";
 import { type ReactNode, type SVGProps } from "react";
 import { withBasePath } from "@/lib/base-path";
 import { DOAR_HREF, org, showPixSection, whatsappHref, whatsappWith } from "@/lib/config";
-import { useShelterPhone } from "@/lib/hooks/use-shelter-phone";
+import {
+  useShelterInstagram,
+  useShelterPhone,
+} from "@/lib/hooks/use-shelter-phone";
 import { openDonationModal, type DonationIntent } from "@/lib/modais";
 
 /**
@@ -274,11 +277,22 @@ const SOCIALS = [
  */
 export default function Footer() {
   const phone = useShelterPhone();
-  const socials = SOCIALS.map((social) =>
-    social.label === "WhatsApp"
-      ? { ...social, href: whatsappWith(org.whatsappMessage, phone) }
-      : social,
-  );
+  const instagramHref = useShelterInstagram();
+  /* WhatsApp e Instagram saem do abrigo em foco, não das constantes: os dois
+     hooks moram em `lib/`, compartilhados com o rodapé da raiz. Portado de lá
+     junto com o fix que tornou o Instagram dinâmico - este arquivo é uma cópia
+     da campanha de remédios, então correção em `components/sections/15-footer`
+     não chega aqui sozinha. Ver o comentário sobre o preço da duplicação em
+     `app/urgencia-remedios/page.tsx`. */
+  const socials = SOCIALS.map((social) => {
+    if (social.label === "WhatsApp") {
+      return { ...social, href: whatsappWith(org.whatsappMessage, phone) };
+    }
+    if (social.label === "Instagram") {
+      return { ...social, href: instagramHref };
+    }
+    return social;
+  });
 
   return (
     /* `pb` reservado para a barra fixa de doação, que fica ancorada no rodapé
