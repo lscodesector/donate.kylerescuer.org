@@ -174,9 +174,13 @@ export const payments = {
    * ⚠️ O slug do fim do caminho é o mesmo `recurring.funnelSlug`, repetido
    * porque um literal não consegue se referenciar. Mudou lá, muda aqui.
    */
+  // Ponte temporaria via Laravel (rota /api/nest-relay/{path} em routes/api.php,
+  // tunel SSH pro Nest), enquanto o aaPanel de origem estiver com bloqueio de
+  // rede. Reverter para 'https://track.lusapayments.com/api/funnels/cp-caio-protetor/web-pixels'
+  // quando o bloqueio for removido.
   webPixelsUrl:
     process.env.NEXT_PUBLIC_NEST_WEB_PIXELS_URL ??
-    "https://track.lusapayments.com/api/funnels/cp-caio-protetor/web-pixels",
+    "https://lusapayments.com/api/nest-relay/funnels/cp-caio-protetor/web-pixels",
 
   /**
    * ╔════════════════════════════════════════════════════════════════════╗
@@ -223,21 +227,20 @@ export const payments = {
     startMonthsAhead: 1,
 
     /**
-     * Piso do valor livre da mensal, em centavos.
+     * Piso do valor livre da mensal, em centavos - R$ 5,00.
      *
-     * R$ 10,00, o mesmo que a página em WordPress do Caio pratica hoje: lá o
-     * par é `FORM_ENV = 'prod'` → `MIN_CENTS = 1000` (conferido no HTML
-     * publicado de `doe.caioprotetor.org` em 13/08/2026), e é o piso das
-     * campanhas irmãs (Adrielly, SOS Animal Help).
+     * ⚠️ Já esteve em `1000` (R$ 10,00), que era o que a página em WordPress do
+     * Caio praticava e o piso das campanhas irmãs (Adrielly, SOS Animal Help).
+     * O histórico registrava que **abaixo de R$ 10 a ONZ/Infopago recusava a
+     * criação do mandato de recorrência**; se a criação da recorrência começar
+     * a falhar para valores entre R$ 5 e R$ 10, é aqui que se volta para
+     * `1000`.
      *
      * ⚠️ Esteve em `1` durante o desenvolvimento, para conferir o fluxo do
      * mandato pagando de verdade - esta integração não tem sandbox e o bind só
      * funciona no domínio publicado (CORS), então cada teste custa dinheiro.
-     * Se precisar testar de novo, baixe **temporariamente** e volte para
-     * `1000` antes de publicar: com o piso em um centavo, quem digita no campo
-     * de valor livre cadastra um débito automático de R$ 0,01 por mês.
      */
-    minCents: 1000,
+    minCents: 500,
 
     /**
      * Prefixo do `contrato` - o identificador do vínculo, no máximo 35
@@ -272,18 +275,25 @@ export const payments = {
      */
     funnelSlug: process.env.NEXT_PUBLIC_NEST_FUNNEL_SLUG ?? "cp-caio-protetor",
 
-    /** Onde o mandato é amarrado ao lead. Ver `bindRecurringAuthorization`. */
+    /** Onde o mandato é amarrado ao lead. Ver `bindRecurringAuthorization`.
+     * Ponte temporaria via Laravel (rota /api/nest-relay/{path}, tunel SSH pro
+     * Nest), enquanto o aaPanel de origem estiver com bloqueio de rede.
+     * Reverter para 'https://track.lusapayments.com/api/wh/pixauto/bind'
+     * quando resolvido. */
     bindUrl:
       process.env.NEXT_PUBLIC_NEST_PIXAUTO_BIND_URL ??
-      "https://track.lusapayments.com/api/wh/pixauto/bind",
+      "https://lusapayments.com/api/nest-relay/wh/pixauto/bind",
 
     /**
      * Onde o InitiateCheckout é gravado. **O bind depende disto**: sem o lead
      * na tabela de IC do funil, ele não tem onde pendurar o mandato.
-     */
+     * Ponte temporaria via Laravel (rota /api/nest-relay/{path}, tunel SSH pro
+     * Nest), enquanto o aaPanel de origem estiver com bloqueio de rede.
+     * Reverter para 'https://track.lusapayments.com/api/ic/cp-caio-protetor'
+     * quando resolvido. */
     icUrl:
       process.env.NEXT_PUBLIC_NEST_IC_URL ??
-      "https://track.lusapayments.com/api/ic/cp-caio-protetor",
+      "https://lusapayments.com/api/nest-relay/ic/cp-caio-protetor",
   },
 } as const;
 

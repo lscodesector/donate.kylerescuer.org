@@ -27,6 +27,58 @@ import { payments, placeholderEmail } from "./lusa";
 const LEAD_KEY = "pix_lead_id";
 const EVENT_KEY = "codex_event_id";
 
+/**
+ * zip/city/state por IP - o Nest (`dynamic-funnels`) só resolve ip/country,
+ * não geo completo (isso é responsabilidade de quem manda o IC, não dele).
+ * Como esta página é export estático, sem backend próprio, resolve direto no
+ * navegador. `ipapi.co` libera CORS no plano grátis (diferente do `ipwho.is`,
+ * que bloqueia - é por isso que o WordPress resolve isso num PHP no servidor,
+ * ver `nest.html`/`wp.php` de lá). Cacheado na sessão pra não bater na API de
+ * novo a cada evento de tracking desta mesma visita.
+ */
+const GEO_CACHE_KEY = "codex_ip_geo_v1";
+
+type GeoMeta = { zip: string | null; city: string | null; state: string | null };
+
+let geoMetaPromise: Promise<GeoMeta> | null = null;
+
+function readGeoCache(): GeoMeta | null {
+  try {
+    const raw = sessionStorage.getItem(GEO_CACHE_KEY);
+    return raw ? (JSON.parse(raw) as GeoMeta) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeGeoCache(geo: GeoMeta) {
+  try {
+    sessionStorage.setItem(GEO_CACHE_KEY, JSON.stringify(geo));
+  } catch {
+    // sessionStorage indisponível (modo privado etc.) - segue sem cache
+  }
+}
+
+async function resolveGeoMeta(): Promise<GeoMeta> {
+  const cached = readGeoCache();
+  if (cached) return cached;
+  if (!geoMetaPromise) {
+    geoMetaPromise = fetch("https://ipapi.co/json/")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        const geo: GeoMeta = {
+          zip: (data && data.postal) || null,
+          city: (data && data.city) || null,
+          state: (data && data.region_code) || null,
+        };
+        writeGeoCache(geo);
+        return geo;
+      })
+      .catch(() => ({ zip: null, city: null, state: null }) as GeoMeta);
+  }
+  return geoMetaPromise;
+}
+
 function getCookie(name: string) {
   const match = document.cookie.match(
     new RegExp("(?:^|; )" + name + "=([^;]+)"),
@@ -260,6 +312,8 @@ export async function sendInitiateCheckoutToNest(detail: LeadTracking) {
   const url = payments.recurring.icUrl;
   if (!url) return;
 
+  const geo = await resolveGeoMeta();
+
   try {
     const res = await fetch(url, {
       method: "POST",
@@ -268,6 +322,9 @@ export async function sendInitiateCheckoutToNest(detail: LeadTracking) {
         event: "InitiateCheckout",
         campaign: payments.recurring.funnelSlug,
         lead_id: detail.lead_id,
+        zip: geo.zip,
+        city: geo.city,
+        state: geo.state,
         first_name: detail.first_name ?? null,
         last_name: detail.last_name ?? null,
         phone: detail.donor_phone ?? null,

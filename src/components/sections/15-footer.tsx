@@ -5,7 +5,10 @@ import Link from "next/link";
 import { type ReactNode, type SVGProps } from "react";
 import { withBasePath } from "@/lib/base-path";
 import { DOAR_HREF, org, showPixSection, whatsappHref, whatsappWith } from "@/lib/config";
-import { useShelterPhone } from "@/lib/hooks/use-shelter-phone";
+import {
+  useShelterInstagram,
+  useShelterPhone,
+} from "@/lib/hooks/use-shelter-phone";
 import { openDonationModal, type DonationIntent } from "@/lib/modais";
 
 /**
@@ -274,11 +277,16 @@ const SOCIALS = [
  */
 export default function Footer() {
   const phone = useShelterPhone();
-  const socials = SOCIALS.map((social) =>
-    social.label === "WhatsApp"
-      ? { ...social, href: whatsappWith(org.whatsappMessage, phone) }
-      : social,
-  );
+  const instagramHref = useShelterInstagram();
+  const socials = SOCIALS.map((social) => {
+    if (social.label === "WhatsApp") {
+      return { ...social, href: whatsappWith(org.whatsappMessage, phone) };
+    }
+    if (social.label === "Instagram") {
+      return { ...social, href: instagramHref };
+    }
+    return social;
+  });
 
   return (
     /* `pb` reservado para a barra fixa de doação, que fica ancorada no rodapé

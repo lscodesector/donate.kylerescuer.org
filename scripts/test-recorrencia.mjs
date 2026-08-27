@@ -108,15 +108,14 @@ checa(
 
 /* --- O piso do gateway ------------------------------------------------ */
 
-/* O piso de produção, R$ 10,00 - o mesmo que a página em WordPress do Caio
-   pratica (`FORM_ENV='prod'` → `MIN_CENTS=1000`). Esteve em 1 centavo durante o
-   desenvolvimento, para conferir o mandato pagando de verdade; se voltar para
-   lá, este teste e o de "0,01" logo abaixo têm de voltar junto - são eles que
-   impedem a mensal de ir ao ar aceitando um centavo por mês. */
+/* O piso de produção, R$ 5,00. Esteve em R$ 10,00 (`1000`) e em 1 centavo
+   durante o desenvolvimento; se voltar para qualquer um deles, este teste e os
+   de "não passa no piso" logo abaixo têm de acompanhar - são eles que impedem
+   a mensal de ir ao ar aceitando um centavo por mês. */
 checa(
-  "piso da mensal é o de produção (R$ 10,00)",
+  "piso da mensal é o de produção (R$ 5,00)",
   String(payments.recurring.minCents),
-  "1000",
+  "500",
 );
 
 checa(
@@ -165,13 +164,13 @@ checa(
   "false",
 );
 checa(
-  "9,99 não passa no piso",
-  String(centsFromBRL("9,99") >= payments.recurring.minCents),
+  "4,99 não passa no piso",
+  String(centsFromBRL("4,99") >= payments.recurring.minCents),
   "false",
 );
 checa(
-  "10,00 passa no piso",
-  String(centsFromBRL("10,00") >= payments.recurring.minCents),
+  "5,00 passa no piso",
+  String(centsFromBRL("5,00") >= payments.recurring.minCents),
   "true",
 );
 
