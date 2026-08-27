@@ -6,6 +6,8 @@ import { type ReactNode, type SVGProps } from "react";
 import { withBasePath } from "@/lib/base-path";
 import { DOAR_HREF, org, showPixSection, whatsappHref, whatsappWith } from "@/lib/config";
 import {
+  useShelterEmail,
+  useShelterFacebook,
   useShelterInstagram,
   useShelterPhone,
 } from "@/lib/hooks/use-shelter-phone";
@@ -278,18 +280,23 @@ const SOCIALS = [
 export default function Footer() {
   const phone = useShelterPhone();
   const instagramHref = useShelterInstagram();
-  /* WhatsApp e Instagram saem do abrigo em foco, não das constantes: os dois
-     hooks moram em `lib/`, compartilhados com o rodapé da raiz. Portado de lá
-     junto com o fix que tornou o Instagram dinâmico - este arquivo é uma cópia
-     da campanha de remédios, então correção em `components/sections/15-footer`
-     não chega aqui sozinha. Ver o comentário sobre o preço da duplicação em
-     `app/urgencia-remedios/page.tsx`. */
+  const facebookHref = useShelterFacebook();
+  const email = useShelterEmail();
+  /* WhatsApp, Instagram, Facebook e e-mail saem do abrigo em foco, não das
+     constantes: os hooks moram em `lib/`, compartilhados com o rodapé da raiz.
+     Portado de lá junto com o fix que tornou o Instagram dinâmico - este arquivo
+     é uma cópia da campanha de remédios, então correção em
+     `components/sections/15-footer` não chega aqui sozinha. Ver o comentário
+     sobre o preço da duplicação em `app/urgencia-remedios/page.tsx`. */
   const socials = SOCIALS.map((social) => {
     if (social.label === "WhatsApp") {
       return { ...social, href: whatsappWith(org.whatsappMessage, phone) };
     }
     if (social.label === "Instagram") {
       return { ...social, href: instagramHref };
+    }
+    if (social.label === "Facebook") {
+      return { ...social, href: facebookHref };
     }
     return social;
   });
@@ -355,11 +362,11 @@ export default function Footer() {
               </p>
 
               <a
-                href={`mailto:${org.email}`}
+                href={`mailto:${email}`}
                 className="flex min-h-[44px] items-center gap-2 transition-colors hover:text-white"
               >
                 <IconMail size={16} className="shrink-0" />
-                <span className="break-all">{org.email}</span>
+                <span className="break-all">{email}</span>
               </a>
 
               <address className="flex items-start gap-2 not-italic leading-[1.5]">

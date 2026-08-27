@@ -6,6 +6,8 @@ import { type ReactNode, type SVGProps } from "react";
 import { withBasePath } from "@/lib/base-path";
 import { DOAR_HREF, org, showPixSection, whatsappHref, whatsappWith } from "@/lib/config";
 import {
+  useShelterEmail,
+  useShelterFacebook,
   useShelterInstagram,
   useShelterPhone,
 } from "@/lib/hooks/use-shelter-phone";
@@ -278,12 +280,17 @@ const SOCIALS = [
 export default function Footer() {
   const phone = useShelterPhone();
   const instagramHref = useShelterInstagram();
+  const facebookHref = useShelterFacebook();
+  const email = useShelterEmail();
   const socials = SOCIALS.map((social) => {
     if (social.label === "WhatsApp") {
       return { ...social, href: whatsappWith(org.whatsappMessage, phone) };
     }
     if (social.label === "Instagram") {
       return { ...social, href: instagramHref };
+    }
+    if (social.label === "Facebook") {
+      return { ...social, href: facebookHref };
     }
     return social;
   });
@@ -349,11 +356,11 @@ export default function Footer() {
               </p>
 
               <a
-                href={`mailto:${org.email}`}
+                href={`mailto:${email}`}
                 className="flex min-h-[44px] items-center gap-2 transition-colors hover:text-white"
               >
                 <IconMail size={16} className="shrink-0" />
-                <span className="break-all">{org.email}</span>
+                <span className="break-all">{email}</span>
               </a>
 
               <address className="flex items-start gap-2 not-italic leading-[1.5]">

@@ -13,7 +13,7 @@ import {
 import { withBasePath } from "@/lib/base-path";
 import { cnpjDocument, org, whatsappWith } from "@/lib/config";
 import { formatPhoneDisplayBR } from "@/lib/format";
-import { useShelterPhone } from "@/lib/hooks/use-shelter-phone";
+import { useShelterEmail, useShelterPhone } from "@/lib/hooks/use-shelter-phone";
 import { openDocumentoModal } from "@/lib/modais";
 
 /**
@@ -385,6 +385,7 @@ function DocumentoCard() {
  */
 export default function Documentacao() {
   const phone = useShelterPhone();
+  const email = useShelterEmail();
   const whatsappHref = whatsappWith(org.whatsappMessage, phone);
 
   return (
@@ -428,7 +429,7 @@ export default function Documentacao() {
           </a>
 
           <a
-            href={`mailto:${org.email}`}
+            href={`mailto:${email}`}
             className="flex h-full flex-col items-center gap-1 rounded-md border border-ink-900/10 bg-surface p-4 text-center shadow transition-colors hover:border-donate/50 sm:items-start sm:text-left"
           >
             <span className="flex items-center gap-2 text-fs12 font-extrabold uppercase tracking-[0.06em] text-accent">
@@ -438,7 +439,7 @@ export default function Documentacao() {
             {/* `break-words` e não `break-all`: só quebra quando não cabe, e no
                 lugar certo. */}
             <span className="break-words text-fs13 font-semibold leading-[1.35] text-ink-900">
-              {org.email}
+              {email}
             </span>
             <span className="text-fs12 leading-[1.4] text-ink-600">
               Dúvidas, informações e prestação de contas.
