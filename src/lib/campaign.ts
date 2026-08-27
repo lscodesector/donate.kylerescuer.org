@@ -38,7 +38,28 @@
  * As constantes são as mesmas do `CP_CONFIG` da página em WordPress. Mudar
  * qualquer uma aqui **descasa** as duas páginas.
  */
-export const campaign = {
+export type CampaignState = {
+  /** Em reais, já arredondado aos centavos. */
+  raised: number;
+  goal: number;
+  /** Inteiro de 1 a 100. Nunca 0 enquanto houver algum valor. */
+  percent: number;
+  supporters: number;
+};
+
+export type CampaignParams = {
+  startDate: string;
+  initialRaised: number;
+  dailyMin: number;
+  dailyMax: number;
+  updateEveryDays: number;
+  goal: number;
+  avgTicket: number;
+  ticketJitterMin: number;
+  ticketJitterMax: number;
+};
+
+export const campaign: CampaignParams = {
   /** Início da campanha, em UTC. É o dia zero da conta. */
   startDate: "2026-06-15",
   /** Valor de partida, em reais. */
@@ -73,8 +94,29 @@ function randBetween(rng: () => number, min: number, max: number) {
 }
 
 /** Dias inteiros desde o início da campanha. Nunca negativo. */
-export function daysElapsed(nowMs: number) {
-  const start = new Date(`${campaign.startDate}T00:00:00Z`).getTime();
+/**
+ * ╔══════════════════════════════════════════════════════════════════════╗
+ * ║  UMA CAMPANHA = UM FECHO                                              ║
+ * ╚══════════════════════════════════════════════════════════════════════╝
+ *
+ * O contador nasceu como singleton de módulo, quando só existia uma campanha.
+ * Hoje existe mais de uma (`/urgencia-remedios` tem meta e data de início
+ * próprias), e cada uma precisa do **seu** retrato: se as duas dividissem o
+ * `retrato` deste arquivo, a segunda a montar leria o número da primeira.
+ *
+ * Por isso `createCampaign` devolve um conjunto fechado sobre os seus próprios
+ * parâmetros **e sobre o seu próprio estado** - `retrato` e `ouvintes` moram
+ * dentro do fecho, não no módulo. A lógica continua uma só: o gerador
+ * pseudoaleatório, a conta e a correção pelo relógio do servidor são o mesmo
+ * código para todas as campanhas, e continuam sendo a transcrição literal do
+ * que a página em produção faz.
+ *
+ * Os exports nomeados logo abaixo são a campanha padrão - a raiz e
+ * `/ajude-sempre` importam exatamente os mesmos nomes de antes.
+ */
+export function createCampaign(p: CampaignParams) {
+function daysElapsed(nowMs: number) {
+  const start = new Date(`${p.startDate}T00:00:00Z`).getTime();
   return Math.max(0, Math.floor((nowMs - start) / 86_400_000));
 }
 
@@ -85,14 +127,14 @@ export function daysElapsed(nowMs: number) {
  * isso o histórico nunca muda: o dia 12 vale hoje o mesmo que valia ontem. Para
  * quando bate a meta.
  */
-export function raisedAt(nowMs: number) {
-  const steps = Math.floor(daysElapsed(nowMs) / campaign.updateEveryDays);
-  let total: number = campaign.initialRaised;
+function raisedAt(nowMs: number) {
+  const steps = Math.floor(daysElapsed(nowMs) / p.updateEveryDays);
+  let total: number = p.initialRaised;
 
   for (let i = 1; i <= steps; i++) {
-    total += randBetween(mulberry32(i), campaign.dailyMin, campaign.dailyMax);
-    if (total >= campaign.goal) {
-      total = campaign.goal;
+    total += randBetween(mulberry32(i), p.dailyMin, p.dailyMax);
+    if (total >= p.goal) {
+      total = p.goal;
       break;
     }
   }
@@ -101,32 +143,24 @@ export function raisedAt(nowMs: number) {
 }
 
 /** Quantos apoiadores aquele total representaria, ao ticket médio do dia. */
-export function supportersAt(raised: number, nowMs: number) {
+function supportersAt(raised: number, nowMs: number) {
   if (raised <= 0) return 0;
 
   const rng = mulberry32(daysElapsed(nowMs) || 1);
   const sign = rng() < 0.5 ? -1 : 1;
   const jitter = randBetween(
     rng,
-    campaign.ticketJitterMin,
-    campaign.ticketJitterMax,
+    p.ticketJitterMin,
+    p.ticketJitterMax,
   );
 
-  return Math.max(1, Math.round(raised / (campaign.avgTicket * (1 + sign * jitter))));
+  return Math.max(1, Math.round(raised / (p.avgTicket * (1 + sign * jitter))));
 }
 
-export type CampaignState = {
-  /** Em reais, já arredondado aos centavos. */
-  raised: number;
-  goal: number;
-  /** Inteiro de 1 a 100. Nunca 0 enquanto houver algum valor. */
-  percent: number;
-  supporters: number;
-};
 
-export function campaignStateAt(nowMs: number): CampaignState {
+function campaignStateAt(nowMs: number): CampaignState {
   const raised = raisedAt(nowMs);
-  let percent = Math.round((raised / campaign.goal) * 100);
+  let percent = Math.round((raised / p.goal) * 100);
 
   /* Arredondar para baixo daria "0% da meta" com dinheiro já na conta - o
      original força o piso em 1% pelo mesmo motivo. */
@@ -135,7 +169,7 @@ export function campaignStateAt(nowMs: number): CampaignState {
 
   return {
     raised,
-    goal: campaign.goal,
+    goal: p.goal,
     percent,
     supporters: supportersAt(raised, nowMs),
   };
@@ -152,6 +186,7 @@ export function campaignStateAt(nowMs: number): CampaignState {
  * Falha em silêncio: sem rede, ou sem o cabeçalho, fica valendo o relógio
  * local. Um contador levemente fora é melhor do que um contador ausente.
  */
+
 const OFFSET_KEY = "cp_config_server_time_offset";
 
 async function serverTimeOffset(): Promise<number> {
@@ -207,11 +242,12 @@ async function serverTimeOffset(): Promise<number> {
  * estourar. Por isso o objeto é calculado uma vez e reaproveitado, e só é
  * trocado quando o valor muda de verdade.
  */
+
 let retrato: CampaignState | null = null;
 let refinando = false;
 const ouvintes = new Set<() => void>();
 
-export function subscribeCampaign(aoMudar: () => void) {
+function subscribeCampaign(aoMudar: () => void) {
   ouvintes.add(aoMudar);
 
   /* A correção pelo relógio do servidor roda **uma vez por página**, não uma
@@ -233,12 +269,40 @@ export function subscribeCampaign(aoMudar: () => void) {
   };
 }
 
-export function getCampaignSnapshot(): CampaignState {
+function getCampaignSnapshot(): CampaignState {
   retrato ??= campaignStateAt(Date.now());
   return retrato;
 }
 
 /** No servidor não há relógio que valha: quem lê recebe o esqueleto. */
-export function getCampaignServerSnapshot(): CampaignState | null {
+function getCampaignServerSnapshot(): CampaignState | null {
   return null;
 }
+
+
+  return {
+    daysElapsed,
+    raisedAt,
+    supportersAt,
+    campaignStateAt,
+    subscribeCampaign,
+    getCampaignSnapshot,
+    getCampaignServerSnapshot,
+  };
+}
+
+/**
+ * A campanha padrão - a da raiz e a de `/ajude-sempre`.
+ *
+ * Os nomes exportados aqui são os mesmos de quando este arquivo era um
+ * singleton, de propósito: nenhum bloco precisou mudar por causa da fábrica.
+ */
+export const {
+  daysElapsed,
+  raisedAt,
+  supportersAt,
+  campaignStateAt,
+  subscribeCampaign,
+  getCampaignSnapshot,
+  getCampaignServerSnapshot,
+} = createCampaign(campaign);

@@ -30,6 +30,18 @@ import type { Metadata } from "next";
  * ║  /ajude-sempre - A MESMA CAMPANHA, PEDINDO A DOAÇÃO MENSAL            ║
  * ╚══════════════════════════════════════════════════════════════════════╝
  *
+ * ⚠️ **ESTA ROTA ESTÁ FORA DO AR** ⚠️
+ *
+ * A pasta começa com `_` de propósito: no App Router, `_pasta` é pasta
+ * privada - o Next não a transforma em rota. `/ajude-sempre/` responde 404
+ * hoje, e o build não gera mais a página.
+ *
+ * O código continua aqui, inteiro e compilando, porque a decisão foi "esconder
+ * por enquanto", não "remover". Para republicar, basta renomear a pasta de
+ * volta para `ajude-sempre` - nada mais precisa mudar: nenhum link do site
+ * aponta para cá (só comentários citam a rota pelo nome), e as props `mensal`
+ * dos blocos compartilhados seguem existindo e em uso pelo modal.
+ *
  * Esta página é a campanha do Caio (`app/page.tsx`) com **um pedido só**: a
  * doação que se repete todo mês.
  *
