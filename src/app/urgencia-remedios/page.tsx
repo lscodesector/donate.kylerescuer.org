@@ -68,15 +68,70 @@ import type { Metadata } from "next";
  * `lib/campaign.ts`. Ver o comentário lá sobre por que cada campanha precisa
  * do seu próprio retrato.
  */
+/**
+ * ── Por que `openGraph` e `twitter` estão declarados inteiros aqui ─────────
+ *
+ * No App Router, metadata de página **substitui por campo de topo** - não
+ * funde campo a campo. `title` e `description` sozinhos consertam a aba do
+ * navegador e o resultado do Google, mas **não** a prévia do link: sem um
+ * `openGraph` próprio, a página herda o do `app/layout.tsx` inteiro, e quem
+ * colasse este endereço no WhatsApp veria "Salvar Mais de 400 Animais" e
+ * "leva ração, remédios e veterinário" - a copy da campanha da raiz, na
+ * página que pede socorro veterinário.
+ *
+ * Por isso `siteName`, `locale` e `type` aparecem repetidos abaixo: eles não
+ * são herdados quando a página declara o seu próprio `openGraph`. Tirar
+ * qualquer um deles não volta para o valor do layout, some.
+ *
+ * Mesma coisa vale para `twitter`, que é um campo de topo separado - o
+ * WhatsApp lê `og:`, mas X/Twitter e alguns leitores preferem `twitter:`, e
+ * um sem o outro deixa metade dos lugares mostrando a campanha errada.
+ */
 export const metadata: Metadata = {
-  title:
-    "Eles Precisam de Veterinário Agora | Caio Protetor",
+  title: "Eles Precisam de Veterinário Agora | Caio Protetor",
   description:
     "Mais de 500 animais precisam de consulta, exames e medicação urgente. Ajude o Caio a levá-los ao veterinário antes que seja tarde demais. Doe via Pix, no valor que puder.",
   /* `withBasePath`, e não o caminho puro - ver o comentário sobre resolução de
      URL relativa em `app/layout.tsx`. A barra final segue o `trailingSlash`
      de `next.config.ts`. */
   alternates: { canonical: withBasePath("/urgencia-remedios/") },
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    siteName: "Caio Protetor",
+    /* O endereço canônico da prévia. Sem ele, quem compartilhar a URL com
+       `?utm_...` colado faz o Facebook tratar cada variante como página
+       diferente, e a contagem de compartilhamentos se divide entre elas. */
+    url: withBasePath("/urgencia-remedios/"),
+    title: "Eles Precisam de Veterinário Agora | Caio Protetor",
+    description:
+      "Mais de 500 animais precisam de consulta, exames e medicação urgente. Ajude o Caio a levá-los ao veterinário antes que seja tarde demais.",
+    images: [
+      {
+        /* Foto diferente da raiz de propósito: `caio-1` (Caio com um cão no
+           colo) é a prévia da campanha de manutenção. Esta é a do animal
+           **recebendo cuidado**, que é o que esta página pede - e, quando as
+           duas campanhas circulam juntas, a imagem é o que separa uma da
+           outra antes de alguém ler o título.
+
+           `width`/`height` declarados porque o WhatsApp monta o espaço da
+           prévia antes de baixar a imagem: sem eles, o card pisca com o
+           tamanho errado ou cai para o layout pequeno. São as dimensões
+           reais do arquivo - conferir se a foto for trocada. */
+        url: withBasePath("/caio/historia/caio-3.webp"),
+        width: 1034,
+        height: 1103,
+        alt: "Cão resgatado recebendo cuidado veterinário depois do resgate",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Eles Precisam de Veterinário Agora | Caio Protetor",
+    description:
+      "Mais de 500 animais precisam de consulta, exames e medicação urgente. Ajude o Caio a levá-los ao veterinário antes que seja tarde demais.",
+    images: [withBasePath("/caio/historia/caio-3.webp")],
+  },
 };
 
 export default function UrgenciaRemedios() {
