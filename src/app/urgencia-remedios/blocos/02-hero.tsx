@@ -159,15 +159,15 @@ const heroVideo: {
   aspect: string;
 } = {
   vturb: {
-    playerId: "vid-6a8e0ddccc0ad7d7c23fb651",
+    playerId: "vid-6a919e6f3f82df024cd0ad0a",
     scriptSrc:
-      "https://scripts.converteai.net/25b0cdcd-2b93-4910-aa45-91b9a6275957/players/6a8e0ddccc0ad7d7c23fb651/v4/player.js",
+      "https://scripts.converteai.net/25b0cdcd-2b93-4910-aa45-91b9a6275957/players/6a919e6f3f82df024cd0ad0a/v4/player.js",
     smartplayerSrc:
       "https://scripts.converteai.net/lib/js/smartplayer-wc/v4/smartplayer.js",
     streamSrc:
-      "https://cdn.converteai.net/25b0cdcd-2b93-4910-aa45-91b9a6275957/6a8e0dd4447c4a09602b1473/main.m3u8",
+      "https://cdn.converteai.net/25b0cdcd-2b93-4910-aa45-91b9a6275957/6a919e65ba9e65956da32435/main.m3u8",
     ratio: 78.125,
-    poster: "/caio/vsl-poster.webp",
+    poster: "/caio/vsl-poster-urgencia.webp",
   },
   /**
    * Formato do player, em `largura / altura`. 78,125% de padding é
