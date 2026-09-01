@@ -677,3 +677,50 @@
     transition-duration: 0.001ms !important;
   }
 }
+
+/* ── Player próprio (player.lusapayments.com) — hero da v2 ──────────────────
+   Mesmo tratamento visual aplicado em hero.html (campanha Adrielly): sem
+   cantos/sombra, proporção real do vídeo (sem tarja preta), barra de
+   progresso estilo VTurb (fininha, sempre visível, só decorativa — sem botão
+   de play, sem "knob", clique passa pro vídeo). Escopado em `.vdl-caio-v2`
+   para não vazar caso outro player da mesma stack apareça na página. */
+.vdl-caio-v2 .vdl__stage {
+  border-radius: 0;
+  box-shadow: none !important;
+  aspect-ratio: 100 / 78.125 !important;
+}
+/* iOS só sintetiza 'click' em quem tem cursor:pointer — sem isto, tocar no
+   vídeo no iPhone não pausa (o tap cai no <video> e não borbulha). */
+.vdl-caio-v2 .vdl__stage,
+.vdl-caio-v2 .vdl__stage .video-js,
+.vdl-caio-v2 .vdl__stage video {
+  cursor: pointer;
+}
+
+.vdl-caio-v2 .vdl__controls {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  gap: 0 !important;
+  background: none !important;
+  pointer-events: none !important; /* clique passa pro vídeo (pausa/despausa) */
+}
+.vdl-caio-v2 .vdl__btn,
+.vdl-caio-v2 .vdl__time {
+  display: none !important;
+}
+.vdl-caio-v2 .vdl__track {
+  height: 8px !important;
+  pointer-events: none !important; /* barra só de exibição — sem clicar/arrastar */
+}
+.vdl-caio-v2 .vdl__track-bg,
+.vdl-caio-v2 .vdl__track-fill {
+  height: 100% !important;
+  top: 0 !important;
+  border-radius: 0 !important;
+}
+.vdl-caio-v2 .vdl__track-knob {
+  display: none !important;
+}

@@ -94,8 +94,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           aparecer. Fica aqui, e não dentro do componente do player, porque
           `beforeInteractive` só é aceito no layout raiz - é a única forma de o
           Next.js garantir que o script rode antes da hidratação em qualquer
-          rota da página. Como as duas versões (v1 e v2) tocam o mesmo player,
-          um script global não duplica nada.
+          rota da página.
+
+          Desde que a `/v2` passou a usar o player próprio em vez do VTurb
+          (`heroPlayer="new"`, ver `v2/page.tsx`), essa marca só é consumida
+          na `/`. Continua global e não movida pro `VturbPlayer`: rodar em
+          toda rota é inofensivo (é só um timestamp que ninguém lê na `/v2`),
+          e o motivo de ficar aqui - `beforeInteractive` só no layout raiz -
+          continua valendo.
         */}
         <Script
           id="vturb-plt"

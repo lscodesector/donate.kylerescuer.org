@@ -175,6 +175,15 @@ const heroVideo: {
      */
     poster: string;
   } | null;
+  /**
+   * O mesmo VSL, servido pelo player próprio (`player-video`, ver
+   * `implementar-player-substituto-vturb`) em vez do VTurb - usado só na
+   * `/v2` (teste A/B, ver `Hero({ player })` mais abaixo). `token` é o
+   * `publicToken` do player no painel (`Copy Embed`).
+   */
+  newPlayer: {
+    token: string;
+  };
   aspect: string;
 } = {
   vturb: {
@@ -187,6 +196,9 @@ const heroVideo: {
       "https://cdn.converteai.net/25b0cdcd-2b93-4910-aa45-91b9a6275957/6a3dc9676e2c9c5a5916f3ba/main.m3u8",
     ratio: 78.125,
     poster: "/caio/vsl-poster.webp",
+  },
+  newPlayer: {
+    token: "6bNYgehtCJyoAhjtn8bR7qmmFz7iWizx",
   },
   /**
    * Formato do player, em `largura / altura`. 78,125% de padding é
@@ -588,6 +600,76 @@ function PlayerA11y({ playerId }: { playerId: string }) {
   return null;
 }
 
+/**
+ * Desmonta o player do VTurb quando o React tira o `<vturb-smartplayer>` do DOM.
+ *
+ * ── Por que ───────────────────────────────────────────────────────────────
+ * O embed do SmartPlayer embute o próprio hls.js e **não o aborta** quando o
+ * elemento sai do DOM. O hls continua alimentando um `SourceBuffer` de um
+ * `MediaSource` cujo `<video>` já não existe, e o console cospe
+ * `SourceBuffer error. MediaSource readyState: ended/closed`. Isso aparece em
+ * dois momentos em que o elemento é removido e recriado:
+ *   - o StrictMode do `next dev` (mount -> unmount -> mount);
+ *   - a navegação client-side entre `/` e `/v2` (as duas trazem o mesmo VSL).
+ *
+ * ── O que faz ─────────────────────────────────────────────────────────────
+ * Só no cleanup do efeito (ou seja, no unmount). Não toca no player enquanto
+ * ele está montado - o embed segue fazendo o que sempre fez. Cada passo é
+ * "melhor esforço" e idempotente: se o player nunca bootou (SSR, navegação
+ * sem carregar o script) ou já foi limpo, o passo é um no-op.
+ *
+ *   1. Chama a API oficial de dispose, se o runtime expuser uma - no próprio
+ *      elemento ou numa instância em `window.smartplayer` (ver `types/vturb.d.ts`).
+ *   2. Fallback: força cada `<video>` de dentro a soltar o `MediaSource` do
+ *      hls (`pause()` -> remove `src` -> `load()`).
+ *   3. Último recurso: esvazia o container antes de o React removê-lo.
+ */
+function VturbTeardown({ playerId }: { playerId: string }) {
+  useEffect(() => {
+    return () => {
+      const tenta = (fn: () => void) => {
+        try {
+          fn();
+        } catch {
+          /* teardown é best-effort: erro aqui não deve quebrar o unmount */
+        }
+      };
+
+      const el = document.getElementById(playerId) as
+        | (HTMLElement & VturbDisposable)
+        | null;
+
+      // 1. API oficial de dispose (elemento ou instância no runtime).
+      const runtime = window.smartplayer;
+      for (const alvo of [
+        el,
+        runtime?.[playerId],
+        runtime?.instances?.[playerId],
+      ]) {
+        tenta(() => alvo?.destroy?.());
+        tenta(() => alvo?.dispose?.());
+      }
+
+      // 2. Forçar cada <video> a soltar o MediaSource que o hls.js mantém.
+      for (const v of Array.from(
+        el?.querySelectorAll<HTMLVideoElement>("video") ?? [],
+      )) {
+        tenta(() => v.pause());
+        tenta(() => {
+          v.removeAttribute("src");
+          v.querySelectorAll("source").forEach((s) => s.remove());
+        });
+        tenta(() => v.load());
+      }
+
+      // 3. Esvaziar o container antes de o React removê-lo.
+      tenta(() => el?.replaceChildren());
+    };
+  }, [playerId]);
+
+  return null;
+}
+
 /** Os quatro domínios que o player toca: scripts, vídeo, imagens e licença. */
 const DOMINIOS = [
   "https://cdn.converteai.net",
@@ -745,7 +827,92 @@ function VturbPlayer({
 
       {/* A miniatura que o player injeta vem sem `alt` - ver `PlayerA11y`. */}
       <PlayerA11y playerId={playerId} />
+
+      {/* Aborta o hls.js do embed no unmount - ver `VturbTeardown`. */}
+      <VturbTeardown playerId={playerId} />
     </>
+  );
+}
+
+/**
+ * Desmonta o Video.js do player próprio quando o React tira o elemento do DOM.
+ *
+ * Mesmo motivo do `VturbTeardown` acima: o embed não aborta sozinho quando o
+ * host (`[data-vdl-player]`) some do DOM, e a navegação client-side entre `/`
+ * (VTurb) e `/v2` (este player) desmonta e remonta a árvore. O Video.js expõe
+ * uma API oficial de limpeza (`dispose()`, via `window.videojs('vdlVideo')` -
+ * o player fica registrado pelo id do `<video>`, ver `player.bootstrap.js` no
+ * repo `player-video-nest-back`), então o teardown aqui é mais direto que o
+ * do VTurb - só o passo 1 já cobre o caso normal; os outros dois são rede de
+ * segurança se o Video.js não tiver montado ainda.
+ */
+function NewPlayerTeardown() {
+  useEffect(() => {
+    return () => {
+      const tenta = (fn: () => void) => {
+        try {
+          fn();
+        } catch {
+          /* teardown é best-effort: erro aqui não deve quebrar o unmount */
+        }
+      };
+
+      // 1. API oficial do Video.js: dispose() remove DOM, listeners e o
+      //    registro interno do player pelo id do <video>.
+      tenta(() => window.videojs?.("vdlVideo")?.dispose());
+
+      // 2. Fallback: solta o <video> na mão, se o Video.js não tiver montado.
+      const video = document.getElementById("vdlVideo") as HTMLVideoElement | null;
+      tenta(() => video?.pause());
+      tenta(() => {
+        video?.removeAttribute("src");
+        video?.load();
+      });
+
+      // 3. Último recurso: esvazia o host antes de o React removê-lo.
+      const host = document.querySelector("[data-vdl-player]");
+      tenta(() => host?.replaceChildren());
+    };
+  }, []);
+
+  return null;
+}
+
+/**
+ * O VSL da campanha, no player próprio (`player.lusapayments.com`).
+ *
+ * Mesmo padrão aplicado em `hero.html` (campanha Adrielly, `soshumanhelp.com`):
+ * um `<div data-vdl-player>` como ponto de montagem + o script do embed com
+ * `referrerPolicy="origin"` (o backend valida o embed pelo domínio do
+ * Referer - sem isto, ou com uma Referrer-Policy restritiva na página, o
+ * player recusa o embed).
+ *
+ * ── Uma diferença de propósito, não de acidente ───────────────────────────
+ * O `hero.html` cria o `<script>` via `document.createElement` porque é
+ * colado dentro de um widget HTML do Elementor, que não executa
+ * `<script src>` externo direto colado no HTML. Aqui não há essa restrição -
+ * é `next/script`, o mesmo mecanismo que o `VturbPlayer` já usa e pelo mesmo
+ * motivo (ver o comentário lá): inserção gerenciada pelo Next.js, que
+ * funciona em navegação client-side e adia a execução para depois da
+ * hidratação. `referrerPolicy` é uma prop normal do componente `Script`.
+ */
+function NewPlayer({ token }: { token: string }) {
+  const scriptSrc = `https://player.lusapayments.com/api/embed/${token}.js`;
+
+  return (
+    <div className="vdl-caio-v2 h-full w-full">
+      <div data-vdl-player />
+
+      <Script
+        id={`vdl-player-${token}`}
+        src={scriptSrc}
+        strategy="afterInteractive"
+        referrerPolicy="origin"
+      />
+
+      {/* Desmonta o Video.js no unmount - ver `NewPlayerTeardown`. */}
+      <NewPlayerTeardown />
+    </div>
   );
 }
 
@@ -1228,10 +1395,19 @@ export default function Hero({
    * não muda com a frequência da doação.
    */
   mensal = false,
+  /**
+   * Qual motor de vídeo esta instância do Hero usa - `"vturb"` (padrão, a
+   * página raiz `/`) ou `"new"` (o player próprio, só na `/v2`, teste A/B -
+   * ver o comentário em `v2/page.tsx`). Com `heroVideo.vturb: null` o motor
+   * `"vturb"` cai para o slide de fotos como já fazia; `"new"` nunca cai,
+   * porque `heroVideo.newPlayer` sempre existe.
+   */
+  player = "vturb",
 }: {
   mensal?: boolean;
+  player?: "vturb" | "new";
 }) {
-  const { vturb } = heroVideo;
+  const { vturb, newPlayer } = heroVideo;
 
   return (
     <section
@@ -1306,7 +1482,24 @@ export default function Hero({
           o comentário no topo do arquivo).
         */}
         <Reveal delay={1} className="flex w-full items-center justify-center">
-          {vturb ? (
+          {player === "new" ? (
+            /*
+              Mesmo quadro medido pela largura da coluna que o VTurb usa
+              abaixo - só troca o motor. O player próprio segura a própria
+              altura pelo `aspect-ratio` em `.vdl-caio-v2 .vdl__stage`
+              (globals.css), não por `padding-top`, mas o resultado visual é
+              o mesmo quadro sem tarja preta.
+            */
+            <div
+              className="mx-auto w-full"
+              style={{
+                aspectRatio: heroVideo.aspect,
+                maxWidth: "var(--hero-col)",
+              }}
+            >
+              <NewPlayer token={newPlayer.token} />
+            </div>
+          ) : vturb ? (
             /*
               ── O quadro do player: medido pela LARGURA da coluna ────────────
               `width: 100%` até `--hero-col` (mesma largura da manchete, da
