@@ -718,9 +718,9 @@
   display: none !important;
 }
 .vdl-caio-v2 .vdl__track {
-  /* 6px ficou fina demais no print comparativo (2026-09-01) — a barra da
-     VTurb é só um pouco mais fina que os 8px originais, não 25% menor. */
-  height: 7px !important;
+  /* 6px e 7px ficaram finas demais nos prints comparativos (2026-09-01) —
+     de volta ao 8px original, que era o mais próximo da VTurb. */
+  height: 8px !important;
   pointer-events: none !important; /* barra só de exibição — sem clicar/arrastar */
 }
 .vdl-caio-v2 .vdl__track-bg,
