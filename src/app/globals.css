@@ -688,6 +688,12 @@
   border-radius: 0;
   box-shadow: none !important;
   aspect-ratio: 100 / 78.125 !important;
+  /* Trilho vazio (parte ainda não assistida) é TRANSPARENTE na VTurb — não
+     tem cor de fundo nenhuma, só o preenchido (vermelho) aparece por cima
+     do vídeo. Comparado lado a lado em 2026-09-01 (mesmo frame, print real):
+     a barra da VTurb não pinta a parte que falta. Sobrescreve o default do
+     template compartilhado (--trilho-vazio, 26% branco) pra zero aqui. */
+  --trilho-vazio: transparent;
 }
 /* iOS só sintetiza 'click' em quem tem cursor:pointer — sem isto, tocar no
    vídeo no iPhone não pausa (o tap cai no <video> e não borbulha). */
@@ -712,7 +718,8 @@
   display: none !important;
 }
 .vdl-caio-v2 .vdl__track {
-  height: 8px !important;
+  /* Altura um pouco menor que a VTurb pareceu ter no print comparativo. */
+  height: 6px !important;
   pointer-events: none !important; /* barra só de exibição — sem clicar/arrastar */
 }
 .vdl-caio-v2 .vdl__track-bg,
