@@ -569,6 +569,76 @@ function PlayerA11y({ playerId }: { playerId: string }) {
   return null;
 }
 
+/**
+ * Desmonta o player do VTurb quando o React tira o `<vturb-smartplayer>` do DOM.
+ *
+ * ── Por que ───────────────────────────────────────────────────────────────
+ * O embed do SmartPlayer embute o próprio hls.js e **não o aborta** quando o
+ * elemento sai do DOM. O hls continua alimentando um `SourceBuffer` de um
+ * `MediaSource` cujo `<video>` já não existe, e o console cospe
+ * `SourceBuffer error. MediaSource readyState: ended/closed`. Isso aparece em
+ * dois momentos em que o elemento é removido e recriado:
+ *   - o StrictMode do `next dev` (mount -> unmount -> mount);
+ *   - a navegação client-side entre `/` e `/v2` (as duas trazem o mesmo VSL).
+ *
+ * ── O que faz ─────────────────────────────────────────────────────────────
+ * Só no cleanup do efeito (ou seja, no unmount). Não toca no player enquanto
+ * ele está montado - o embed segue fazendo o que sempre fez. Cada passo é
+ * "melhor esforço" e idempotente: se o player nunca bootou (SSR, navegação
+ * sem carregar o script) ou já foi limpo, o passo é um no-op.
+ *
+ *   1. Chama a API oficial de dispose, se o runtime expuser uma - no próprio
+ *      elemento ou numa instância em `window.smartplayer` (ver `types/vturb.d.ts`).
+ *   2. Fallback: força cada `<video>` de dentro a soltar o `MediaSource` do
+ *      hls (`pause()` -> remove `src` -> `load()`).
+ *   3. Último recurso: esvazia o container antes de o React removê-lo.
+ */
+function VturbTeardown({ playerId }: { playerId: string }) {
+  useEffect(() => {
+    return () => {
+      const tenta = (fn: () => void) => {
+        try {
+          fn();
+        } catch {
+          /* teardown é best-effort: erro aqui não deve quebrar o unmount */
+        }
+      };
+
+      const el = document.getElementById(playerId) as
+        | (HTMLElement & VturbDisposable)
+        | null;
+
+      // 1. API oficial de dispose (elemento ou instância no runtime).
+      const runtime = window.smartplayer;
+      for (const alvo of [
+        el,
+        runtime?.[playerId],
+        runtime?.instances?.[playerId],
+      ]) {
+        tenta(() => alvo?.destroy?.());
+        tenta(() => alvo?.dispose?.());
+      }
+
+      // 2. Forçar cada <video> a soltar o MediaSource que o hls.js mantém.
+      for (const v of Array.from(
+        el?.querySelectorAll<HTMLVideoElement>("video") ?? [],
+      )) {
+        tenta(() => v.pause());
+        tenta(() => {
+          v.removeAttribute("src");
+          v.querySelectorAll("source").forEach((s) => s.remove());
+        });
+        tenta(() => v.load());
+      }
+
+      // 3. Esvaziar o container antes de o React removê-lo.
+      tenta(() => el?.replaceChildren());
+    };
+  }, [playerId]);
+
+  return null;
+}
+
 /** Os quatro domínios que o player toca: scripts, vídeo, imagens e licença. */
 const DOMINIOS = [
   "https://cdn.converteai.net",
@@ -726,6 +796,9 @@ function VturbPlayer({
 
       {/* A miniatura que o player injeta vem sem `alt` - ver `PlayerA11y`. */}
       <PlayerA11y playerId={playerId} />
+
+      {/* Aborta o hls.js do embed no unmount - ver `VturbTeardown`. */}
+      <VturbTeardown playerId={playerId} />
     </>
   );
 }
