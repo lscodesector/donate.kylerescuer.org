@@ -1,0 +1,416 @@
+<!-- Tracking do lead InitiateCheckout do forms.html.
+     Fluxo: (1) POST no WP para enriquecer IP/country -> (2) POST no Nest (/api/ic/cp-caio-protetor). -->
+<script>
+  (function () {
+    if (window.__GIVE_IC_NEST_INIT__) return;
+    window.__GIVE_IC_NEST_INIT__ = true;
+
+    // (1) Rota WP que enriquece o payload (adiciona IP/country) e o devolve.
+    const URL_WP_ENRICH =
+      window.location.origin + "/wp-json/track/v1/forms-back";
+
+    // (2) Rota do Nest (produção) que grava o InitiateCheckout e indexa a ref do
+    //     email (/wh/givewp/ref, derivada desta URL) para o webhook casar.
+    //     Passa pela ponte do Laravel (/api/nest-relay/{path} -> 127.0.0.1:3000/api/{path})
+    //     em vez de bater direto em https://track.lusapayments.com, inacessível quando a
+    //     rede bloqueia esse domínio. Host = Laravel (APP_URL), não o do site de doação
+    //     (os widgets rodam noutra origem, então caminho relativo não alcança a ponte).
+    //     Reverter p/ 'https://track.lusapayments.com/api/ic/caio-protetor-us' quando desbloquear.
+    const URL_IC_NEST =
+      "https://lusapayments.com/api/nest-relay/ic/caio-protetor-us";
+
+    function getCookie(name) {
+      const match = document.cookie.match(
+        new RegExp("(?:^|; )" + name + "=([^;]+)"),
+      );
+      return match ? decodeURIComponent(match[1]) : null;
+    }
+
+    function getStoredLeadId() {
+      try {
+        return (
+          localStorage.getItem("pix_lead_id") ||
+          getCookie("pix_lead_id") ||
+          null
+        );
+      } catch (_) {
+        return getCookie("pix_lead_id") || null;
+      }
+    }
+
+    function getUrlParam(name) {
+      try {
+        const url = new URL(window.location.href);
+        return url.searchParams.get(name) || null;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function parseUtmsFromQueryString() {
+      try {
+        const search = new URL(location.href).searchParams;
+        const hash = String(location.hash || "");
+        const hashQuery =
+          hash.indexOf("?") >= 0
+            ? new URLSearchParams(hash.slice(hash.indexOf("?") + 1))
+            : null;
+        const pick = (k) =>
+          search.get(k) || (hashQuery && hashQuery.get(k)) || null;
+        return {
+          utm_source: pick("utm_source"),
+          utm_medium: pick("utm_medium"),
+          utm_campaign: pick("utm_campaign"),
+          utm_term: pick("utm_term"),
+          utm_content: pick("utm_content"),
+        };
+      } catch (_) {
+        return {};
+      }
+    }
+
+    // ===== Geo (zip/city/state) p/ o CAPI — mesma lógica do sosaOrg.html =====
+    // Normalização no formato esperado pelo Meta/Facebook (ct/st/zp).
+    function safeString(value) {
+      if (value === null || value === undefined) return null;
+      const str = String(value).trim();
+      return str ? str : null;
+    }
+
+    function normalizeZipForMeta(value) {
+      const zip = safeString(value);
+      // Meta exige zp sem espaços/pontuação (ex.: "11700-290" -> "11700290").
+      return zip ? zip.toLowerCase().replace(/[^a-z0-9]/g, "") : null;
+    }
+
+    function normalizeCityForMeta(value) {
+      const city = safeString(value);
+      return city
+        ? city
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[̀-ͯ]/g, "")
+            .replace(/[^a-z0-9]/g, "")
+        : null;
+    }
+
+    function normalizeStateForMeta(value) {
+      const state = safeString(value);
+      if (!state) return null;
+
+      const normalized = state
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[̀-ͯ]/g, "")
+        .replace(/[^a-z]/g, "");
+
+      if (normalized.length === 2) return normalized;
+      return state.toLowerCase().slice(0, 2);
+    }
+
+    function readGeoCache() {
+      try {
+        const raw = sessionStorage.getItem("codex_ip_geo_meta_v2");
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== "object") return null;
+        return parsed;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function writeGeoCache(geo) {
+      try {
+        sessionStorage.setItem("codex_ip_geo_meta_v2", JSON.stringify(geo));
+      } catch (_) {}
+    }
+
+    let geoMetaPromise = null;
+
+    async function fetchGeoMetaFallback() {
+      // Geo (zip/city/state) é resolvido SERVER-SIDE no wp.php, que chama o
+      // ipwho.is por IP. NÃO dá pra fazer no navegador: o ipwho.is bloqueia CORS
+      // no plano grátis ({"success":false,"message":"CORS is not supported..."}).
+      // Aqui só aproveitamos geo já em cache (caso o detail traga) — sem rede.
+      return readGeoCache();
+    }
+
+    function ensureGeoMetaReady() {
+      if (!geoMetaPromise) {
+        geoMetaPromise = fetchGeoMetaFallback().catch(function () {
+          return readGeoCache();
+        });
+      }
+      return geoMetaPromise;
+    }
+
+    // Resolve o fbc (mesma lógica do sosaOrg.html): detail.fbc -> cookie _fbc ->
+    // monta a partir do fbclid (detail ou URL) no formato fb.1.<ts>.<fbclid>.
+    function resolveFbc(detail) {
+      if (detail && detail.fbc) {
+        return detail.fbc;
+      }
+
+      const cookieFbc = getCookie("_fbc");
+      if (cookieFbc) {
+        return cookieFbc;
+      }
+
+      const fbclid = (detail && detail.fbclid) || getUrlParam("fbclid");
+      if (!fbclid) {
+        return null;
+      }
+
+      return "fb.1." + String(Math.floor(Date.now() / 1000)) + "." + fbclid;
+    }
+
+    // Payload enxuto — as colunas do ic/cp-caio-protetor. IP/country ficam vazios aqui
+    // (o wp.php preenche). `campaign` é mantido só para conferência no webhook.
+    async function buildLeadPayload(detail) {
+      const amount = Number(detail && detail.amount);
+      const amountCents = Number.isFinite(amount)
+        ? Math.round(amount * 100)
+        : null;
+      const anonymousName = Number.isFinite(amount)
+        ? "anonymous " + Math.round(amount)
+        : "anonymous";
+
+      // O formulário envia o nome completo no campo `name`. Quebramos em
+      // first/last; se vier vazio ou "Anônimo", mantém o fallback anônimo.
+      const rawName = detail && detail.name ? String(detail.name).trim() : "";
+      const isAnon = !rawName || /^an[oô]nimo$/i.test(rawName);
+      const nameParts = isAnon ? [] : rawName.split(/\s+/).filter(Boolean);
+      const firstFromName = nameParts[0] || null;
+      const lastFromName =
+        nameParts.length > 1 ? nameParts.slice(1).join(" ") : null;
+      const fbp = (detail && detail.fbp) || getCookie("_fbp") || null;
+      const resolvedLeadId =
+        detail && (detail.lead_id || detail.integration_id)
+          ? detail.lead_id || detail.integration_id
+          : getStoredLeadId();
+      const utms = parseUtmsFromQueryString();
+
+      // zip/city/state p/ o CAPI: preenchidos server-side pelo wp.php (geo por IP).
+      // Aqui só usamos o que vier no detail; geoLookup fica null (ver fetchGeoMetaFallback).
+      const geoLookup = await ensureGeoMetaReady();
+      let zip =
+        (geoLookup && geoLookup.zip) ||
+        normalizeZipForMeta(
+          detail && (detail.zip || detail.zip_code || detail.postal_code),
+        );
+      let city =
+        (geoLookup && geoLookup.city) ||
+        normalizeCityForMeta(detail && detail.city);
+      let state =
+        (geoLookup && geoLookup.state) ||
+        normalizeStateForMeta(detail && detail.state);
+
+      return {
+        event: (detail && detail.event_name) || "InitiateCheckout",
+        // Motivo/estado da última etapa (instrumentado no forms.html): reached →
+        // paypal_ready | paypal_render_error | form_not_loaded | paypal_clicked
+        // | paypal_click_no_open. Vazio = fluxo antigo.
+        cause: (detail && detail.cause) || null,
+        campaign: (detail && detail.campaign) || null,
+        first_name:
+          (detail && detail.first_name) || firstFromName || anonymousName,
+        last_name:
+          (detail && detail.last_name) || lastFromName || anonymousName,
+        email: (detail && detail.email) || null,
+        phone: (detail && detail.phone) || null,
+        amount: Number.isFinite(amount) ? amount : null,
+        amount_cents: amountCents,
+        currency: (detail && detail.currency) || "BRL",
+        gateway: (detail && detail.gateway) || "infopago_pix",
+        event_time: (detail && detail.event_time) || Date.now(),
+        lead_id: resolvedLeadId,
+        page_url: (detail && detail.page_url) || window.location.href,
+        user_agent: (detail && detail.user_agent) || navigator.userAgent,
+        fbc: resolveFbc(detail),
+        fbp: fbp,
+        fbclid: (detail && detail.fbclid) || getUrlParam("fbclid") || null,
+        utm_source: (detail && detail.utm_source) || utms.utm_source || null,
+        utm_medium: (detail && detail.utm_medium) || utms.utm_medium || null,
+        utm_campaign:
+          (detail && detail.utm_campaign) || utms.utm_campaign || null,
+        utm_term: (detail && detail.utm_term) || utms.utm_term || null,
+        utm_content: (detail && detail.utm_content) || utms.utm_content || null,
+        redirect: (detail && detail.redirect) || null,
+        zip: zip || null,
+        city: city || null,
+        state: state || null,
+      };
+    }
+
+    // (1) Enriquece via WP (rota original, intocada). O wp.php adiciona IP/country
+    //     ao $dados e o devolve no campo `received` da resposta. Usamos esse
+    //     `received` como payload enriquecido. Em falha, seguimos com o original.
+    async function enrichViaWp(payload) {
+      try {
+        const res = await fetch(URL_WP_ENRICH, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Requested-With": "XMLHttpRequest",
+          },
+          body: JSON.stringify(payload),
+          credentials: "same-origin",
+        });
+        const json = await res.json().catch(() => null);
+        if (json && json.received && typeof json.received === "object") {
+          return json.received;
+        }
+        try {
+          console.log("[ic][wp enrich] sem received", res.status, json);
+        } catch (_) {}
+      } catch (err) {
+        try {
+          console.log("[ic][wp enrich][erro]", err);
+        } catch (_) {}
+      }
+      // Fallback: segue sem enriquecer (o Nest deriva IP/country dos headers).
+      return payload;
+    }
+
+    // (2) Envia o payload enriquecido para a rota de IC do Nest.
+    async function sendToIcNest(payload) {
+      try {
+        const res = await fetch(URL_IC_NEST, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
+          },
+          body: JSON.stringify(payload),
+          keepalive: true,
+        });
+        const text = await res.text();
+        try {
+          console.log("[ic][nest]", res.status, text);
+        } catch (_) {}
+      } catch (err) {
+        try {
+          console.log("[ic][nest][erro]", err);
+        } catch (_) {}
+      }
+    }
+
+    // Ranking do funil (espelha o forms.html). Guard anti-regressão de `cause` no
+    // ENVIO: o payment_reached (create) passa pelo enrich do WP (lento) e pode chegar
+    // ao Nest DEPOIS de paypal_ready/opened (rápidos, sem enrich), sobrescrevendo a
+    // causa. Aqui rastreamos a maior causa já vista (em ordem de DISPATCH) e, na hora
+    // de enviar, promovemos qualquer payload com causa menor p/ a maior — assim um
+    // evento que chega tarde nunca rebaixa a `cause`.
+    const IC_CAUSE_RANK = {
+      form_not_loaded: 1,
+      paypal_render_error: 1,
+      payment_reached: 1,
+      paypal_ready: 2,
+      paypal_clicked: 3,
+      paypal_opened: 4,
+      paypal_click_no_open: 4,
+    };
+    const icCauseTop = {}; // lead_id -> { rank, cause } — a maior causa já vista por lead
+    function leadKey(detail) {
+      return (detail && (detail.lead_id || detail.integration_id)) || "_nolead";
+    }
+    function noteCause(detail) {
+      const cause = detail && detail.cause;
+      const r = IC_CAUSE_RANK[cause] || 0;
+      const k = leadKey(detail);
+      const cur = icCauseTop[k] || { rank: 0, cause: null };
+      if (r > cur.rank) icCauseTop[k] = { rank: r, cause: cause };
+    }
+
+    async function handleTrackingEvent(event) {
+      const detail = event.detail || {};
+      const eventName =
+        detail && detail.event_name
+          ? String(detail.event_name)
+          : "InitiateCheckout";
+
+      if (eventName !== "InitiateCheckout") {
+        try {
+          console.log("[ic] evento ignorado:", eventName);
+        } catch (_) {}
+        return;
+      }
+
+      // Marca a causa (por lead) em ordem de dispatch — síncrono, antes de qualquer await.
+      noteCause(detail);
+
+      const base = await buildLeadPayload(detail);
+      // Follow-up só de `cause` (paypal_ready / paypal_render_error): não precisa de
+      // geo/IP nem do roundtrip no WP — vai direto pro Nest. O upsert atualiza o
+      // `cause` do registro existente sem tocar no `event` (não reverte um paid).
+      const enriched =
+        detail && detail.cause_update ? base : await enrichViaWp(base);
+      // Anti-regressão: se este payload (que talvez tenha demorado no enrich) carrega
+      // uma causa MENOR que a maior já vista NESTE lead, promove p/ a maior antes de enviar.
+      const top = icCauseTop[leadKey(detail)];
+      if (
+        enriched &&
+        top &&
+        top.rank &&
+        (IC_CAUSE_RANK[enriched.cause] || 0) < top.rank
+      ) {
+        enriched.cause = top.cause;
+      }
+      await sendToIcNest(enriched);
+    }
+
+    document.addEventListener("codex:fake-donate-click", handleTrackingEvent);
+
+    // Captura eventos vindos do iframe via postMessage (cross-frame)
+    window.addEventListener("message", function (ev) {
+      if (!ev.data || ev.data.type !== "codex:fake-donate-click") return;
+      handleTrackingEvent({ detail: ev.data.detail || {} });
+    });
+
+    // (3) Índice de correlação GiveWP: o forms1.html dispara `codex:gb-ref` com
+    //     { ic_slug, lead_id, refs:[email] } no momento do IC. Registramos no Nest
+    //     (mesma origem do IC) para o webhook do GiveWP casar o pago com este IC.
+    // .origin de URL_IC_NEST devolve só https://lusapayments.com (sem o path da ponte),
+    // então recompomos o prefixo /api/nest-relay aqui. Final:
+    // https://lusapayments.com/api/nest-relay/wh/givewp/ref
+    const URL_GIVEWP_REF = (function () {
+      try {
+        return new URL(URL_IC_NEST).origin + "/api/nest-relay/wh/givewp/ref";
+      } catch (_) {
+        return null;
+      }
+    })();
+
+    async function handleGbRef(event) {
+      const d = event.detail || {};
+      const slug = d.ic_slug || d.slug;
+      const leadId = d.lead_id;
+      const refs = Array.isArray(d.refs) ? d.refs.filter(Boolean) : [];
+      if (!URL_GIVEWP_REF || !slug || !leadId || refs.length === 0) return;
+      try {
+        const res = await fetch(URL_GIVEWP_REF, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
+          },
+          body: JSON.stringify({ slug: slug, lead_id: leadId, refs: refs }),
+          keepalive: true,
+        });
+        try {
+          console.log("[gb-ref][nest]", res.status, await res.text());
+        } catch (_) {}
+      } catch (err) {
+        try {
+          console.log("[gb-ref][erro]", err);
+        } catch (_) {}
+      }
+    }
+    document.addEventListener("codex:gb-ref", handleGbRef);
+    window.addEventListener("message", function (ev) {
+      if (!ev.data || ev.data.type !== "codex:gb-ref") return;
+      handleGbRef({ detail: ev.data.detail || {} });
+    });
+  })();
+</script>

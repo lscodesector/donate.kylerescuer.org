@@ -27,14 +27,14 @@ import { openDonationModal } from "@/lib/modais";
 
 /** O bloco de doação: o argumento (o contraste) e o pedido, num botão só. */
 const copyDoar = {
-  eyebrow: "Como ajudar",
-  title: "Cada doação pode ser a diferença entre a vida e a morte",
-  /* Sem `lead`: a linha que ficava aqui ("O Caio não consegue fazer isso
+  eyebrow: "How to help",
+  title: "Every donation can be the difference between life and death",
+  /* Sem `lead`: a linha que ficava aqui ("O Kyle não consegue fazer isso
      sozinho...") dizia em outras palavras o que os dois cards logo abaixo
      mostram item a item, e a frase que fecha a seção (`impactCompare.closing`)
      repetia a primeira metade dela. Menos texto entre o título e o pedido. */
-  cta: "Quero salvar uma vida agora",
-  seal: "Doação segura · Pix na hora · CNPJ verificado",
+  cta: "I want to save a life now",
+  seal: "Secure donation · Card or PayPal · Verified nonprofit ID",
 };
 
 /**
@@ -49,20 +49,20 @@ const copyDoar = {
  * "Com você", lado a lado, não precisa ser apresentado.
  */
 const impactCompare = {
-  withoutTitle: "Sem ajuda",
+  withoutTitle: "Without help",
   without: [
-    "Animais doentes ficam sem consulta e sem tratamento.",
-    "Casos urgentes esperam por exames e medicação que não chegam.",
-    "Muitos seguem sofrendo, correndo risco de não resistir.",
+    "Sick animals go without a vet visit and without treatment.",
+    "Urgent cases wait for tests and medication that never arrive.",
+    "Many keep suffering, at risk of not making it.",
   ],
-  withTitle: "Com você",
+  withTitle: "With you",
   with: [
-    "Consultas, exames e medicamentos chegam a quem precisa.",
-    "Animais em estado grave recebem socorro e atendimento veterinário.",
-    "Cada doação ajuda a dar uma chance real de sobreviver.",
+    "Vet visits, tests and medicine reach the ones who need them.",
+    "Animals in critical condition get rescue and veterinary care.",
+    "Every donation helps give a real chance of surviving.",
   ],
   closing:
-    "Sua ajuda paga socorro, veterinário, exames e medicação para animais que estão lutando para viver. O Caio não consegue fazer isso sozinho.",
+    "Your help pays for rescue, vet care, tests and medication for animals fighting to live. Kyle cannot do this alone.",
 };
 
 /* ─────────────────────────────────────────────────────────── ícones ──── */
@@ -120,7 +120,7 @@ const IconShield = (p: IconProps) => (
  * `next.config.ts`), o `next/image` passa o `src` adiante sem tocar nele. É
  * comportamento documentado: o prefixo de `basePath` só acontece na URL do
  * otimizador (`/_next/image?url=…`), e sem otimizador não há essa URL para
- * prefixar. Sem este envelope, publicado em `doe.caioprotetor.org/v2`, toda
+ * prefixar. Sem este envelope, publicado em `donate.kylerescuer.org/v2`, toda
  * imagem apontaria para a raiz do domínio - que é outro site (WordPress) - e
  * simplesmente não carregaria.
  *

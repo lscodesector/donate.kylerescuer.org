@@ -21,29 +21,29 @@ import {
 /* ─────────────────────────────────────────────────── conteúdo do bloco ──── */
 
 const copyComoFunciona = {
-  eyebrow: "Como funciona",
-  title: "Três passos, menos de um minuto",
-  seal: "Doação 100% segura",
+  eyebrow: "How it works",
+  title: "Three steps, less than a minute",
+  seal: "100% secure donation",
   steps: [
     {
       icon: "bowl",
-      title: "Você escolhe quanto doar",
-      text: "Escolha um dos valores ou digite o que o seu coração mandar. Não existe valor mínimo.",
+      title: "You choose how much to give",
+      text: "Pick one of the amounts or type whatever your heart says. There is no minimum amount.",
     },
     {
-      icon: "pix",
-      title: "Faz o pagamento via Pix",
-      text: "O código é gerado na hora, sem sair desta página. Pagamento rápido, seguro e direto para o CNPJ da SOS Animal Help.",
+      icon: "card",
+      title: "You pay by card or PayPal",
+      text: "You pay on PayPal's secure screen, with a credit or debit card or with your PayPal balance. No card details are typed on this page.",
     },
-    /* Quem entrega e quem presta contas é a **organização**, não o Caio: ele
+    /* Quem entrega e quem presta contas é a **organização**, não o Kyle: ele
        é quem visita os abrigos e mostra a realidade deles, e a SOS Animal
        Help é quem recebe a doação, faz o repasse e publica o comprovante no
        app. Trocar os dois de lugar num texto que fala de dinheiro é o tipo de
        imprecisão que vira desconfiança. */
     {
       icon: "heart",
-      title: "A SOS Animal Help leva o atendimento até o abrigo",
-      text: "A doação vira consulta, exame, medicação e cirurgia nos abrigos que o Caio acompanha - e a SOS Animal Help publica os comprovantes no app.",
+      title: "SOS Animal Help takes the care to the shelter",
+      text: "The donation turns into vet visits, tests, medication and surgery at the shelters Kyle follows - and SOS Animal Help publishes the receipts in the app.",
     },
   ],
 };
@@ -85,32 +85,18 @@ const IconHeart = (p: IconProps) => (
 );
 
 /**
- * A marca do Pix como ela é distribuída - os quatro braços do losango, em
- * traçado cheio, transcrita do SVG oficial (SVG Repo) para componente: inline
- * ela herda a cor do texto (`currentColor`) e não custa uma requisição.
+ * Cartão de crédito ou débito - o desenho do meio de pagamento que substituiu
+ * o Pix nesta página.
  *
- * O `.svg` de origem morava em `public/` e saiu de lá: servido, ele era um
- * arquivo publicado que nenhuma tela pedia - os dois `path` abaixo são o
- * arquivo inteiro, caractere por caractere.
- *
- * ⚠️ **É a única marca do Pix da página.** Havia um segundo desenho aqui, o
- * `IconPix` - um losango simplificado, redesenhado à mão, que as listas e os
- * selos usavam enquanto o checkout usava este. Dois desenhos diferentes para a
- * mesma marca, na mesma página, e o antigo não era o arquivo oficial. Ele saiu;
- * todo lugar que mostra o Pix aponta para cá.
+ * Traçado, e não a bandeira de ninguém: a página aceita o que o PayPal aceitar,
+ * e desenhar a marca de uma bandeira específica prometeria uma lista que este
+ * projeto não controla.
  */
-const IconPixMark = ({ size = 20, ...rest }: IconProps) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 16 16"
-    fill="currentColor"
-    aria-hidden="true"
-    focusable={false}
-    {...rest}
-  >
-    <path d="M11.917 11.71a2.046 2.046 0 0 1-1.454-.602l-2.1-2.1a.4.4 0 0 0-.551 0l-2.108 2.108a2.044 2.044 0 0 1-1.454.602h-.414l2.66 2.66c.83.83 2.177.83 3.007 0l2.667-2.668h-.253zM4.25 4.282c.55 0 1.066.214 1.454.602l2.108 2.108a.39.39 0 0 0 .552 0l2.1-2.1a2.044 2.044 0 0 1 1.453-.602h.253L9.503 1.623a2.127 2.127 0 0 0-3.007 0l-2.66 2.66h.414z" />
-    <path d="m14.377 6.496-1.612-1.612a.307.307 0 0 1-.114.023h-.733c-.379 0-.75.154-1.017.422l-2.1 2.1a1.005 1.005 0 0 1-1.425 0L5.268 5.32a1.448 1.448 0 0 0-1.018-.422h-.9a.306.306 0 0 1-.109-.021L1.623 6.496c-.83.83-.83 2.177 0 3.008l1.618 1.618a.305.305 0 0 1 .108-.022h.901c.38 0 .75-.153 1.018-.421L7.375 8.57a1.034 1.034 0 0 1 1.426 0l2.1 2.1c.267.268.638.421 1.017.421h.733c.04 0 .079.01.114.024l1.612-1.612c.83-.83.83-2.178 0-3.008z" />
+const IconCard = (p: IconProps) => (
+  <svg {...base(p)}>
+    <rect x="2.5" y="5" width="19" height="14" rx="2.5" />
+    <path d="M2.5 10h19" />
+    <path d="M6 14.5h3" />
   </svg>
 );
 
@@ -241,11 +227,7 @@ function Reveal({
 
 const ICONES = {
   bowl: IconBowl,
-  /* A marca oficial do Pix (ver `IconPixMark`), e não um losango simplificado:
-     no cartão que fala do pagamento, o desenho que a pessoa reconhece do app
-     do banco vale mais que um ícone parecido. O emblema redondo verde continua
-     igual - muda só o traço de dentro. */
-  pix: IconPixMark,
+  card: IconCard,
   heart: IconHeart,
 } as const;
 

@@ -27,15 +27,14 @@ import { openDonationModal } from "@/lib/modais";
 
 /** O bloco de doação: o argumento (o contraste) e o pedido, num botão só. */
 const copyDoar = {
-  eyebrow: "Como ajudar",
-  title:
-    "Cada doação é a diferença entre um animal ter ou não ter uma chance",
-  /* Sem `lead`: a linha que ficava aqui ("O Caio não consegue fazer isso
+  eyebrow: "How to help",
+  title: "The impact of your donation",
+  /* Sem `lead`: a linha que ficava aqui ("O Kyle não consegue fazer isso
      sozinho...") dizia em outras palavras o que os dois cards logo abaixo
      mostram item a item, e a frase que fecha a seção (`impactCompare.closing`)
      repetia a primeira metade dela. Menos texto entre o título e o pedido. */
-  cta: "Quero ajudar agora",
-  seal: "Doação segura · Pix na hora · CNPJ verificado",
+  cta: "I want to help now",
+  seal: "Secure donation · Card or PayPal · Verified nonprofit ID",
 };
 
 /**
@@ -48,19 +47,18 @@ const copyDoar = {
  *
  * O título troca "cada doação" por "todo mês" porque é essa a promessa da
  * página: o problema dos abrigos não é um mês ruim, é a conta que volta em
- * trinta dias. E o selo perde o "Pix na hora" - na recorrência o primeiro Pix
- * é na hora, mas o que a pessoa está contratando é o mandato - e ganha a
- * resposta da única objeção que a mensal cria e a única não: dá para parar.
+ * trinta dias. E o selo troca o meio de pagamento pela resposta da única
+ * objeção que a mensal cria e a única não: dá para parar.
  */
 const copyDoarMensal = {
-  eyebrow: "Como ajudar todo mês",
+  eyebrow: "How to help every month",
   title:
-    "Todo mês a conta volta - e é a doação que se repete que mantém os abrigos de pé",
+    "The bills come back every month - and it is the donation that repeats that keeps the shelters standing",
   /* Não diz a frequência, e a tela que ele abre está travada na mensal - quem
      diz são o eyebrow ("Como ajudar todo mês"), o título e o selo logo abaixo,
      que cercam o botão dos dois lados. */
-  cta: "Faça a diferença",
-  seal: "Doação mensal segura · Cancele quando quiser · CNPJ verificado",
+  cta: "Make a difference",
+  seal: "Secure monthly donation · Cancel anytime · Verified nonprofit ID",
 };
 
 /**
@@ -75,25 +73,25 @@ const copyDoarMensal = {
  * "Com você", lado a lado, não precisa ser apresentado.
  */
 const impactCompare = {
-  withoutTitle: "Sem apoio",
+  withoutTitle: "Without support",
   without: [
-    "A ração acaba antes do fim do mês e os animais passam fome.",
-    "Doenças avançam porque não há dinheiro para tratamento.",
-    "Abrigos fecham as portas e os animais voltam para as ruas.",
+    "Food runs out before the end of the month and the animals go hungry.",
+    "Illnesses get worse because there's no money for treatment.",
+    "Shelters close their doors and the animals end up back on the streets.",
   ],
-  withTitle: "Com você",
+  withTitle: "With you",
   with: [
-    "Nenhum animal dorme com fome ou sem cuidado.",
-    "Tratamentos e cirurgias acontecem quando os animais mais precisam.",
-    "Os abrigos ficam de pé e cada vida tem um lar.",
+    "No animal goes to sleep hungry or uncared for.",
+    "Treatments and surgeries happen exactly when the animals need them most.",
+    "Shelters stay standing and every life has a home.",
   ],
   closing:
-    "Cada doação, por menor que seja, é a diferença entre um animal ter ou não ter uma chance. O Caio não consegue fazer isso sozinho.",
+    "Every donation, no matter how small, is the difference between an animal having a chance or not. Kyle can't do this alone.",
   /* A mesma frase, do lado da mensal: o que ela troca é "por menor que seja"
      por "que se repete" - numa página que pede recorrência, o que fecha o
      argumento não é o tamanho da doação, é ela voltar no mês seguinte. */
   closingMensal:
-    "Uma doação que se repete, por menor que seja, é o que tira o abrigo do improviso do mês que vem. O Caio não consegue fazer isso sozinho.",
+    "A donation that repeats, no matter how small, is what takes a shelter out of next month improvising. Kyle can't do this alone.",
 };
 
 /* ─────────────────────────────────────────────────────────── ícones ──── */
@@ -151,7 +149,7 @@ const IconShield = (p: IconProps) => (
  * `next.config.ts`), o `next/image` passa o `src` adiante sem tocar nele. É
  * comportamento documentado: o prefixo de `basePath` só acontece na URL do
  * otimizador (`/_next/image?url=…`), e sem otimizador não há essa URL para
- * prefixar. Sem este envelope, publicado em `doe.caioprotetor.org/v2`, toda
+ * prefixar. Sem este envelope, publicado em `donate.kylerescuer.org/v2`, toda
  * imagem apontaria para a raiz do domínio - que é outro site (WordPress) - e
  * simplesmente não carregaria.
  *

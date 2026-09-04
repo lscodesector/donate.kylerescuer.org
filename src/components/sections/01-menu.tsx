@@ -149,7 +149,7 @@ const IconShare = (p: IconProps) => (
  * `next.config.ts`), o `next/image` passa o `src` adiante sem tocar nele. É
  * comportamento documentado: o prefixo de `basePath` só acontece na URL do
  * otimizador (`/_next/image?url=…`), e sem otimizador não há essa URL para
- * prefixar. Sem este envelope, publicado em `doe.caioprotetor.org/v2`, toda
+ * prefixar. Sem este envelope, publicado em `donate.kylerescuer.org/v2`, toda
  * imagem apontaria para a raiz do domínio - que é outro site (WordPress) - e
  * simplesmente não carregaria.
  *
@@ -208,11 +208,11 @@ function ShareButton({ className }: { className?: string }) {
        parâmetros de campanha (`utm_*`) de quem a trouxe até aqui colados. */
     const url = `${window.location.origin}${window.location.pathname}`;
     const texto =
-      "O Caio leva ração, remédio e veterinário a mais de 400 animais em cinco abrigos. Dá uma olhada:";
+      "Kyle brings food, medicine and vet care to more than 400 animals across five shelters. Take a look:";
 
     if (navigator.share) {
       try {
-        await navigator.share({ title: "Caio Protetor", text: texto, url });
+        await navigator.share({ title: "Kyle Rescuer", text: texto, url });
         return;
       } catch (erro) {
         if ((erro as Error)?.name === "AbortError") return;
@@ -246,13 +246,13 @@ function ShareButton({ className }: { className?: string }) {
     <button
       type="button"
       onClick={compartilhar}
-      aria-label={copiado ? "Link copiado" : "Compartilhar a campanha"}
-      title="Compartilhar a campanha"
+      aria-label={copiado ? "Link copied" : "Share the campaign"}
+      title="Share the campaign"
       className={className}
     >
       {copiado ? <IconCheck size={18} /> : <IconShare size={18} />}
       <span className="sr-only" aria-live="polite">
-        {copiado ? "Link copiado!" : ""}
+        {copiado ? "Link copied!" : ""}
       </span>
     </button>
   );
@@ -261,7 +261,7 @@ function ShareButton({ className }: { className?: string }) {
 /*
  * O menu da campanha: o mesmo percurso da página, na mesma ordem em que as
  * seções aparecem. São os sete destinos do menu lateral de
- * `doe.caioprotetor.org`, apontando para as âncoras desta página.
+ * `donate.kylerescuer.org`, apontando para as âncoras desta página.
  *
  * ⚠️ Todo item aqui precisa existir como `id` de seção em `app/page.tsx`. Item
  * de menu que rola para lugar nenhum é o defeito que ninguém testa e todo mundo
@@ -269,14 +269,14 @@ function ShareButton({ className }: { className?: string }) {
  * nesta lista depois de as seções saírem.
  */
 const NAV = [
-  { href: "#missao", label: "A história", icon: IconPaw },
-  { href: "#abrigos", label: "Abrigos", icon: IconHome },
-  { href: DOAR_HREF, label: "Doar agora", icon: IconHeart },
-  { href: "#transparencia", label: "Transparência", icon: IconDollar },
-  { href: "#atualizacoes", label: "Atualizações", icon: IconClock },
-  { href: "#depoimentos", label: "Depoimentos", icon: IconUsers },
-  { href: "#duvidas", label: "Dúvidas", icon: IconQuestion },
-  { href: "#documentacao", label: "Canais e documentação", icon: IconFile },
+  { href: "#missao", label: "The Story", icon: IconPaw },
+  { href: "#abrigos", label: "Shelters", icon: IconHome },
+  { href: DOAR_HREF, label: "Donate now", icon: IconHeart },
+  { href: "#transparencia", label: "Transparency", icon: IconDollar },
+  { href: "#atualizacoes", label: "Updates", icon: IconClock },
+  { href: "#depoimentos", label: "Testimonials", icon: IconUsers },
+  { href: "#duvidas", label: "FAQ", icon: IconQuestion },
+  { href: "#documentacao", label: "Channels and paperwork", icon: IconFile },
 ];
 
 export default function Menu() {
@@ -332,7 +332,7 @@ export default function Menu() {
         <button
           type="button"
           onClick={() => setMenuOpen((v) => !v)}
-          aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
           aria-expanded={menuOpen}
           aria-controls="menu-principal"
           className="flex h-[44px] w-[44px] items-center justify-center rounded-sm text-ink-900 transition-colors hover:bg-surface-alt"
@@ -344,7 +344,7 @@ export default function Menu() {
             agora abre com a manchete, que é o que precisa ser lido primeiro. */}
         <Link
           href="#topo"
-          aria-label={`${org.name} - início`}
+          aria-label={`${org.name} - home`}
           className="flex min-w-0 items-center justify-center"
         >
           {/* Só a marca, sem o nome escrito ao lado: a logo já traz o nome no
@@ -417,7 +417,7 @@ export default function Menu() {
 
           <nav
             id="menu-principal"
-            aria-label="Menu principal"
+            aria-label="Main menu"
             className="anim-slide-in-left fixed inset-y-0 left-0 z-50 flex h-[100dvh] w-[min(86vw,340px)] flex-col border-r border-ink-900/10 bg-surface shadow-[8px_0_40px_-12px_rgba(20,17,15,.35)]"
           >
             {/* Topo: a marca e o X, como no exemplo de referência. */}
@@ -425,7 +425,7 @@ export default function Menu() {
               <Link
                 href="#topo"
                 onClick={() => setMenuOpen(false)}
-                aria-label={`${org.name} - início`}
+                aria-label={`${org.name} - home`}
                 className="flex min-w-0 items-center"
               >
                 <Image
@@ -440,7 +440,7 @@ export default function Menu() {
               <button
                 type="button"
                 onClick={() => setMenuOpen(false)}
-                aria-label="Fechar menu"
+                aria-label="Close menu"
                 className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full bg-[#f5f5f5] text-[#6b6b6b] transition-colors hover:bg-ink-900/10"
               >
                 <IconClose size={20} />
@@ -458,7 +458,7 @@ export default function Menu() {
                   {/*
                     A barrinha vermelha que acende na borda esquerda no hover é
                     o detalhe do exemplo que você mandou - lá ela é azul porque
-                    a marca é azul; aqui ela é o vermelho do Caio. Feita com
+                    a marca é azul; aqui ela é o vermelho do Kyle. Feita com
                     `before:`, e não com um `<span>`: é decoração pura e não
                     tem por que existir no DOM para um leitor de tela.
                   */}
@@ -509,7 +509,7 @@ export default function Menu() {
                 className="inline-flex min-h-[46px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-action px-5 text-fs14 font-extrabold uppercase tracking-[0.03em] text-action-ink shadow transition-colors hover:bg-action-hover"
               >
                 <IconPaw size={18} />
-                Quero ajudar todo mês
+                I want to help every month
               </a>
 
               {/* O único destino fora desta página, e por isso ele fica depois
@@ -524,14 +524,14 @@ export default function Menu() {
                 className="inline-flex min-h-[46px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full border-2 border-ink-900/[.12] bg-surface px-5 text-fs15 font-extrabold text-ink-900 transition-colors hover:border-action hover:text-action"
               >
                 <IconHome size={16} className="shrink-0 text-action" />
-                CONHEÇA A SOS ANIMAL HELP
+                GET TO KNOW SOS ANIMAL HELP
                 <IconArrowUpRight size={16} className="shrink-0" />
               </a>
 
               <p className="pt-1 text-fs12 leading-[1.4] text-ink-600">
                 <span className="font-extrabold text-action">{org.name}</span>
                 <br />
-                Levando ajuda a quem não tem voz.
+                Bringing help to those who have no voice.
               </p>
             </div>
           </nav>

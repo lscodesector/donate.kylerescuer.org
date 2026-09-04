@@ -1,0 +1,293 @@
+<!-- Facebook Pixel V7 — DINÂMICO: os pixels vêm da sua API por funil + utm_campaign -->
+<script>
+  (function () {
+    if (window.__ENVIO_PIXEL_INIT__) return;
+    window.__ENVIO_PIXEL_INIT__ = true;
+    console.log("[PIXEL] iniciado");
+
+    // ===== Config por abrigo =====
+    // Para outro abrigo, basta trocar o slug abaixo (ou definir, ANTES deste
+    // script, window.PIXEL_FUNNEL_SLUG = 'slug-do-abrigo'; assim o corpo do
+    // script pode ficar idêntico em todos os forms).
+    // Ponte Laravel (/api/nest-relay/{path} -> 127.0.0.1:3000/api/{path}) em vez de bater
+    // direto em https://track.lusapayments.com, que fica inacessivel quando a rede bloqueia
+    // esse dominio. O host aqui e o do Laravel (APP_URL), NAO o do site de doacao — os
+    // widgets rodam em outra origem (WordPress), entao caminho relativo nao alcancaria a ponte.
+    // Reverter p/ 'https://track.lusapayments.com' quando o bloqueio for resolvido.
+    const API_BASE =
+      window.PIXEL_API_BASE || "https://lusapayments.com/api/nest-relay";
+    const FUNNEL_SLUG = window.PIXEL_FUNNEL_SLUG || "caio-protetor-us"; // <-- ABRIGO deste form
+    const FALLBACK_PIXELS = window.PIXEL_FALLBACK || []; // opcional: pixel(s) se a API falhar
+
+    function getParam(n) {
+      try {
+        return new URL(location.href).searchParams.get(n);
+      } catch (_) {
+        return null;
+      }
+    }
+    function getCookie(name) {
+      try {
+        const m = document.cookie.match(
+          new RegExp("(?:^| )" + name + "=([^;]+)"),
+        );
+        return m ? m[1] : null;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    const fbclid = getParam("fbclid");
+    const base = {
+      fbclid: fbclid || null,
+      fbc: fbclid
+        ? "fb.1." + Math.floor(Date.now() / 1000) + "." + fbclid
+        : null,
+      fbp: getCookie("_fbp"),
+      page_url: location.href,
+      client_user_agent: navigator.userAgent,
+      event_time: Math.floor(Date.now() / 1000),
+    };
+
+    // Loader Pixel
+    !(function (f, b, e, v, n, t, s) {
+      if (f.fbq) return;
+      n = f.fbq = function () {
+        n.callMethod
+          ? n.callMethod.apply(n, arguments)
+          : n.queue.push(arguments);
+      };
+      if (!f._fbq) f._fbq = n;
+      n.push = n;
+      n.loaded = !0;
+      n.version = "2.0";
+      n.queue = [];
+      t = b.createElement(e);
+      t.async = !0;
+      t.src = v;
+      s = b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t, s);
+    })(
+      window,
+      document,
+      "script",
+      "https://connect.facebook.net/en_US/fbevents.js",
+    );
+
+    // ===== Busca dinâmica dos pixels do funil (aplica a regra de utm_campaign no backend) =====
+    const utmCampaign = getParam("utm_campaign") || "";
+    // Sem o '/api/' aqui: a ponte (API_BASE = .../api/nest-relay) ja reinjeta o prefixo
+    // '/api/' do lado do Nest. Final: https://lusapayments.com/api/nest-relay/funnels/<slug>/web-pixels
+    const url =
+      API_BASE.replace(/\/+$/, "") +
+      "/funnels/" +
+      encodeURIComponent(FUNNEL_SLUG) +
+      "/web-pixels?utm_campaign=" +
+      encodeURIComponent(utmCampaign);
+
+    // Promise que resolve quando os pixels foram inicializados. Garante que
+    // PageView/ViewContent/InitiateCheckout só disparem APÓS o fbq('init').
+    const pixelsReady = fetch(url, {
+      method: "GET",
+      headers: { Accept: "application/json" },
+    })
+      .then(function (r) {
+        return r.ok ? r.json() : null;
+      })
+      .then(function (data) {
+        const pixels =
+          data && Array.isArray(data.pixels) && data.pixels.length
+            ? data.pixels
+            : FALLBACK_PIXELS;
+        console.log(
+          "[PIXEL] pixels de",
+          FUNNEL_SLUG,
+          "(utm_campaign=" + (utmCampaign || "—") + "):",
+          pixels,
+        );
+        pixels.forEach(function (id) {
+          try {
+            fbq("init", String(id));
+          } catch (e) {
+            console.error("[PIXEL] init falhou para", id, e);
+          }
+        });
+        return pixels;
+      })
+      .catch(function (err) {
+        console.error("[PIXEL] falha ao buscar pixels; usando fallback", err);
+        FALLBACK_PIXELS.forEach(function (id) {
+          try {
+            fbq("init", String(id));
+          } catch (_) {}
+        });
+        return FALLBACK_PIXELS;
+      });
+
+    function trackWhenReady(eventName, payload) {
+      pixelsReady.then(function () {
+        try {
+          fbq("track", eventName, payload);
+          console.log("[PIXEL] " + eventName + " enviado:", payload);
+        } catch (err) {
+          console.error("[PIXEL] erro fbq " + eventName + ":", err);
+        }
+      });
+    }
+
+    // PageView (após init dos pixels)
+    trackWhenReady("PageView", {
+      content_name: "envio_pixel",
+      content_category: "page_load",
+      ...base,
+    });
+
+    // ViewContent (30%)
+    let VC_SENT = false;
+    function checkVC() {
+      if (VC_SENT) return;
+      const el = document.documentElement;
+      const ratio = window.scrollY / (el.scrollHeight - window.innerHeight);
+
+      if (ratio >= 0.3) {
+        VC_SENT = true;
+        trackWhenReady("ViewContent", {
+          content_name: "envio_pixel_view",
+          content_category: "pix",
+          ...base,
+        });
+      }
+    }
+
+    window.addEventListener("scroll", checkVC, { passive: true });
+    setTimeout(checkVC, 200);
+
+    // InitiateCheckout – dispara após gerar o QR Code (etapa stepPix), quando a
+    // cobrança já foi criada. Nesse momento o amount_cents reflete o valor real
+    // da cobrança (com o tip "Turbinar doação" somado, se marcado).
+    // Sem PII (name/phone/email saem do payload).
+    let IC_SENT = false;
+    function triggerIC(detail) {
+      if (IC_SENT) return;
+
+      // O `detail` do evento é o snapshot do valor no momento do clique
+      // (amount_cents já com o tip somado). Preferimos ele; o getter global
+      // fica como reserva caso o evento venha sem o valor.
+      const fromGetter =
+        (typeof window.getPixCopyPayload === "function"
+          ? window.getPixCopyPayload()
+          : null) || null;
+      const extraRaw =
+        detail && typeof detail === "object" && detail.amount_cents != null
+          ? detail
+          : fromGetter || detail || {};
+
+      const {
+        name,
+        first_name,
+        second_name,
+        last_name,
+        phone,
+        email,
+        event_name,
+        action,
+        ...extra
+      } = extraRaw;
+
+      if (extra.amount_cents && extra.amount_cents < 1) {
+        // TESTE: piso de R$ 0,01 (produção: 100 = R$ 1,00)
+        console.warn(
+          "[PIXEL] IC não enviado: valor abaixo do mínimo",
+          extra.amount_cents,
+        );
+        return;
+      }
+
+      IC_SENT = true;
+
+      // value (em BRL) é exigido pelo Facebook para conversion tracking.
+      const valueBRL = (extra.amount_cents || 0) / 100;
+
+      const payloadIC = {
+        content_name: "envio_pixel",
+        content_category: "pix",
+        content_type: "donation",
+        num_items: 1,
+        contents: [{ id: "pix_donation", quantity: 1 }],
+        currency: "BRL",
+        value: Number(valueBRL.toFixed(2)),
+        triggered_by: "stepPix_qrcode_gerado",
+        ...extra,
+        ...base,
+      };
+
+      trackWhenReady("InitiateCheckout", payloadIC);
+    }
+
+    // Trigger via CustomEvent (mesmo contexto ou parent.document.dispatchEvent)
+    document.addEventListener("pixCopy:released", function (ev) {
+      try {
+        const d = ev && ev.detail ? ev.detail : null;
+        if (!d) return;
+        triggerIC(d);
+      } catch (err) {
+        console.error("[PIXEL] erro ao tentar enviar IC:", err);
+      }
+    });
+
+    // Captura eventos vindos do iframe via postMessage (cross-frame fallback)
+    window.addEventListener("message", function (ev) {
+      if (!ev.data || ev.data.type !== "pixCopy:released") return;
+      try {
+        triggerIC(ev.data.detail || {});
+      } catch (err) {
+        console.error("[PIXEL] erro IC via postMessage:", err);
+      }
+    });
+
+    // Fluxo US (GiveWP): o forms1.html dispara `codex:fake-donate-click` (IC) ao
+    // seguir pro pagamento — mesmo gatilho do IC server-side (nest.html). O detail
+    // traz o buildPayload completo (amount_cents, currency:'USD', utm_*), então
+    // moeda/valor saem dinâmicos via `...extra`. PII é removida no triggerIC.
+    function icFromDonateClick(detail) {
+      const d = detail || {};
+      if (d.event_name && String(d.event_name) !== "InitiateCheckout") return;
+      triggerIC(d);
+    }
+    document.addEventListener("codex:fake-donate-click", function (ev) {
+      try {
+        icFromDonateClick(ev && ev.detail ? ev.detail : {});
+      } catch (err) {
+        console.error("[PIXEL] erro IC (codex:fake-donate-click):", err);
+      }
+    });
+    window.addEventListener("message", function (ev) {
+      if (!ev.data || ev.data.type !== "codex:fake-donate-click") return;
+      try {
+        icFromDonateClick(ev.data.detail || {});
+      } catch (err) {
+        console.error(
+          "[PIXEL] erro IC (codex:fake-donate-click via postMessage):",
+          err,
+        );
+      }
+    });
+
+    console.log(
+      "[PIXEL] listeners IC ligados: pixCopy:released (Pix) + codex:fake-donate-click (US/GiveWP)",
+    );
+  })();
+</script>
+
+<!--
+  Noscript: fallback para navegadores SEM JavaScript. Não é dinâmico (sem JS não
+  dá para consultar a API), então usa o pixel principal do Kyle Rescuer.
+-->
+<noscript>
+  <img
+    height="1"
+    width="1"
+    style="display: none"
+    src="https://www.facebook.com/tr?id=1329196859189821&ev=PageView&noscript=1"
+  />
+</noscript>

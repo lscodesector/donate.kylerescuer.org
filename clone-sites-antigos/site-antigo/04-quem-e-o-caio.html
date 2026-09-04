@@ -1,0 +1,266 @@
+<!-- KYLE RESCUER US | 3 - WHO IS KYLE -->
+<style>
+  .cp-story-section {
+    width: 100%; margin: 0;
+    background: #F4F4F4;
+    font-family: "Nunito", sans-serif;
+  }
+
+  .cp-story-section .ln-copy { color: #6b6b6b; }
+  .ln-story-caption { display: none !important; }
+
+  .ln-story-carousel {
+    position: relative; overflow: hidden;
+    border-radius: 6px; margin-bottom: 20px;
+    background: #0a0d12; aspect-ratio: 1/1;
+    user-select: none; touch-action: pan-y;
+  }
+  .ln-story-track {
+    display: flex; height: 100%;
+    transition: transform 0.38s cubic-bezier(0.25,0.46,0.45,0.94);
+    will-change: transform;
+  }
+  .ln-story-slide {
+    min-width: 100%; height: 100%; flex: 0 0 100%; position: relative;
+    background: linear-gradient(135deg, #1a2d44, #0f1a28);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ln-story-slide img {
+    width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; pointer-events: none;
+  }
+  .ln-story-slide-num {
+    position: absolute; top: 12px; right: 12px; z-index: 2;
+    background: rgba(0,0,0,0.45); color: rgba(255,255,255,0.7);
+    font-size: 0.68rem; font-weight: 700; padding: 4px 8px; border-radius: 999px;
+    backdrop-filter: blur(8px); font-family: "Nunito", sans-serif;
+  }
+  .ln-story-caption {
+    position: absolute; bottom: 0; left: 0; right: 0; z-index: 2;
+    background: linear-gradient(to top, rgba(10,13,20,0.7), transparent);
+    padding: 14px 14px 10px; color: rgba(255,255,255,0.75);
+    font-size: 0.8rem; line-height: 1.45; font-weight: 500;
+    font-family: "Nunito", sans-serif;
+  }
+  .ln-story-btn {
+    position: absolute; top: 50%; transform: translateY(-50%); z-index: 3;
+    width: 36px; height: 36px; border-radius: 6px; border: 0;
+    background: rgba(255,255,255,0.14); backdrop-filter: blur(8px);
+    color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s; font-size: 1.4rem; line-height: 1;
+  }
+  .ln-story-btn:hover { background: rgba(255,255,255,0.28); }
+  .ln-story-btn--prev { left: 10px; }
+  .ln-story-btn--next { right: 10px; }
+  .ln-story-dots {
+    display: flex; gap: 6px; justify-content: center; margin-top: 10px;
+  }
+  .ln-story-dot {
+    width: 7px; height: 7px; border-radius: 999px;
+    background: rgba(0,0,0,0.18); border: 0; padding: 0; cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .ln-story-dot.active { background: #BF0521; transform: scale(1.2); }
+
+  .cp-alert-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 14px; border-radius: 5px;
+    background: #fff1f1; border: 1px solid rgba(232,74,74,0.2);
+    color: #c0392b; font-size: 0.82rem; font-weight: 800; margin-bottom: 14px;
+    font-family: "Nunito", sans-serif;
+  }
+
+  .cp-pull-quote {
+    border-left: 3px solid #f3b639; padding: 12px 16px; margin: 16px 0;
+    background: rgba(243,182,57,0.05); border-radius: 0 5px 5px 0;
+    font-family: "Nunito", sans-serif;
+    font-size: 1.05rem; line-height: 1.55; color: #9B1B2D; font-style: italic;
+    font-weight: 700;
+  }
+</style>
+
+<section class="ln-section cp-story-section ln-section-anchor" id="story">
+  <div class="ln-card">
+    <div class="ln-card-inner">
+
+      <div class="ln-section-title">
+        <div class="ln-section-icon" style="background:rgba(200,16,46,0.08)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#BF0521" stroke-width="2">
+            <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.58-7 8-7s8 3 8 7"/>
+          </svg>
+        </div>
+        <span>Who is Kyle?</span>
+      </div>
+
+      <!-- Carousel com drag em tempo real -->
+      <div class="ln-story-carousel" id="cpStoryCarousel">
+        <div class="ln-story-track" id="cpStoryTrack">
+
+          <div class="ln-story-slide">
+            <img src="https://donate.kylerescuer.org/wp-content/uploads/2026/06/quem-e-o-caio-1.webp" alt="Kyle Rescuer · photo 1" loading="lazy">
+            <span class="ln-story-slide-num">1 / 6</span>
+            <div class="ln-story-caption">One rescuer. One mission. 400 lives that depend on your help.</div>
+          </div>
+
+          <div class="ln-story-slide">
+            <img src="https://donate.kylerescuer.org/wp-content/uploads/2026/06/quem-e-o-caio-2.webp" alt="Kyle Rescuer · photo 2" loading="lazy">
+            <span class="ln-story-slide-num">2 / 6</span>
+            <div class="ln-story-caption">Kyle with the animals he cares for every day &middot; food, medicine and love</div>
+          </div>
+
+          <div class="ln-story-slide">
+            <img src="https://donate.kylerescuer.org/wp-content/uploads/2026/06/quem-e-o-caio-3.webp" alt="Kyle Rescuer · photo 3" loading="lazy">
+            <span class="ln-story-slide-num">3 / 6</span>
+            <div class="ln-story-caption">Every rescue is a second chance at life</div>
+          </div>
+
+          <div class="ln-story-slide">
+            <img src="https://donate.kylerescuer.org/wp-content/uploads/2026/06/quem-e-o-caio-4.webp" alt="Kyle Rescuer · photo 4" loading="lazy">
+            <span class="ln-story-slide-num">4 / 6</span>
+            <div class="ln-story-caption">Shelters at their breaking point &middot; animals waiting for urgent care</div>
+          </div>
+
+          <div class="ln-story-slide">
+            <img src="https://donate.kylerescuer.org/wp-content/uploads/2026/06/quem-e-o-caio-5.webp" alt="Kyle Rescuer · photo 5" loading="lazy">
+            <span class="ln-story-slide-num">5 / 6</span>
+            <div class="ln-story-caption">Food, medicine and vet care &middot; every donation goes straight to the animals</div>
+          </div>
+
+          <div class="ln-story-slide">
+            <img src="https://donate.kylerescuer.org/wp-content/uploads/2026/06/quem-e-o-caio-6.webp" alt="Kyle Rescuer · photo 6" loading="lazy">
+            <span class="ln-story-slide-num">6 / 6</span>
+            <div class="ln-story-caption">400+ animals who would have no other chance without your support</div>
+          </div>
+
+        </div>
+
+        <button class="ln-story-btn ln-story-btn--prev" id="cpSlidePrev" aria-label="Previous photo">&#8249;</button>
+        <button class="ln-story-btn ln-story-btn--next" id="cpSlideNext" aria-label="Next photo">&#8250;</button>
+      </div>
+
+      <div class="ln-story-dots" id="cpSlideDots">
+        <button class="ln-story-dot active" aria-label="Photo 1"></button>
+        <button class="ln-story-dot" aria-label="Photo 2"></button>
+        <button class="ln-story-dot" aria-label="Photo 3"></button>
+        <button class="ln-story-dot" aria-label="Photo 4"></button>
+        <button class="ln-story-dot" aria-label="Photo 5"></button>
+        <button class="ln-story-dot" aria-label="Photo 6"></button>
+      </div>
+
+      <div class="ln-copy">
+        <p></p>
+        <p>My name is <strong>Kyle, I'm an animal rescuer</strong>, and I make sure help reaches shelters caring for animals in critical condition.</p>
+        <p>Through <strong>SOS Animal Help</strong>, I visit shelters that are <strong>at their breaking point</strong>, see firsthand what rescuers are up against, and bring financial support for food, medicine, vet care and urgent needs, <strong>so these animals get the chance to keep living.</strong></p>
+      </div>
+
+      <blockquote class="cp-pull-quote">
+        <strong>Hunger and debt:</strong> in recent months, donations have dropped sharply and the situation has gotten worse. <strong>22 lives have already been lost</strong>, and other animals are still sick, waiting for urgent care.
+      </blockquote>
+
+      <div class="ln-copy">
+
+        <p>Even facing so much hardship, I can't turn my back. If we don't help now, many of these animals will keep suffering <strong>with no help, no food and no one to look out for them</strong>.</p>
+        <p><strong>Abandoning these animals is not an option...</strong></p>
+      </div>
+
+
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var track = document.getElementById("cpStoryTrack");
+  var dotsEl = document.getElementById("cpSlideDots");
+  var carousel = document.getElementById("cpStoryCarousel");
+  var prev = document.getElementById("cpSlidePrev");
+  var next = document.getElementById("cpSlideNext");
+  if (!track) return;
+
+  var total = track.children.length; // 7 slides reais
+  // Clona o primeiro slide ao final para scroll infinito para frente
+  track.appendChild(track.children[0].cloneNode(true));
+
+  var cur = 0, jumping = false;
+  var dots = dotsEl ? Array.from(dotsEl.querySelectorAll(".ln-story-dot")) : [];
+  var timer;
+  var TRANS = 400;
+
+  function setPos(idx, animated) {
+    if (!animated) { track.style.transition = "none"; }
+    track.style.transform = "translateX(-" + (idx * 100) + "%)";
+    if (!animated) { track.getBoundingClientRect(); track.style.transition = ""; }
+  }
+  function setDots(idx) {
+    dots.forEach(function(d, i){ d.classList.toggle("active", i === idx); });
+  }
+
+  function goNext() {
+    if (jumping) return;
+    if (cur === total - 1) {
+      jumping = true;
+      setPos(total, true);
+      setDots(0);
+      setTimeout(function(){
+        setPos(0, false);
+        cur = 0;
+        jumping = false;
+      }, TRANS + 30);
+    } else {
+      cur++;
+      setPos(cur, true);
+      setDots(cur);
+    }
+  }
+  function goPrev() {
+    if (jumping) return;
+    cur = (cur - 1 + total) % total;
+    setPos(cur, true);
+    setDots(cur);
+  }
+  function jumpTo(idx) {
+    if (jumping) return;
+    cur = idx;
+    setPos(cur, true);
+    setDots(cur);
+  }
+  function resetTimer() {
+    clearInterval(timer);
+    timer = setInterval(goNext, 4500);
+  }
+
+  if (prev) prev.addEventListener("click", function(){ goPrev(); resetTimer(); });
+  if (next) next.addEventListener("click", function(){ goNext(); resetTimer(); });
+  dots.forEach(function(d, i){ d.addEventListener("click", function(){ jumpTo(i); resetTimer(); }); });
+
+  if (carousel) {
+    var dragging = false, dragStartX = 0;
+    carousel.addEventListener("pointerdown", function(e){
+      if (e.target.closest('.ln-story-btn')) return;
+      dragging = true; dragStartX = e.clientX;
+      track.style.transition = "none"; clearInterval(timer);
+      carousel.setPointerCapture(e.pointerId);
+    });
+    carousel.addEventListener("pointermove", function(e){
+      if (!dragging) return;
+      var diff = e.clientX - dragStartX;
+      track.style.transform = "translateX(calc(-" + cur * 100 + "% + " + diff + "px))";
+    });
+    carousel.addEventListener("pointerup", function(e){
+      if (!dragging) return; dragging = false;
+      track.style.transition = "";
+      var diff = dragStartX - e.clientX;
+      if (diff > 44) goNext();
+      else if (diff < -44) goPrev();
+      else setPos(cur, true);
+      resetTimer();
+    });
+    carousel.addEventListener("pointercancel", function(){
+      if (!dragging) return; dragging = false;
+      track.style.transition = "";
+      setPos(cur, true); resetTimer();
+    });
+  }
+
+  resetTimer();
+})();
+</script>

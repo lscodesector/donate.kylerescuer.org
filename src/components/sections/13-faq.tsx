@@ -9,8 +9,7 @@ import {
   type ReactNode,
   type SVGProps,
 } from "react";
-import { org, whatsappWith } from "@/lib/config";
-import { useShelterPhone } from "@/lib/hooks/use-shelter-phone";
+import { useShelterEmail } from "@/lib/hooks/use-shelter-phone";
 
 /**
  * ╔══════════════════════════════════════════════════════════════════════╗
@@ -25,40 +24,40 @@ import { useShelterPhone } from "@/lib/hooks/use-shelter-phone";
 /* ─────────────────────────────────────────────────── conteúdo do bloco ──── */
 
 const copyFaq = {
-  eyebrow: "Dúvidas frequentes",
-  title: "Perguntas e respostas",
-  lead: "Tire suas dúvidas sobre a campanha e sobre as doações.",
-  help: "Não achou o que procurava?",
-  ctaWhatsapp: "Falar no WhatsApp",
+  eyebrow: "Frequently asked questions",
+  title: "Questions and answers",
+  lead: "Clear up your doubts about the campaign and about the donations.",
+  help: "Did not find what you were looking for?",
+  ctaEmail: "Email us",
 };
 
 /**
  * As dúvidas - **cinco, e só cinco**.
  *
- * São as cinco perguntas da campanha do Caio, com as mesmas respostas.
+ * São as cinco perguntas da campanha do Kyle, com as mesmas respostas.
  *
  * ⚠️ Se for acrescentar uma pergunta, tire outra. Cinco é o limite acordado.
  */
 const faq = [
   {
-    q: "A doação é segura?",
-    a: "Sim. Os pagamentos são processados com segurança via Pix, um dos métodos de pagamento mais confiáveis do Brasil, com criptografia de ponta a ponta. Nenhum dado bancário é armazenado neste site.",
+    q: "Is my donation secure?",
+    a: "Yes. Payments are processed by PayPal on their own encrypted screen - with a credit or debit card, or with your PayPal balance. No card details are typed on this site or stored by us.",
   },
   {
-    q: "Existe valor mínimo?",
-    a: "Não. Qualquer valor é bem-vindo. Toda ajuda mantém vivas as mais de 400 vidas que dependem do Caio.",
+    q: "Is there a minimum amount?",
+    a: "No. Any amount is welcome. All help keeps alive the more than 400 lives that depend on Kyle.",
   },
   {
-    q: "Para onde vai o dinheiro exatamente?",
-    a: "Direto para os cuidados dos animais: ração, resgates, tratamento veterinário, medicamentos e manutenção dos abrigos. O Caio publica comprovantes mensais no Instagram.",
+    q: "Where exactly does the money go?",
+    a: "Straight into caring for the animals: food, rescues, veterinary treatment, medicine and keeping the shelters running. Kyle posts monthly receipts on Instagram.",
   },
   {
-    q: "Quem é a SOS Animal Help?",
-    a: "Organização brasileira de proteção animal que apoia protetores independentes como o Caio. É ela quem recebe as doações e faz o repasse com rastreabilidade, sob o CNPJ 63.153.881/0001-09.",
+    q: "Who is SOS Animal Help?",
+    a: "A Brazilian animal protection organization that supports independent rescuers like Kyle. It is the one that receives the donations and passes them on with full traceability, under EIN 41-4770760.",
   },
   {
-    q: "Vou receber um comprovante da minha doação?",
-    a: "Sim. Assim que o Pix é confirmado, o comprovante fica disponível automaticamente no aplicativo do seu banco.",
+    q: "Will I get a receipt for my donation?",
+    a: "Yes. PayPal emails you a receipt as soon as the payment goes through, and it stays in your PayPal activity.",
   },
 ] as const;
 
@@ -88,17 +87,10 @@ const IconChevron = (p: IconProps) => (
   </svg>
 );
 
-const IconWhatsApp = ({ size = 28, ...rest }: IconProps) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    aria-hidden="true"
-    focusable={false}
-    {...rest}
-  >
-    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.65-1.24-1.46-1.38-1.71-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.13-.14.17-.24.25-.41.09-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.23.24-.86.84-.86 2.05s.88 2.38 1 2.54c.13.17 1.74 2.66 4.21 3.73.59.25 1.05.4 1.4.52.59.19 1.13.16 1.55.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29Z" />
+const IconMail = (p: IconProps) => (
+  <svg {...base(p)}>
+    <rect x="2.8" y="5" width="18.4" height="14" rx="2" />
+    <path d="m3.4 6.6 8.6 6 8.6-6" />
   </svg>
 );
 
@@ -292,8 +284,7 @@ function SectionHead({
  * fantasma saiu e a seta é o único elemento à direita.
  */
 export default function Faq() {
-  const phone = useShelterPhone();
-  const whatsappHref = whatsappWith(org.whatsappMessage, phone);
+  const email = useShelterEmail();
 
   return (
     <section id="duvidas" className="py-[clamp(2.5rem,6vh,4.5rem)]">
@@ -329,18 +320,16 @@ export default function Faq() {
 
         {/* Quem chega ao fim da lista sem achar a resposta não fica num beco
             sem saída. É o único link para fora desta seção, e ele vai para o
-            mesmo WhatsApp que a última pergunta cita - o botão flutuante saiu
+            mesmo e-mail que a última pergunta cita - o botão flutuante saiu
             da página, então este é o caminho de contato no meio dela. */}
         <Reveal delay={1} className="flex flex-col items-center gap-3 pt-2 text-center">
           <p className="text-fs15 text-ink-600">{copyFaq.help}</p>
           <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex min-h-[52px] items-center gap-2 whitespace-nowrap rounded-full bg-[#25D366] px-8 text-fs15 font-extrabold text-white shadow transition-[filter] hover:brightness-95"
+            href={`mailto:${email}`}
+            className="inline-flex min-h-[52px] items-center gap-2 whitespace-nowrap rounded-full bg-donate px-8 text-fs15 font-extrabold text-donate-ink shadow transition-colors hover:bg-donate-hover"
           >
-            <IconWhatsApp size={21} />
-            {copyFaq.ctaWhatsapp}
+            <IconMail size={21} />
+            {copyFaq.ctaEmail}
           </a>
         </Reveal>
       </div>

@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { CheckoutValor } from "./CheckoutValor";
 
 export const metadata: Metadata = {
-  title: "Finalizar doação | Caio Protetor",
+  title: "Complete your donation | Kyle Rescuer",
   robots: { index: false, follow: false },
 };
 
@@ -11,8 +11,9 @@ export const metadata: Metadata = {
  * O invólucro estático de `/doar/valor`.
  *
  * O valor da doação vem na query (`?cents=…`), e query não existe em build:
- * o HTML desta rota é um só, e é o navegador que lê o número e monta o Pix
- * (ver `CheckoutValor`). Por isso a página é apenas este casco - ele existe
+ * o HTML desta rota é um só, e é o navegador que lê o número e monta os
+ * botões de pagamento (ver `CheckoutValor`). Por isso a página é apenas este
+ * casco - ele existe
  * para carregar o `metadata`, que Client Component não pode exportar, e para
  * abrir o `Suspense` que `useSearchParams` exige na renderização estática.
  *

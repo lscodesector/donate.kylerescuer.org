@@ -10,7 +10,7 @@ import {
   type ReactNode,
   type SVGProps,
 } from "react";
-import { formatBRL } from "@/lib/format";
+import { formatUSDCurto } from "@/lib/format";
 
 /**
  * ╔══════════════════════════════════════════════════════════════════════╗
@@ -18,7 +18,7 @@ import { formatBRL } from "@/lib/format";
  * ╚══════════════════════════════════════════════════════════════════════╝
  *
  * Bloco isolado: a conta mensal, os números da rede, a contagem animada e a
- * cabeça de seção moram aqui. De fora entra só `formatBRL`, que é a mesma
+ * cabeça de seção moram aqui. De fora entra só `formatUSDCurto`, que é a mesma
  * formatação de dinheiro do checkout - dois formatos de real na mesma página
  * é o tipo de detalhe que faz a pessoa reler o valor.
  */
@@ -26,31 +26,34 @@ import { formatBRL } from "@/lib/format";
 /* ─────────────────────────────────────────────────── conteúdo do bloco ──── */
 
 const copyTransparencia = {
-  eyebrow: "Transparência",
-  title: "Para onde vai cada real",
-  lead: "Manter mais de 400 animais seguros exige alimentação, atendimento veterinário e uma estrutura que funciona todos os dias.",
-  costsCaption: "Custos mensais dos abrigos que o Caio Protetor acompanha",
-  totalLabel: "Total necessário por mês",
+  eyebrow: "Transparency",
+  title: "Full transparency",
+  lead: "See where every dollar raised in the campaign goes:",
+  costsCaption: "Monthly costs",
+  totalLabel: "Total needed",
 };
 
 /**
  * ⚠️ CONFERIR ANTES DE PUBLICAR ⚠️
  *
- * A conta mensal dos abrigos, em reais - os cinco itens da tabela
- * "Custos mensais" da campanha, com os mesmos valores. A soma dá **R$ 58.000**,
- * que é a meta que o vídeo fala em voz alta.
+ * A conta mensal dos abrigos, em dólares - os cinco itens da tabela
+ * "Monthly costs" da campanha em produção, com os mesmos valores. A soma dá
+ * **$48,587**.
+ *
+ * ⚠️ Ela **não** é a meta: a meta são os $50.000 redondos de `campaign.goal`.
+ * A folga entre os dois é de propósito e está anotada lá.
  *
  * O total é somado a partir dos itens (`monthlyCostsTotal`), então a linha final
- * nunca fica fora de sincronia com a lista. **Número em reais só continua
+ * nunca fica fora de sincronia com a lista. **Número em dinheiro só continua
  * verdadeiro se alguém revisar.**
  */
 const monthlyCosts = {
   items: [
-    { label: "Ração para os animais", cents: 1_740_000, dot: "bg-action" },
-    { label: "Consultas e cirurgias", cents: 2_030_000, dot: "bg-warning" },
-    { label: "Aluguel dos abrigos", cents: 1_160_000, dot: "bg-donate" },
-    { label: "Medicamentos", cents: 580_000, dot: "bg-progress" },
-    { label: "Luz, água e estrutura", cents: 290_000, dot: "bg-ink-300" },
+    { label: "Food for the animals", cents: 1_421_300, dot: "bg-action" },
+    { label: "Vet visits and surgeries", cents: 1_674_200, dot: "bg-warning" },
+    { label: "Shelter rent", cents: 984_500, dot: "bg-donate" },
+    { label: "Medication", cents: 512_700, dot: "bg-progress" },
+    { label: "Utilities and upkeep", cents: 266_000, dot: "bg-ink-300" },
   ],
 };
 
@@ -79,22 +82,22 @@ const impactNumbers = [
     prefix: "+",
     value: 400,
     suffix: "",
-    label: "vidas acolhidas",
-    note: "Animais nos abrigos que o Caio acompanha.",
+    label: "lives sheltered",
+    note: "Animals in the shelters Kyle follows.",
   },
   {
     prefix: "",
     value: 5,
     suffix: "",
-    label: "abrigos apoiados",
-    note: "Cada um com nome e endereço abertos.",
+    label: "shelters supported",
+    note: "Each one with its name and address in the open.",
   },
   {
     prefix: "",
     value: 4,
     suffix: "",
-    label: "estados alcançados",
-    note: "São Paulo, Minas Gerais, Bahia e Espírito Santo.",
+    label: "states reached",
+    note: "São Paulo, Minas Gerais, Bahia and Espírito Santo.",
   },
 ] as const;
 
@@ -390,7 +393,7 @@ function CountUp({
     // treme na horizontal durante a contagem inteira.
     <span ref={ref} className={`tabular-nums ${className}`}>
       {prefix}
-      {display.toLocaleString("pt-BR")}
+      {display.toLocaleString("en-US")}
       {suffix}
     </span>
   );
@@ -520,7 +523,7 @@ export default function Transparencia() {
                     </span>
                   </th>
                   <td className="whitespace-nowrap px-4 py-3 text-right text-fs14 font-extrabold tabular-nums text-ink-900">
-                    {formatBRL(item.cents)}
+                    {formatUSDCurto(item.cents)}
                   </td>
                 </tr>
               ))}
@@ -530,7 +533,7 @@ export default function Transparencia() {
                   {copyTransparencia.totalLabel}
                 </th>
                 <td className="whitespace-nowrap px-4 py-4 text-right text-[clamp(0.93rem,0.837rem+0.372vw,1.163rem)] font-extrabold tabular-nums text-action">
-                  {formatBRL(monthlyCostsTotal)}
+                  {formatUSDCurto(monthlyCostsTotal)}
                 </td>
               </tr>
             </tbody>

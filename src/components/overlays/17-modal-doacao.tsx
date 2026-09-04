@@ -14,10 +14,10 @@ import {
   testAmount,
 } from "@/lib/config";
 import {
-  centsFromBRL,
-  formatBRL,
-  formatBRLCurto,
-  maskBRL,
+  centsFromUSD,
+  formatUSD,
+  formatUSDCurto,
+  maskUSD,
 } from "@/lib/format";
 import {
   DONATION_MODAL_EVENT,
@@ -213,7 +213,7 @@ export default function ModalDoacao() {
   const modoTeste = isLocalhost();
   const valores = modoTeste ? [testAmount, ...escada] : escada;
 
-  const cents = centsFromBRL(valor);
+  const cents = centsFromUSD(valor);
 
   /*
    * As duas frequências têm piso no campo de valor livre - a grade já começa
@@ -281,7 +281,7 @@ export default function ModalDoacao() {
 
   /*
    * A aba escolhida é uma faixa vermelha cheia, com o brilho de baixo que o
-   * checkout de `doe.caioprotetor.org` usa (`0 2px 8px` do próprio vermelho a
+   * checkout de `donate.kylerescuer.org` usa (`0 2px 8px` do próprio vermelho a
    * 35%); a outra fica em contorno frio. Raio de 8px, como lá.
    */
   const aba = (destino: Freq) =>
@@ -349,7 +349,7 @@ export default function ModalDoacao() {
                 id="doacao-titulo"
                 className="text-fs17 font-extrabold leading-tight text-cp-titulo"
               >
-                Qual valor deseja doar?
+                How much would you like to give?
               </h2>
             </div>
           </div>
@@ -359,7 +359,7 @@ export default function ModalDoacao() {
             ref={fecharRef}
             type="button"
             onClick={fechar}
-            aria-label="Fechar"
+            aria-label="Close"
             className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full bg-[#f5f5f5] text-[#6b6b6b] transition-colors hover:bg-ink-900/10"
           >
             <IconClose size={18} />
@@ -395,12 +395,12 @@ export default function ModalDoacao() {
               selecionar. Ver `DonationIntent.somenteMensal`. */}
           {somenteMensal ? (
             <p className={`${aba("mensal")} mt-[clamp(0.625rem,1.9vh,1rem)]`}>
-              Doação Mensal
+              Monthly donation
             </p>
           ) : (
             <div
               role="tablist"
-              aria-label="Frequência da doação"
+              aria-label="Donation frequency"
               className="mt-[clamp(0.625rem,1.9vh,1rem)] grid grid-cols-2 gap-2"
             >
               <button
@@ -413,7 +413,7 @@ export default function ModalDoacao() {
                 }}
                 className={aba("unica")}
               >
-                Doação Única
+                One-time donation
               </button>
 
               <button
@@ -426,7 +426,7 @@ export default function ModalDoacao() {
                 }}
                 className={aba("mensal")}
               >
-                Doação Mensal
+                Monthly donation
               </button>
             </div>
           )}
@@ -444,9 +444,9 @@ export default function ModalDoacao() {
                   key={amount.cents}
                   type="button"
                   onClick={() => {
-                    /* `maskBRL` para o campo receber o número no mesmo formato
+                    /* `maskUSD` para o campo receber o número no mesmo formato
                        em que ele seria digitado - "1.000" e não "1000". */
-                    setValor(maskBRL(String(amount.cents / 100)));
+                    setValor(maskUSD(String(amount.cents / 100)));
                     setMostrarMinimo(false);
                   }}
                   /* Cartão do original: 48px de altura, cantos de 10px, borda
@@ -470,16 +470,16 @@ export default function ModalDoacao() {
                   */}
                   {amount.popular && (
                     <span className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-[4px] bg-[#f5a623] px-1.5 py-[3px] text-center text-fs9 font-bold text-[#181818]">
-                      Mais escolhido
+                      Most chosen
                     </span>
                   )}
                   {/* Só o número. O "/mês" que ficava embaixo do valor na aba
                       mensal saiu: a aba já diz a frequência, e a repetição
                       dentro de cada um dos nove cartões só engordava a grade. */}
-                  {formatBRLCurto(amount.cents).replace(/\s/g, " ")}
+                  {formatUSDCurto(amount.cents).replace(/\s/g, " ")}
                   {amount.teste && (
                     <span className="block text-fs10 font-extrabold uppercase tracking-[0.06em] text-ink-300">
-                      teste
+                      test
                     </span>
                   )}
                 </button>
@@ -488,7 +488,7 @@ export default function ModalDoacao() {
           </div>
 
           <label className="mt-[clamp(0.75rem,2.2vh,1.25rem)] block text-fs14 font-semibold text-[#404048]">
-            Ou o que o seu coração mandar ❤️:
+            Or whatever your heart says ❤️:
             <div
               className={`mt-2 flex overflow-hidden rounded-[10px] border ${
                 mostrarMinimo
@@ -505,7 +505,7 @@ export default function ModalDoacao() {
                 inputMode="decimal"
                 value={valor}
                 onChange={(e) => {
-                  setValor(maskBRL(e.target.value).slice(0, 12));
+                  setValor(maskUSD(e.target.value).slice(0, 12));
                   setMostrarMinimo(false);
                 }}
                 /* No `blur` além do clique em Continuar: descobrir o mínimo só ao
@@ -513,7 +513,7 @@ export default function ModalDoacao() {
                    valor. */
                 onBlur={() => setMostrarMinimo(abaixoDoMinimo)}
                 aria-invalid={mostrarMinimo}
-                placeholder="Valor livre"
+                placeholder="Any amount"
                 /* `text-[16px]` fixos, fora da escala fluida: abaixo disso o
                    Safari do iPhone dá zoom ao focar o campo - ver o mesmo
                    cuidado nos campos do `CheckoutModal`. */
@@ -522,8 +522,8 @@ export default function ModalDoacao() {
             </div>
             {mostrarMinimo && (
               <span className="mt-1.5 block text-fs12 font-semibold text-error">
-                O valor mínimo para {mensal ? "doação mensal" : "doação"} é{" "}
-                {formatBRL(minimoCents)}.
+                The minimum for a {mensal ? "monthly donation" : "donation"} is{" "}
+                {formatUSD(minimoCents)}.
               </span>
             )}
           </label>
@@ -543,13 +543,13 @@ export default function ModalDoacao() {
             disabled={!podeSeguir}
             className="inline-flex min-h-[56px] w-full items-center justify-center gap-2.5 whitespace-nowrap rounded-[14px] bg-highlight px-6 text-fs16 font-bold uppercase tracking-[0.03em] text-cp-titulo shadow-[0_0_10px_1px_rgba(243,182,57,.6)] transition hover:bg-highlight-hover disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
           >
-            Continuar
+            Continue
             <IconArrowRight size={18} />
           </button>
 
           <p className="mt-2 hidden items-center justify-center gap-1.5 text-center text-fs11-5 font-medium text-cp-legenda [@media(min-height:620px)]:flex">
             <span aria-hidden="true" className="h-[7px] w-[7px] shrink-0 rounded-full bg-donate" />
-            Pagamento 100% seguro e verificado
+            100% secure and verified payment
           </p>
         </div>
       </div>

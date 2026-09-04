@@ -4,12 +4,11 @@ import NextImage, { type ImageProps } from "next/image";
 import Link from "next/link";
 import { type ReactNode, type SVGProps } from "react";
 import { withBasePath } from "@/lib/base-path";
-import { DOAR_HREF, org, showPixSection, whatsappHref, whatsappWith } from "@/lib/config";
+import { DOAR_HREF, org } from "@/lib/config";
 import {
   useShelterEmail,
   useShelterFacebook,
   useShelterInstagram,
-  useShelterPhone,
 } from "@/lib/hooks/use-shelter-phone";
 import { openDonationModal, type DonationIntent } from "@/lib/modais";
 
@@ -26,7 +25,7 @@ import { openDonationModal, type DonationIntent } from "@/lib/modais";
 /* ─────────────────────────────────────────────────── conteúdo do bloco ──── */
 
 const copyFooterAbout =
-  "Levando socorro veterinário a SP, ES, MG e BA com o apoio da SOS Animal Help e de pessoas como você. São 500+ vidas que dependem de consulta, exame e medicação.";
+  "Bringing emergency veterinary help to SP, ES, MG and BA with the support of SOS Animal Help and of people like you. That is 500+ lives depending on vet visits, tests and medication.";
 
 /**
  * Os abrigos, **só nome e link** - a lista do rodapé.
@@ -39,13 +38,13 @@ const copyFooterAbout =
  *
  * Cada um aponta para o site próprio quando tem um, e para o Instagram quando
  * não tem. Quem não tem nenhum dos dois fica de fora em vez de virar link
- * morto - é o caso do Abrigo Dona Rose, que a campanha não publica.
+ * morto - é o caso do Rose's Shelter, que a campanha não publica.
  */
 const ABRIGOS_LINKS = [
-  { label: "Siulsan Resgate", href: "https://siulsanresgate.org/" },
+  { label: "Susan Pet Rescue", href: "https://siulsanresgate.org/" },
   { label: "SOS Joana Darc", href: "https://sosjoanadarc.org/" },
-  { label: "Abrigo Salve Cão", href: "https://salvecaoabrigo.org/" },
-  { label: "Casa da Mili", href: "https://www.instagram.com/milenaefernanda.ong/" },
+  { label: "Save Dog Shelter", href: "https://salvecaoabrigo.org/" },
+  { label: "Millie Home", href: "https://www.instagram.com/milenaefernanda.ong/" },
 ];
 
 /* ─────────────────────────────────────────────────────────── ícones ──── */
@@ -111,20 +110,6 @@ const IconShield = (p: IconProps) => (
   </svg>
 );
 
-const IconWhatsApp = ({ size = 28, ...rest }: IconProps) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    aria-hidden="true"
-    focusable={false}
-    {...rest}
-  >
-    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.65-1.24-1.46-1.38-1.71-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.13-.14.17-.24.25-.41.09-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.23.24-.86.84-.86 2.05s.88 2.38 1 2.54c.13.17 1.74 2.66 4.21 3.73.59.25 1.05.4 1.4.52.59.19 1.13.16 1.55.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29Z" />
-  </svg>
-);
-
 /* ────────────────────────────────────────────── utilitários do bloco ──── */
 
 /**
@@ -134,7 +119,7 @@ const IconWhatsApp = ({ size = 28, ...rest }: IconProps) => (
  * `next.config.ts`), o `next/image` passa o `src` adiante sem tocar nele. É
  * comportamento documentado: o prefixo de `basePath` só acontece na URL do
  * otimizador (`/_next/image?url=…`), e sem otimizador não há essa URL para
- * prefixar. Sem este envelope, publicado em `doe.caioprotetor.org/v2`, toda
+ * prefixar. Sem este envelope, publicado em `donate.kylerescuer.org/v2`, toda
  * imagem apontaria para a raiz do domínio - que é outro site (WordPress) - e
  * simplesmente não carregaria.
  *
@@ -201,9 +186,9 @@ function MonthlyDonateButton({
  */
 const COLUMNS = [
   {
-    label: "Ajude",
+    label: "Help",
     links: [
-      { label: "Doar agora", href: DOAR_HREF },
+      { label: "Donate now", href: DOAR_HREF },
       /*
        * "Doar todo mês" é o único item destas listas que **não** é link: não há
        * âncora de recorrência na página (a decisão "de quanto em quanto tempo"
@@ -211,30 +196,27 @@ const COLUMNS = [
        * o mesmo destino do botão da barra fixa e do fechamento da página. Ver
        * `MonthlyDonateButton`.
        */
-      { label: "Doar todo mês", action: "mensal" as const },
-      /* Só entra se a seção existir: com `showPixSection` em `false` a âncora
-         `#pix` não é renderizada e o link levaria a lugar nenhum. */
-      ...(showPixSection ? [{ label: "Doar via Pix", href: "#pix" }] : []),
+      { label: "Donate every month", action: "mensal" as const },
     ],
   },
   {
-    label: "Abrigos",
+    label: "Shelters",
     /* A lista, e o aviso sobre ela ser uma segunda cópia, estão em
        `ABRIGOS_LINKS`, no topo deste arquivo. */
     links: ABRIGOS_LINKS,
   },
   {
-    label: "Campanha",
+    label: "Campaign",
     links: [
-      { label: "Transparência", href: "#transparencia" },
-      { label: "Atualizações", href: "#atualizacoes" },
-      { label: "Contato", href: "#documentacao" },
+      { label: "Transparency", href: "#transparencia" },
+      { label: "Updates", href: "#atualizacoes" },
+      { label: "Contact", href: "#documentacao" },
     ],
   },
   {
     label: "Legal",
     /* As três políticas ficam no site institucional da campanha
-       (`caioprotetor.org`), não aqui: este projeto é só a página de doação. */
+       (`kylerescuer.org`), não aqui: este projeto é só a página de doação. */
     links: org.policies,
   },
 ];
@@ -243,7 +225,7 @@ const COLUMNS = [
 const SOCIALS = [
   { label: "Instagram", href: org.instagramHref, Icon: IconInstagram },
   { label: "Facebook", href: org.facebookHref, Icon: IconFacebook },
-  { label: "WhatsApp", href: whatsappHref, Icon: IconWhatsApp },
+  { label: "Email", href: `mailto:${org.email}`, Icon: IconMail },
 ];
 
 /**
@@ -278,7 +260,6 @@ const SOCIALS = [
  * da página: as listas e as fichas já leem alinhadas à esquerda.
  */
 export default function Footer() {
-  const phone = useShelterPhone();
   const instagramHref = useShelterInstagram();
   const facebookHref = useShelterFacebook();
   const email = useShelterEmail();
@@ -289,8 +270,8 @@ export default function Footer() {
      `components/sections/15-footer` não chega aqui sozinha. Ver o comentário
      sobre o preço da duplicação em `app/urgencia-remedios/page.tsx`. */
   const socials = SOCIALS.map((social) => {
-    if (social.label === "WhatsApp") {
-      return { ...social, href: whatsappWith(org.whatsappMessage, phone) };
+    if (social.label === "Email") {
+      return { ...social, href: `mailto:${email}` };
     }
     if (social.label === "Instagram") {
       return { ...social, href: instagramHref };
@@ -330,7 +311,7 @@ export default function Footer() {
 
               Ela tinha saído do rodapé do site institucional porque sobrava um
               ícone só, o do WhatsApp - barra de redes com um item lê como barra
-              quebrada. A campanha do Caio tem os três perfis publicados, então
+              quebrada. A campanha do Kyle tem os três perfis publicados, então
               agora ela tem o que uma barra precisa para existir.
             */}
             <ul className="flex items-center gap-3">
@@ -340,7 +321,7 @@ export default function Footer() {
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={`${org.name} no ${label}`}
+                    aria-label={`${org.name} on ${label}`}
                     className="flex h-[44px] w-[44px] items-center justify-center rounded-full border border-white/15 text-white/70 transition-colors hover:border-white/40 hover:text-white"
                   >
                     <Icon size={18} />
@@ -351,12 +332,12 @@ export default function Footer() {
 
             <div className="flex flex-col items-start gap-2 text-fs14 text-white/60">
               {/* O CNPJ é o de quem **recebe** - a SOS Animal Help -, e é por
-                  isso que o nome dela aparece escrito ao lado dele. O Caio é
+                  isso que o nome dela aparece escrito ao lado dele. O Kyle é
                   protetor independente e não tem CNPJ próprio nesta campanha. */}
               <p className="flex items-center gap-2">
                 <IconShield size={16} className="shrink-0" />
                 <span>
-                  {org.supporter} · CNPJ{" "}
+                  {org.supporter} · EIN{" "}
                   <span className="tabular-nums">{org.cnpj}</span>
                 </span>
               </p>
@@ -434,7 +415,7 @@ export default function Footer() {
           {/* Os links legais já estão na coluna "Legal" - repetir aqui só
               duplicaria o mesmo destino duas vezes na mesma tela. */}
           <p>
-            © {new Date().getFullYear()} {org.name}. Todos os direitos reservados.
+            © {new Date().getFullYear()} {org.name}. All rights reserved.
           </p>
         </div>
       </div>

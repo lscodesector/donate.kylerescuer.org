@@ -1,0 +1,595 @@
+<!-- KYLE RESCUER US | 9 - TESTIMONIALS -->
+<style>
+  .cp-dep-section {
+    width: 100%;
+    margin: 0;
+    padding: 40px 20px;
+    background: #ffffff;
+    font-family: "Nunito", sans-serif;
+  }
+  .cp-dep__wrap {
+    max-width: 650px;
+    margin: 0 auto;
+  }
+
+  .cp-dep__title {
+    font-size: clamp(1.35rem, 4vw, 1.9rem);
+    font-weight: 900;
+    color: #0d0d0d;
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+    margin: 0 0 24px;
+  }
+  .cp-dep__title em {
+    font-style: normal;
+    color: #bf0521;
+  }
+
+  /* Carousel — same look as the Who Is Kyle section */
+  .cp-dep-carousel {
+    position: relative;
+    overflow: hidden;
+    border-radius: 6px;
+    background: #ededed;
+    aspect-ratio: 9/16;
+    user-select: none;
+    touch-action: pan-y;
+  }
+  @media (min-width: 768px) {
+    .cp-dep-carousel {
+      aspect-ratio: auto;
+      height: 340px;
+    }
+    .cp-dep-track {
+      gap: 30px;
+    }
+  }
+  .cp-dep-track {
+    display: flex;
+    height: 100%;
+    transition: transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
+  }
+  .cp-dep-slide {
+    min-width: 100%;
+    height: 100%;
+    flex: 0 0 100%;
+    position: relative;
+    background: #ededed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cp-dep-video {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .cp-dep-play-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.22s;
+  }
+  .cp-dep-play-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .cp-dep-play-btn {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    border: 0;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.94);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 32px rgba(0, 0, 0, 0.45);
+    transition:
+      transform 0.18s,
+      background 0.18s;
+  }
+  .cp-dep-play-btn:hover {
+    transform: scale(1.1);
+    background: #fff;
+  }
+  .cp-dep-play-btn svg {
+    width: 30px;
+    height: 30px;
+    fill: #bf0521;
+    margin-left: 4px;
+  }
+
+  .cp-dep-slide-num {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 2;
+    background: rgba(0, 0, 0, 0.45);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 999px;
+    backdrop-filter: blur(8px);
+    font-family: "Nunito", sans-serif;
+  }
+
+  .cp-dep-slide-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    background: linear-gradient(to top, rgba(10, 13, 20, 0.75), transparent);
+    padding: 22px 14px 12px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-family: "Nunito", sans-serif;
+    line-height: 1.4;
+  }
+
+  /* Arrows */
+  .cp-dep-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    border: 0;
+    background: rgba(0, 0, 0, 0.22);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    font-size: 1.4rem;
+    line-height: 1;
+  }
+  .cp-dep-btn:hover {
+    background: rgba(0, 0, 0, 0.4);
+  }
+  .cp-dep-btn--prev {
+    left: 10px;
+  }
+  .cp-dep-btn--next {
+    right: 10px;
+  }
+
+  /* Dots */
+  .cp-dep-dots {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 10px;
+  }
+  .cp-dep-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.18);
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    transition:
+      background 0.2s,
+      transform 0.2s;
+  }
+  .cp-dep-dot.active {
+    background: #bf0521;
+    transform: scale(1.2);
+  }
+</style>
+
+<section class="cp-dep-section ln-section-anchor" id="testimonials">
+  <div class="cp-dep__wrap">
+    <h2 class="cp-dep__title">
+      Testimonials from the <em>shelters Kyle helps</em>
+    </h2>
+
+    <div class="cp-dep-carousel" id="cpDepCarousel">
+      <div class="cp-dep-track" id="cpDepTrack">
+        <div class="cp-dep-slide">
+          <video
+            class="cp-dep-video"
+            src="https://donate.kylerescuer.org/wp-content/uploads/2026/07/DEPOIMENTO-SOS-JOANA-DARC-US.mp4"
+            poster="https://donate.kylerescuer.org/wp-content/uploads/2026/07/THUMB-JOANA-US.webp"
+            playsinline
+            preload="none"
+          ></video>
+          <div class="cp-dep-play-overlay">
+            <button class="cp-dep-play-btn" type="button" aria-label="Play">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+            </button>
+          </div>
+          <span class="cp-dep-slide-num">1 / 5</span>
+          <div class="cp-dep-slide-caption">
+            Joana &middot; SOS Joana Darc &middot; 200 animals
+          </div>
+        </div>
+
+        <div class="cp-dep-slide">
+          <video
+            class="cp-dep-video"
+            src="https://donate.kylerescuer.org/wp-content/uploads/2026/07/DEPOIMENTO-SAVE-DOG-SHELTER.mp4"
+            poster="https://donate.kylerescuer.org/wp-content/uploads/2026/07/THUMB-SAVE-DOG.webp"
+            playsinline
+            preload="none"
+          ></video>
+          <div class="cp-dep-play-overlay">
+            <button class="cp-dep-play-btn" type="button" aria-label="Play">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+            </button>
+          </div>
+          <span class="cp-dep-slide-num">2 / 5</span>
+          <div class="cp-dep-slide-caption">
+            Andrezza &middot; Save Dog Shelter &middot; 92 animals
+          </div>
+        </div>
+
+        <div class="cp-dep-slide">
+          <video
+            class="cp-dep-video"
+            src="https://donate.kylerescuer.org/wp-content/uploads/2026/07/DEPOIMENTO-MILLIE-HOME.mp4"
+            poster="https://donate.kylerescuer.org/wp-content/uploads/2026/07/THUMB-MILLIE.webp"
+            playsinline
+            preload="none"
+          ></video>
+          <div class="cp-dep-play-overlay">
+            <button class="cp-dep-play-btn" type="button" aria-label="Play">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+            </button>
+          </div>
+          <span class="cp-dep-slide-num">3 / 5</span>
+          <div class="cp-dep-slide-caption">
+            Milena &middot; Millie Home &middot; 74 animals
+          </div>
+        </div>
+
+        <div class="cp-dep-slide">
+          <video
+            class="cp-dep-video"
+            src="https://donate.kylerescuer.org/wp-content/uploads/2026/07/DEPOIMENTO-SUSAN.mp4"
+            poster="https://donate.kylerescuer.org/wp-content/uploads/2026/07/THUMB-SUSAN.webp"
+            playsinline
+            preload="none"
+          ></video>
+          <div class="cp-dep-play-overlay">
+            <button class="cp-dep-play-btn" type="button" aria-label="Play">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+            </button>
+          </div>
+          <span class="cp-dep-slide-num">4 / 5</span>
+          <div class="cp-dep-slide-caption">
+            Siulsan &middot; Susan Pet Rescue &middot; 53 dogs
+          </div>
+        </div>
+
+        <div class="cp-dep-slide">
+          <video
+            class="cp-dep-video"
+            src="https://donate.kylerescuer.org/wp-content/uploads/2026/07/DEPOIMENTO-ROSES-SHELTER.mp4"
+            poster="https://donate.kylerescuer.org/wp-content/uploads/2026/07/THUMB-ROSES.webp"
+            playsinline
+            preload="none"
+          ></video>
+          <div class="cp-dep-play-overlay">
+            <button class="cp-dep-play-btn" type="button" aria-label="Play">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+            </button>
+          </div>
+          <span class="cp-dep-slide-num">5 / 5</span>
+          <div class="cp-dep-slide-caption">
+            Rose &middot; Rose's Shelter &middot; 95 animals
+          </div>
+        </div>
+      </div>
+
+      <button
+        class="cp-dep-btn cp-dep-btn--prev"
+        id="cpDepPrev"
+        aria-label="Previous"
+      >
+        &#8249;
+      </button>
+      <button
+        class="cp-dep-btn cp-dep-btn--next"
+        id="cpDepNext"
+        aria-label="Next"
+      >
+        &#8250;
+      </button>
+    </div>
+
+    <div class="cp-dep-dots" id="cpDepDots">
+      <button class="cp-dep-dot active" aria-label="Slide 1"></button>
+      <button class="cp-dep-dot" aria-label="Slide 2"></button>
+      <button class="cp-dep-dot" aria-label="Slide 3"></button>
+      <button class="cp-dep-dot" aria-label="Slide 4"></button>
+      <button class="cp-dep-dot" aria-label="Slide 5"></button>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var track = document.getElementById("cpDepTrack");
+    var dotsEl = document.getElementById("cpDepDots");
+    var carousel = document.getElementById("cpDepCarousel");
+    var prev = document.getElementById("cpDepPrev");
+    var next = document.getElementById("cpDepNext");
+    if (!track) return;
+
+    var rawTotal = track.children.length; // slides reais (5)
+    /* clone only for infinite-scroll on mobile */
+    track.appendChild(track.children[0].cloneNode(true));
+
+    var cur = 0,
+      jumping = false,
+      TRANS = 400;
+    var dots = dotsEl ? Array.from(dotsEl.querySelectorAll(".cp-dep-dot")) : [];
+
+    function spv() {
+      return window.innerWidth >= 768 ? 3 : 1;
+    }
+
+    var GAP = 30;
+
+    /* Define largura dos slides em px para desktop, reseta para mobile */
+    function layoutDesktop() {
+      var desktop = spv() > 1;
+      var slideW = desktop
+        ? Math.floor((carousel.offsetWidth - GAP * 2) / 3)
+        : 0;
+      Array.from(track.children).forEach(function (s) {
+        if (desktop) {
+          s.style.minWidth = slideW + "px";
+          s.style.flex = "0 0 " + slideW + "px";
+        } else {
+          s.style.minWidth = "";
+          s.style.flex = "";
+        }
+      });
+    }
+
+    function stepPx() {
+      return Math.floor((carousel.offsetWidth - GAP * 2) / 3) + GAP;
+    }
+
+    function setPos(idx, animated) {
+      var val =
+        spv() > 1
+          ? "translateX(" + -(idx * stepPx()) + "px)"
+          : "translateX(-" + idx * 100 + "%)";
+      if (!animated) {
+        track.style.transition = "none";
+      }
+      track.style.transform = val;
+      if (!animated) {
+        track.getBoundingClientRect();
+        track.style.transition = "";
+      }
+    }
+
+    function setDots(idx) {
+      dots.forEach(function (d, i) {
+        d.classList.toggle("active", i === idx % rawTotal);
+      });
+    }
+
+    function pauseVisible() {
+      var n = spv();
+      for (var i = cur; i < cur + n && i < track.children.length; i++) {
+        var v = track.children[i] && track.children[i].querySelector("video");
+        if (v) v.pause();
+      }
+    }
+
+    function goNext() {
+      if (jumping) return;
+      pauseVisible();
+      if (spv() > 1) {
+        /* desktop: wrap simples */
+        cur = (cur + 1) % rawTotal;
+        setPos(cur, true);
+        setDots(cur);
+        preloadSlide(cur);
+      } else {
+        /* mobile: infinite scroll via clone */
+        if (cur === rawTotal - 1) {
+          jumping = true;
+          setPos(rawTotal, true);
+          setDots(0);
+          setTimeout(function () {
+            setPos(0, false);
+            cur = 0;
+            jumping = false;
+            preloadSlide(0);
+          }, TRANS + 30);
+        } else {
+          cur++;
+          setPos(cur, true);
+          setDots(cur);
+          preloadSlide(cur);
+        }
+      }
+    }
+
+    function goPrev() {
+      if (jumping) return;
+      pauseVisible();
+      cur = (cur - 1 + rawTotal) % rawTotal;
+      setPos(cur, true);
+      setDots(cur);
+      preloadSlide(cur);
+    }
+
+    if (prev) prev.addEventListener("click", goPrev);
+    if (next) next.addEventListener("click", goNext);
+    dots.forEach(function (d, i) {
+      d.addEventListener("click", function () {
+        if (jumping) return;
+        pauseVisible();
+        cur = i;
+        setPos(cur, true);
+        setDots(cur);
+        preloadSlide(cur);
+      });
+    });
+
+    function pauseAllExcept(except) {
+      Array.from(track.children).forEach(function (slide) {
+        var v = slide.querySelector("video");
+        if (v && v !== except && !v.paused) v.pause();
+      });
+    }
+
+    function setupOverlays() {
+      Array.from(track.children).forEach(function (slide) {
+        var video = slide.querySelector("video");
+        var overlay = slide.querySelector(".cp-dep-play-overlay");
+        if (!video || !overlay) return;
+        overlay.addEventListener("click", function () {
+          video.play();
+        });
+        video.addEventListener("play", function () {
+          pauseAllExcept(video);
+          overlay.classList.add("hidden");
+        });
+        video.addEventListener("pause", function () {
+          overlay.classList.remove("hidden");
+        });
+        video.addEventListener("ended", function () {
+          overlay.classList.remove("hidden");
+        });
+      });
+    }
+    setupOverlays();
+
+    function preloadSlide(idx) {
+      var slide = track.children[idx];
+      if (!slide) return;
+      var v = slide.querySelector("video");
+      if (v && v.preload === "none") v.preload = "metadata";
+    }
+    preloadSlide(0);
+
+    /* Once the rest of the page (menu, hero + its video, and every other section)
+     has finished loading, start buffering the actual testimonial video files in
+     the background — staggered a bit so they don't all fight for bandwidth at
+     once — so by the time someone scrolls down and hits play, the video is
+     already loaded or well into loading instead of starting from zero. */
+    var testimonialsPreloaded = false;
+    function preloadTestimonialVideos() {
+      if (testimonialsPreloaded) return;
+      testimonialsPreloaded = true;
+      Array.from(track.children)
+        .slice(0, rawTotal)
+        .forEach(function (slide, i) {
+          var v = slide && slide.querySelector("video");
+          if (!v) return;
+          setTimeout(function () {
+            v.preload = "auto";
+            v.load();
+          }, i * 300);
+        });
+    }
+    if (document.readyState === "complete") {
+      preloadTestimonialVideos();
+    } else {
+      window.addEventListener("load", preloadTestimonialVideos);
+      setTimeout(preloadTestimonialVideos, 6000); // safety net if load is delayed
+    }
+
+    /* apply widths and initial position */
+    layoutDesktop();
+    setPos(0, false);
+
+    window.addEventListener("resize", function () {
+      layoutDesktop();
+      setPos(cur, false);
+    });
+
+    if (carousel) {
+      var dragging = false,
+        dragStartX = 0,
+        dragStartY = 0,
+        dirLocked = false,
+        horizDrag = false;
+      carousel.addEventListener("pointerdown", function (e) {
+        if (e.target.closest(".cp-dep-btn")) return;
+        dragging = true;
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        dirLocked = false;
+        horizDrag = false;
+        track.style.transition = "none";
+      });
+      carousel.addEventListener("pointermove", function (e) {
+        if (!dragging) return;
+        var dx = e.clientX - dragStartX,
+          dy = e.clientY - dragStartY;
+        if (!dirLocked && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) {
+          dirLocked = true;
+          horizDrag = Math.abs(dx) > Math.abs(dy);
+          if (horizDrag) {
+            carousel.setPointerCapture(e.pointerId);
+          } else {
+            dragging = false;
+            track.style.transition = "";
+            return;
+          }
+        }
+        if (!horizDrag) return;
+        if (spv() > 1) {
+          track.style.transform =
+            "translateX(" + (-(cur * stepPx()) + dx) + "px)";
+        } else {
+          track.style.transform =
+            "translateX(calc(-" + cur * 100 + "% + " + dx + "px))";
+        }
+      });
+      carousel.addEventListener("pointerup", function (e) {
+        if (!dragging) return;
+        dragging = false;
+        track.style.transition = "";
+        var diff = dragStartX - e.clientX;
+        if (horizDrag && Math.abs(diff) > 44) {
+          if (diff > 0) goNext();
+          else goPrev();
+        } else {
+          setPos(cur, true);
+          var isTap =
+            Math.abs(diff) < 10 && Math.abs(dragStartY - e.clientY) < 10;
+          if (isTap && spv() === 1) {
+            var v =
+              track.children[cur] && track.children[cur].querySelector("video");
+            if (v) {
+              if (v.paused) v.play();
+              else v.pause();
+            }
+          }
+        }
+      });
+      carousel.addEventListener("pointercancel", function () {
+        if (!dragging) return;
+        dragging = false;
+        track.style.transition = "";
+        setPos(cur, true);
+      });
+    }
+  })();
+</script>

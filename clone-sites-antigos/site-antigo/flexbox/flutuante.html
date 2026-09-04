@@ -1,0 +1,411 @@
+<!-- KYLE RESCUER US | 12 - WHATSAPP BUTTON + STICKY DONATION BAR -->
+<style>
+  /* ── Sticky Donation Bar ── */
+  #cpStickyBar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 70;
+    background: #ffffff;
+    border-top: 1px solid #ebebeb;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.07);
+    transform: translateY(110%);
+    transition: transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+  }
+  #cpStickyBar.is-visible {
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .cp-sticky-inner {
+    width: 100%;
+    max-width: 650px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+  }
+
+  .cp-sticky-info {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .cp-sticky-top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .cp-sticky-raised {
+    font-family: "Nunito", sans-serif;
+    font-size: 1.05rem;
+    font-weight: 900;
+    color: #0d0d0d;
+    line-height: 1;
+  }
+  .cp-sticky-goal {
+    text-align: right;
+  }
+  .cp-sticky-goal-val {
+    display: block;
+    font-family: "Nunito", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #555;
+  }
+  .cp-sticky-goal-lbl {
+    display: block;
+    font-family: "Nunito", sans-serif;
+    font-size: 0.58rem;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .cp-sticky-progress {
+    height: 7px;
+    background: #ebebeb;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 4px;
+  }
+  .cp-sticky-progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #f3b639 0%, #e0a020 100%);
+  }
+
+  .cp-sticky-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .cp-sticky-pct {
+    font-family: "Nunito", sans-serif;
+    font-size: 0.7rem;
+    color: #bf0521;
+    font-weight: 800;
+  }
+  .cp-sticky-supporters {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: "Nunito", sans-serif;
+    font-size: 0.7rem;
+    color: #888;
+    font-weight: 700;
+  }
+  .cp-sticky-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #18b85b;
+    flex: 0 0 auto;
+  }
+
+  .cp-sticky-cta {
+    flex: 0 0 auto;
+    min-height: 48px;
+    padding: 10px 20px;
+    border: 0;
+    border-radius: 6px;
+    background: #f3b639 !important;
+    color: #2c1a0a !important;
+    font-family: "Nunito", sans-serif;
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    cursor: pointer;
+    white-space: nowrap;
+    animation: btnQueroAjudarGlow 1.45s ease-in-out infinite;
+  }
+  .cp-sticky-cta svg {
+    width: 14px;
+    height: 14px;
+    fill: #2c1a0a;
+  }
+
+  /* Trava o estilo contra o hover global de botão do Elementor (ficava rosa) */
+  .cp-sticky-cta:hover,
+  .cp-sticky-cta:focus,
+  .cp-sticky-cta:active,
+  .cp-sticky-cta:focus-visible {
+    background: #e0a020 !important;
+    color: #2c1a0a !important;
+    border: 0 !important;
+    box-shadow: 0 0 13px 1px rgba(247, 185, 54, 0.8) !important;
+    outline: none !important;
+    text-decoration: none !important;
+  }
+  .cp-sticky-cta:hover svg,
+  .cp-sticky-cta:focus svg {
+    fill: #2c1a0a !important;
+  }
+
+  @keyframes btnQueroAjudarGlow {
+    0%,
+    100% {
+      box-shadow: 0 0 6px 0 rgba(247, 185, 54, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 13px 1px rgba(247, 185, 54, 0.8);
+    }
+  }
+
+  /* Âncora do float do WhatsApp: ele fica ABSOLUTO em relação ao botão
+     "Donate Now", não ao viewport — assim os dois ficam alinhados pela
+     direita em qualquer largura de tela. */
+  .cp-sticky-cta-wrap {
+    position: relative;
+    flex: 0 0 auto;
+  }
+
+  /* ── WhatsApp Float ── */
+  .cp-wa-float {
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin-top: -60px; /* sobe acima do "Donate Now" */
+    z-index: 71;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(8px);
+    transition:
+      opacity 0.32s ease,
+      transform 0.32s ease;
+    pointer-events: none;
+  }
+  .cp-wa-float.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .cp-wa-label {
+    background: #fff;
+    color: #1a1a2e;
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-family: "Nunito", sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(232, 232, 232, 0.9);
+    white-space: nowrap;
+  }
+  .cp-wa-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 999px;
+    border: 0;
+    background: #25d366;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35);
+    text-decoration: none;
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
+    flex: 0 0 auto;
+  }
+  .cp-wa-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 8px 24px rgba(37, 211, 102, 0.5);
+  }
+  .cp-wa-btn svg {
+    width: 26px;
+    height: 26px;
+    fill: #fff;
+  }
+
+  /* Offset body to avoid sticky bar hiding content */
+  body {
+    padding-bottom: calc(90px + env(safe-area-inset-bottom));
+  }
+
+  @media (max-width: 767px) {
+    .cp-wa-float {
+      margin-top: -56px;
+    }
+    .cp-sticky-cta {
+      font-size: 0.8rem;
+      padding: 8px 14px;
+      min-height: 44px;
+    }
+  }
+</style>
+
+<!-- Sticky Donation Bar -->
+<div id="cpStickyBar" role="complementary" aria-label="Donation bar">
+  <div class="cp-sticky-inner">
+    <div class="cp-sticky-info">
+      <div class="cp-sticky-top">
+        <span class="cp-sticky-raised" data-cp-raised>xx</span>
+        <span class="cp-sticky-goal">
+          <span class="cp-sticky-goal-val" data-cp-goal>xx</span>
+        </span>
+      </div>
+      <div class="cp-sticky-progress">
+        <div
+          class="cp-sticky-progress-fill"
+          id="cpStickyFill"
+          style="width: 0%"
+        ></div>
+      </div>
+      <div class="cp-sticky-footer">
+        <span class="cp-sticky-pct" id="cpStickyPct">xx</span>
+        <span class="cp-sticky-supporters">
+          <span class="cp-sticky-dot"></span>
+          <span data-cp-supporters-label>xx</span>
+        </span>
+      </div>
+    </div>
+    <div class="cp-sticky-cta-wrap">
+      <!-- WhatsApp Button — absoluto EM RELAÇÃO ao "Donate Now" (mesma borda direita) -->
+      <div class="cp-wa-float" id="cpWaFloat" data-cp-wrap>
+        <a
+          class="cp-wa-label"
+          href="https://api.whatsapp.com/send/?phone=5585997934599&text=I+have+a+question+about+Kyle+Rescuer"
+          data-cp-contact="whatsapp"
+          target="_blank"
+          rel="noopener"
+          style="text-decoration: none; color: inherit"
+          >Contact Us</a
+        >
+        <a
+          class="cp-wa-btn"
+          href="https://api.whatsapp.com/send/?phone=5585997934599&text=I+have+a+question+about+Kyle+Rescuer"
+          data-cp-contact="whatsapp"
+          target="_blank"
+          rel="noopener"
+          aria-label="Chat on WhatsApp"
+        >
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+            />
+          </svg>
+        </a>
+      </div>
+
+      <button
+        class="cp-sticky-cta"
+        type="button"
+        onclick="document.dispatchEvent(new CustomEvent('cp:openDonation'))"
+      >
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+          />
+        </svg>
+        Donate Now
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    // Values come from window.CP_CONFIG defined in 1 - MENU.html
+    var stickyBar = document.getElementById("cpStickyBar");
+    var waFloat = document.getElementById("cpWaFloat");
+
+    function handleScroll() {
+      var scrolled =
+        window.scrollY /
+        (document.documentElement.scrollHeight - window.innerHeight);
+      var show = scrolled > 0.3;
+      if (stickyBar) stickyBar.classList.toggle("is-visible", show);
+      if (waFloat) waFloat.classList.toggle("is-visible", show);
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
+    if (stickyBar && waFloat) {
+      var obs = new MutationObserver(function () {
+        var barVisible = stickyBar.classList.contains("is-visible");
+        waFloat.classList.toggle("is-visible", barVisible);
+      });
+      obs.observe(stickyBar, { attributes: true, attributeFilter: ["class"] });
+    }
+  })();
+</script>
+
+<script>
+  /* Contato dinâmico do abrigo — vem do painel (ic-wh) via GET /api/ic/:slug pela
+   ponte do Laravel (/api/nest-relay). Regra: só aparece o que estiver preenchido
+   no painel; campo vazio => o elemento (ou o [data-cp-wrap] ancestral) some.
+   Se a chamada falhar, o botão mantém o href que já está no HTML. */
+  (function () {
+    window.cpContact =
+      window.cpContact ||
+      function () {
+        if (window.__cpContactPromise) return window.__cpContactPromise;
+        var SLUG = window.CP_FUNNEL_SLUG || "caio-protetor-us";
+        var BASE = (
+          window.CP_CONTACT_API || "https://lusapayments.com/api/nest-relay"
+        ).replace(/\/+$/, "");
+        window.__cpContactPromise = fetch(
+          BASE + "/ic/" + encodeURIComponent(SLUG),
+          { headers: { Accept: "application/json" } },
+        )
+          .then(function (r) {
+            return r.ok ? r.json() : null;
+          })
+          .then(function (d) {
+            var f = d && d.funnel ? d.funnel : {};
+            return {
+              whatsapp: String(f.phone || "").replace(/\D/g, "") || null,
+              instagram: f.instagramUrl || null,
+              facebook: f.facebookUrl || null,
+              email: f.email || null,
+            };
+          })
+          .catch(function () {
+            return null;
+          });
+        return window.__cpContactPromise;
+      };
+
+    var WA_TEXT = "I have a question about Kyle Rescuer";
+    function box(a) {
+      return a.closest("[data-cp-wrap]") || a;
+    }
+
+    window.cpContact().then(function (c) {
+      document.querySelectorAll("[data-cp-contact]").forEach(function (a) {
+        if (c === null) return;
+        var kind = a.getAttribute("data-cp-contact");
+        var val = c[kind];
+        if (!val) {
+          box(a).style.display = "none";
+          return;
+        }
+        if (kind === "whatsapp")
+          a.href =
+            "https://api.whatsapp.com/send/?phone=" +
+            val +
+            "&text=" +
+            encodeURIComponent(WA_TEXT);
+        else if (kind === "email") {
+          a.href = "mailto:" + val;
+          if (a.hasAttribute("data-cp-fill-text")) a.textContent = val;
+        } else a.href = val;
+        box(a).style.display = "";
+      });
+    });
+  })();
+</script>

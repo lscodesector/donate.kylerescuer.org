@@ -11,9 +11,9 @@ const inter = Inter({
   weight: ["400", "600", "800"],
 });
 
-const TITLE = "Doe e Ajude o Caio a Salvar Mais de 400 Animais | Caio Protetor";
+const TITLE = "Donate and Help Kyle Save More Than 400 Animals | Kyle Rescuer";
 const DESCRIPTION =
-  "O Caio é protetor e leva ração, remédios e veterinário a cinco abrigos em SP, MG, BA e ES. Mais de 400 animais dependem de cada doação. Doe via Pix, no valor que puder.";
+  "Kyle is an animal rescuer who brings food, medicine and vet care to five shelters in SP, MG, BA and ES. More than 400 animals depend on every donation. Give by card or PayPal, whatever you can.";
 
 export const metadata: Metadata = {
   /*
@@ -35,14 +35,14 @@ export const metadata: Metadata = {
    * duas partes somarem certo.
    */
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://doe.caioprotetor.org",
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://donate.kylerescuer.org",
   ),
   title: TITLE,
   description: DESCRIPTION,
   openGraph: {
     type: "website",
-    locale: "pt_BR",
-    siteName: "Caio Protetor",
+    locale: "en_US",
+    siteName: "Kyle Rescuer",
     title: TITLE,
     description: DESCRIPTION,
     images: [
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
         url: withBasePath("/caio/historia/caio-1.webp"),
         width: 883,
         height: 947,
-        alt: "Caio Protetor com um cão resgatado no colo",
+        alt: "Kyle Rescuer holding a rescued dog",
       },
     ],
   },
@@ -64,21 +64,33 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} h-full antialiased`}>
-      <head>
-        {/*
-          Sem JavaScript o IntersectionObserver do `Reveal` nunca roda, e todo
-          bloco animado ficaria em `opacity: 0` - a página inteira em branco.
-          Esta regra devolve o conteúdo; a animação é enfeite, o texto não.
-        */}
-        <noscript>
-          <style>{".reveal{opacity:1!important;transform:none!important}"}</style>
-        </noscript>
-      </head>
+    <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body
         className="min-h-full flex flex-col bg-surface text-ink-900"
         suppressHydrationWarning
       >
+        {/*
+          Sem JavaScript o IntersectionObserver do `Reveal` nunca roda, e todo
+          bloco animado ficaria em `opacity: 0` - a página inteira em branco.
+          Esta regra devolve o conteúdo; a animação é enfeite, o texto não.
+
+          ⚠️ Mora no `<body>`, e não num `<head>` escrito à mão: o root layout
+          não pode declarar `<head>` (é o que a doc do Next manda em
+          `file-conventions/layout`, e o que a regra de lint
+          `@next/next/no-head-element` cobra). Com o `<head>` manual, o espaço
+          em branco do JSX virava um nó de texto onde o Next insere o wrapper
+          de metadata, e a hidratação falhava na raiz da árvore - o React
+          descartava o HTML do servidor e reconstruía tudo no cliente, o que
+          arrancava o `<vturb-smartplayer>` de baixo do player já montado
+          (`Cannot set properties of null` + `Player already mounted`).
+
+          `<style>` dentro de `<noscript>` no corpo é aceito por todos os
+          navegadores - e sem JavaScript é a única forma de a regra chegar.
+        */}
+        <noscript>
+          <style>{".reveal{opacity:1!important;transform:none!important}"}</style>
+        </noscript>
+
         {children}
 
         {/*

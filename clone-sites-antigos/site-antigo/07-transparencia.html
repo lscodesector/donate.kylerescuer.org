@@ -1,0 +1,264 @@
+<!-- KYLE RESCUER US | 7 - TRANSPARENCY -->
+<style>
+  .cp-transp-section {
+    background: #ffffff;
+  }
+
+  /* Cost table */
+  .ln-cost-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+  .ln-cost-table th {
+    text-align: left;
+    padding: 10px 12px;
+    background: #111111;
+    color: #fff;
+    font-weight: 800;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 2px solid #111111;
+  }
+  .ln-cost-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(229, 229, 229, 0.7);
+    color: #1a1a2e;
+    vertical-align: middle;
+  }
+  .ln-cost-table td:last-child {
+    text-align: right;
+    font-weight: 700;
+    color: #bf0521;
+  }
+  .ln-cost-table tr:last-child td {
+    background: #f4f4f4;
+    font-weight: 800;
+    color: #111111;
+    border-top: 2px solid #e0e0e0;
+    border-bottom: none;
+  }
+  .ln-cost-table tr:last-child td:last-child {
+    color: #bf0521;
+  }
+
+  .ln-cost-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  /* EIN doc card */
+  .ln-doc-card {
+    border: 1px solid rgba(229, 229, 229, 0.92);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 20px;
+  }
+  .ln-doc-card__head {
+    padding: 14px 16px;
+    background: rgba(200, 16, 46, 0.04);
+    border-bottom: 1px solid rgba(229, 229, 229, 0.7);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .ln-doc-card__head svg {
+    width: 18px;
+    height: 18px;
+    color: #c8102e;
+    flex: 0 0 auto;
+  }
+  .ln-doc-card__title {
+    font-weight: 800;
+    font-size: 0.88rem;
+    color: #9b1b2d;
+  }
+  .ln-doc-card__sub {
+    font-size: 0.76rem;
+    color: #6b6b6b;
+  }
+  .ln-doc-preview {
+    display: block;
+    width: 100%;
+    aspect-ratio: 5/3;
+    object-fit: cover;
+    object-position: top;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .ln-doc-preview:hover {
+    opacity: 0.88;
+  }
+  .ln-doc-card__footer {
+    padding: 12px 16px;
+    border-top: 1px solid rgba(229, 229, 229, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .ln-doc-card__cnpj {
+    font-size: 0.82rem;
+    color: #6b6b6b;
+  }
+  .ln-doc-card__cnpj strong {
+    color: #9b1b2d;
+  }
+</style>
+
+<section
+  class="ln-section cp-transp-section ln-section-anchor"
+  id="transparency"
+>
+  <div class="ln-card">
+    <div class="ln-card-inner">
+      <div class="ln-section-title">
+        <div
+          class="ln-section-icon"
+          style="background: rgba(200, 16, 46, 0.08)"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#C8102E"
+            stroke-width="2"
+          >
+            <path
+              d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"
+            />
+          </svg>
+        </div>
+        <span>Full transparency</span>
+      </div>
+
+      <p class="ln-copy" style="margin-bottom: 14px">
+        See where every dollar raised in the campaign goes:
+      </p>
+
+      <!-- Cost table -->
+      <div
+        style="
+          border-radius: 5px;
+          border: 1px solid rgba(229, 229, 229, 0.7);
+          overflow: hidden;
+        "
+      >
+        <table class="ln-cost-table">
+          <colgroup>
+            <col />
+            <col style="width: 110px" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th colspan="2">Monthly costs</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <span class="ln-cost-dot" style="background: #d94050"></span
+                >Food for the animals
+              </td>
+              <td>$14,213</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="ln-cost-dot" style="background: #f3b639"></span>Vet
+                visits and surgeries
+              </td>
+              <td>$16,742</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="ln-cost-dot" style="background: #c8102e"></span
+                >Shelter rent
+              </td>
+              <td>$9,845</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="ln-cost-dot" style="background: #18b85b"></span
+                >Medication
+              </td>
+              <td>$5,127</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="ln-cost-dot" style="background: #6b7a90"></span
+                >Utilities and upkeep
+              </td>
+              <td>$2,660</td>
+            </tr>
+            <tr>
+              <td><strong>Total needed</strong></td>
+              <td>$48,587</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- EIN doc -->
+      <div class="ln-doc-card">
+        <div class="ln-doc-card__head">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+            />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+          </svg>
+          <div>
+            <div class="ln-doc-card__title">EIN · SOS Animal Help</div>
+            <div class="ln-doc-card__sub">
+              Official US Employer Identification Number document
+            </div>
+          </div>
+        </div>
+
+        <a
+          href="https://donate.kylerescuer.org/wp-content/uploads/2026/07/EIN-SOS-ANIMAL-HELP.webp"
+          target="_blank"
+          rel="noopener"
+        >
+          <img
+            class="ln-doc-preview"
+            src="https://donate.kylerescuer.org/wp-content/uploads/2026/07/EIN-SOS-ANIMAL-HELP.webp"
+            alt="SOS Animal Help EIN document"
+            loading="lazy"
+          />
+        </a>
+
+        <div class="ln-doc-card__footer">
+          <div class="ln-doc-card__cnpj">EIN: <strong>41-4770760</strong></div>
+          <a
+            class="ln-doc-button"
+            href="https://donate.kylerescuer.org/wp-content/uploads/2026/07/EIN-SOS-ANIMAL-HELP.webp"
+            target="_blank"
+            rel="noopener"
+            style="
+              min-height: 40px;
+              padding: 8px 14px;
+              font-size: 0.8rem;
+              width: auto;
+              border-radius: 10px;
+            "
+          >
+            View full document ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

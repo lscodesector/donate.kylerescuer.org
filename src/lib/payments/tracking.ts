@@ -36,9 +36,25 @@ const EVENT_KEY = "codex_event_id";
  * ver `nest.html`/`wp.php` de lá). Cacheado na sessão pra não bater na API de
  * novo a cada evento de tracking desta mesma visita.
  */
-const GEO_CACHE_KEY = "codex_ip_geo_v1";
+/* `v2`: o formato ganhou `country` - a chave muda junto para não ler um
+   cache antigo sem esse campo e concluir que o país é desconhecido. */
+const GEO_CACHE_KEY = "codex_ip_geo_v2";
 
-type GeoMeta = { zip: string | null; city: string | null; state: string | null };
+type GeoMeta = {
+  zip: string | null;
+  city: string | null;
+  state: string | null;
+  /**
+   * O país de **quem está doando**, não o da campanha.
+   *
+   * ⚠️ Isto é dado de casamento do CAPI: o Meta usa país, CEP, cidade e
+   * estado para achar a pessoa. Um valor chumbado mente para o algoritmo -
+   * e chumbar `US` numa visita do Brasil é pior do que não mandar nada.
+   * Sai do mesmo `ipapi.co` que já resolvia os outros três; o campo estava
+   * na resposta e era descartado.
+   */
+  country: string | null;
+};
 
 let geoMetaPromise: Promise<GeoMeta> | null = null;
 
@@ -59,22 +75,71 @@ function writeGeoCache(geo: GeoMeta) {
   }
 }
 
+/**
+ * Os provedores, na ordem em que são tentados.
+ *
+ * ⚠️ **Dois, e não um.** Até 04/09/2026 havia só o `ipapi.co` - e ele passou
+ * a responder `{"error":true,"reason":"RateLimited"}` no plano grátis. O
+ * `catch` engolia isso e devolvia tudo `null`, então `zip`/`city`/`state`
+ * saíam vazios em TODO evento sem ninguém perceber: no painel a linha
+ * parecia normal, só sem os campos. Um provedor de reserva transforma a
+ * queda de um deles em degradação, não em apagão silencioso.
+ *
+ * Os dois usam os MESMOS nomes de campo (`country_code`, `postal`, `city`,
+ * `region_code`), então a leitura é uma só.
+ *
+ * `ipwho.is` primeiro porque devolve os quatro campos e ainda tem `success`
+ * para dizer quando falhou - o `ipapi.co` sinaliza erro com `error: true`.
+ * (Um comentário antigo aqui dizia que o `ipwho.is` bloqueava CORS; medido
+ * em 04/09/2026 ele responde `Access-Control-Allow-Origin: *`.)
+ */
+const GEO_PROVIDERS = ["https://ipwho.is/", "https://ipapi.co/json/"];
+
+/** `null` quando a resposta é um erro disfarçado de 200. */
+function parseGeo(data: unknown): GeoMeta | null {
+  if (!data || typeof data !== "object") return null;
+  const d = data as Record<string, unknown>;
+  /* `ipwho.is` diz `success: false`; `ipapi.co`, `error: true`. */
+  if (d.success === false || d.error === true) return null;
+
+  const texto = (v: unknown) => (typeof v === "string" && v ? v : null);
+  const geo: GeoMeta = {
+    zip: texto(d.postal),
+    city: texto(d.city),
+    /* Sigla de duas letras ("SP"), não o nome por extenso. */
+    state: texto(d.region_code),
+    /* ISO de duas letras ("BR", "US") - o formato que o funil e o CAPI esperam. */
+    country: texto(d.country_code),
+  };
+  /* Uma resposta que não trouxe nem o país não serve como resolvida: deixa a
+     vez para o provedor seguinte. */
+  return geo.country ? geo : null;
+}
+
 async function resolveGeoMeta(): Promise<GeoMeta> {
   const cached = readGeoCache();
   if (cached) return cached;
+
   if (!geoMetaPromise) {
-    geoMetaPromise = fetch("https://ipapi.co/json/")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        const geo: GeoMeta = {
-          zip: (data && data.postal) || null,
-          city: (data && data.city) || null,
-          state: (data && data.region_code) || null,
-        };
-        writeGeoCache(geo);
-        return geo;
-      })
-      .catch(() => ({ zip: null, city: null, state: null }) as GeoMeta);
+    geoMetaPromise = (async () => {
+      for (const url of GEO_PROVIDERS) {
+        try {
+          const res = await fetch(url);
+          if (!res.ok) continue;
+          const geo = parseGeo(await res.json());
+          if (geo) {
+            writeGeoCache(geo);
+            return geo;
+          }
+        } catch {
+          /* Rede, CORS, DNS: tenta o próximo. */
+        }
+      }
+      /* Nenhum respondeu. Campos vazios, que o Meta ignora - melhor do que um
+         valor inventado, que ele usa para casar errado. NÃO é cacheado: a
+         próxima visita tenta de novo. */
+      return { zip: null, city: null, state: null, country: null };
+    })();
   }
   return geoMetaPromise;
 }
@@ -218,7 +283,7 @@ export function trackInitiateCheckout({
   donorName: string;
   donorPhone: string;
   anonymous: boolean;
-  /** Doação mensal (Pix Automático). Muda o `gateway` - ver abaixo. */
+  /** Doação mensal (assinatura do PayPal). Muda o `gateway` - ver abaixo. */
   recurring?: boolean;
 }): LeadTracking {
   const leadId = createLeadId();
@@ -248,8 +313,8 @@ export function trackInitiateCheckout({
      * afins não são reconhecidos, e a doação mensal cairia no relatório
      * indistinguível de uma doação única.
      */
-    gateway: recurring ? "infopago_pix_recurring" : "infopago_pix",
-    currency: "BRL",
+    gateway: recurring ? "paypal_subscription" : "paypal",
+    currency: "USD",
     amount: amountCents > 0 ? Number((amountCents / 100).toFixed(2)) : null,
     amount_cents: amountCents > 0 ? amountCents : null,
     product_name: productName,
@@ -265,7 +330,16 @@ export function trackInitiateCheckout({
        WordPress. O checkout não pede e-mail de ninguém. */
     donor_email: placeholderEmail(),
     donor_anonymous: anonymous,
-    country: "BR",
+    /**
+     * ⚠️ **Nunca chumbe um país aqui.** É o país de quem está doando, e vale
+     * como dado de casamento do CAPI - um valor fixo mente para o Meta.
+     *
+     * `trackInitiateCheckout` é síncrono e a resolução por IP é assíncrona,
+     * então aqui só entra o que já estiver no cache da sessão. Quando não
+     * houver, fica `null` e quem preenche é o `sendInitiateCheckoutToNest`,
+     * que aguarda o `resolveGeoMeta()` antes de mandar.
+     */
+    country: readGeoCache()?.country ?? null,
     ...attribution(),
   };
 
@@ -298,7 +372,7 @@ export function trackInitiateCheckout({
  *
  * Chegou a valer só para a mensal, com a justificativa de que a doação única
  * "já é conciliada pela planilha" e que mandá-la ao Nest duplicaria lead. Era
- * engano: `doe.caioprotetor.org` (WordPress) manda **toda** doação única para
+ * engano: `donate.kylerescuer.org` (WordPress) manda **toda** doação única para
  * esta mesma rota - é o que faz o bloco `15-nest.html` de lá, escutando o
  * `CustomEvent` que sai daqui. As duas páginas são caminhos alternativos para a
  * mesma campanha, nunca simultâneos, então não há o que duplicar. O que havia
@@ -336,12 +410,26 @@ export async function sendInitiateCheckoutToNest(detail: LeadTracking) {
         donation_flow: detail.donation_flow ?? null,
         product_name: detail.product_name ?? null,
         product_description: detail.product_description ?? null,
-        country: detail.country ?? "BR",
+        /**
+         * O país sai da resolução por IP, igual a `zip`/`city`/`state` - os
+         * quatro são o mesmo dado de casamento do CAPI e têm que contar a
+         * mesma história.
+         *
+         * ⚠️ Já esteve chumbado aqui, primeiro como `"BR"` (herança do fork
+         * da campanha brasileira) e depois como `"US"` (achando que era o
+         * país da campanha). Os dois estavam errados: o campo é de quem doa.
+         * Em 04/09/2026 o painel mostrava visitas de Hortolândia gravadas
+         * como US.
+         *
+         * `null` quando a busca falha - melhor um campo vazio, que o Meta
+         * ignora, do que um país inventado, que ele usa para casar errado.
+         */
+        country: geo.country ?? detail.country ?? null,
         page_title: detail.page_title ?? null,
         referrer: detail.referrer ?? null,
         amount: detail.amount,
         amount_cents: detail.amount_cents ?? null,
-        currency: detail.currency ?? "BRL",
+        currency: detail.currency ?? "USD",
         gateway: detail.gateway,
         event_time: detail.event_time,
         page_url: detail.page_url,
@@ -364,11 +452,16 @@ export async function sendInitiateCheckoutToNest(detail: LeadTracking) {
 }
 
 /**
- * Purchase: só quando o gateway confirmou. `record_action: 'update'` porque a
- * linha da planilha já existe desde o InitiateCheckout - este evento completa
- * aquela linha, não cria outra.
+ * Purchase: só quando o PayPal confirmou a captura. `record_action: 'update'`
+ * porque a linha da planilha já existe desde o InitiateCheckout - este evento
+ * completa aquela linha, não cria outra.
+ *
+ * ⚠️ O **nome do evento no DOM continua `codex:pix-paid`**, e não é
+ * esquecimento: quem escuta esse nome é o GTM da campanha, fora deste
+ * repositório. Renomear aqui apagaria o Purchase do relatório sem aviso, e o
+ * dia em que o GTM passar a escutar outro nome os dois mudam juntos.
  */
-export function trackPixPaid(
+export function trackDonationPaid(
   base: LeadTracking | null,
   paid: {
     original_value?: number;
@@ -400,10 +493,10 @@ export function trackPixPaid(
     referrer: document.referrer || "",
     user_agent: navigator.userAgent || "",
     /* Herda do InitiateCheckout: numa doação mensal ele é
-       `infopago_pix_recurring`, e sobrescrever com o avulso aqui faria a
-       ativação do mandato ser contada como doação única no relatório. */
-    gateway: base?.gateway ?? "infopago_pix",
-    currency: paid.currency || "BRL",
+       `paypal_subscription`, e sobrescrever com o avulso aqui faria a
+       assinatura ser contada como doação única no relatório. */
+    gateway: base?.gateway ?? "paypal",
+    currency: paid.currency || "USD",
     amount: Number.isFinite(amount) ? Number(amount.toFixed(2)) : null,
     ...attribution(base as Record<string, string> | undefined),
     status: "paid",

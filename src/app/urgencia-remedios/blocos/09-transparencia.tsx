@@ -10,7 +10,7 @@ import {
   type ReactNode,
   type SVGProps,
 } from "react";
-import { formatBRL } from "@/lib/format";
+import { formatUSDCurto } from "@/lib/format";
 
 /**
  * ╔══════════════════════════════════════════════════════════════════════╗
@@ -18,7 +18,7 @@ import { formatBRL } from "@/lib/format";
  * ╚══════════════════════════════════════════════════════════════════════╝
  *
  * Bloco isolado: a conta mensal, os números da rede, a contagem animada e a
- * cabeça de seção moram aqui. De fora entra só `formatBRL`, que é a mesma
+ * cabeça de seção moram aqui. De fora entra só `formatUSDCurto`, que é a mesma
  * formatação de dinheiro do checkout - dois formatos de real na mesma página
  * é o tipo de detalhe que faz a pessoa reler o valor.
  */
@@ -26,11 +26,11 @@ import { formatBRL } from "@/lib/format";
 /* ─────────────────────────────────────────────────── conteúdo do bloco ──── */
 
 const copyTransparencia = {
-  eyebrow: "Transparência",
-  title: "Para onde vai cada real",
-  lead: "Tratar mais de 500 animais exige consulta, exame, medicação e cirurgia todo mês - e sempre antes de o caso virar urgência.",
-  costsCaption: "Custos veterinários mensais dos abrigos que o Caio Protetor acompanha",
-  totalLabel: "Meta veterinária por mês",
+  eyebrow: "Transparency",
+  title: "Where every real goes",
+  lead: "Treating more than 500 animals takes vet visits, tests, medication and surgery every month - always before a case turns into an emergency.",
+  costsCaption: "Monthly veterinary costs of the shelters Kyle Rescuer follows",
+  totalLabel: "Veterinary goal per month",
 };
 
 /**
@@ -46,11 +46,11 @@ const copyTransparencia = {
  */
 const monthlyCosts = {
   items: [
-    { label: "Consultas e atendimento veterinário", cents: 1_420_000, dot: "bg-action" },
-    { label: "Exames e diagnóstico", cents: 985_000, dot: "bg-warning" },
-    { label: "Medicamentos e antibióticos", cents: 890_000, dot: "bg-donate" },
-    { label: "Vacinas e antiparasitários", cents: 570_385, dot: "bg-progress" },
-    { label: "Cirurgias e urgências", cents: 400_000, dot: "bg-ink-300" },
+    { label: "Vet visits and veterinary care", cents: 1_420_000, dot: "bg-action" },
+    { label: "Tests and diagnosis", cents: 985_000, dot: "bg-warning" },
+    { label: "Medicine and antibiotics", cents: 890_000, dot: "bg-donate" },
+    { label: "Vaccines and parasite control", cents: 570_385, dot: "bg-progress" },
+    { label: "Surgeries and emergencies", cents: 400_000, dot: "bg-ink-300" },
   ],
 };
 
@@ -79,22 +79,22 @@ const impactNumbers = [
     prefix: "+",
     value: 500,
     suffix: "",
-    label: "vidas em tratamento",
-    note: "Animais que dependem de atendimento nos abrigos que o Caio acompanha.",
+    label: "lives in treatment",
+    note: "Animals that depend on care at the shelters Kyle follows.",
   },
   {
     prefix: "",
     value: 5,
     suffix: "",
-    label: "abrigos apoiados",
-    note: "Cada um com nome e endereço abertos.",
+    label: "shelters supported",
+    note: "Each one with its name and address in the open.",
   },
   {
     prefix: "",
     value: 4,
     suffix: "",
-    label: "estados alcançados",
-    note: "São Paulo, Minas Gerais, Bahia e Espírito Santo.",
+    label: "states reached",
+    note: "São Paulo, Minas Gerais, Bahia and Espírito Santo.",
   },
 ] as const;
 
@@ -390,7 +390,7 @@ function CountUp({
     // treme na horizontal durante a contagem inteira.
     <span ref={ref} className={`tabular-nums ${className}`}>
       {prefix}
-      {display.toLocaleString("pt-BR")}
+      {display.toLocaleString("en-US")}
       {suffix}
     </span>
   );
@@ -520,7 +520,7 @@ export default function Transparencia() {
                     </span>
                   </th>
                   <td className="whitespace-nowrap px-4 py-3 text-right text-fs14 font-extrabold tabular-nums text-ink-900">
-                    {formatBRL(item.cents)}
+                    {formatUSDCurto(item.cents)}
                   </td>
                 </tr>
               ))}
@@ -530,7 +530,7 @@ export default function Transparencia() {
                   {copyTransparencia.totalLabel}
                 </th>
                 <td className="whitespace-nowrap px-4 py-4 text-right text-[clamp(0.93rem,0.837rem+0.372vw,1.163rem)] font-extrabold tabular-nums text-action">
-                  {formatBRL(monthlyCostsTotal)}
+                  {formatUSDCurto(monthlyCostsTotal)}
                 </td>
               </tr>
             </tbody>

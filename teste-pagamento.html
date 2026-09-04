@@ -1,0 +1,1077 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Teste de pagamento · GiveWP</title>
+
+<!--
+  ╔══════════════════════════════════════════════════════════════════════╗
+  ║  PÁGINA DE TESTE - as rotas REST do GiveWP, PayPal e Stripe           ║
+  ╚══════════════════════════════════════════════════════════════════════╝
+
+  Arquivo avulso, sem build e sem dependência: sobe num host HTTPS e abre.
+  Fala com as rotas de `givewp.kylerescuer.org` - as mesmas que o site usa -
+  e mostra cada requisição e resposta no log.
+
+  ⚠️ O aviso do topo é montado a partir do `testMode` que o servidor
+  devolve, não de um texto fixo. Test Mode ligado = dinheiro de mentira;
+  desligado = cobrança real. Nunca confie na memória sobre em que modo o
+  servidor está: leia a faixa.
+
+  ⚠️ NÃO fica no build do site. Mora na raiz do repositório, não em
+  `public/` - o `next build` não a copia para `out/`. Suba à mão e tire do ar
+  quando terminar.
+
+  ── O ciclo do funil, as duas pontas ──────────────────────────────────────
+  O bloco "Funil" fecha o ciclo inteiro, para o teste não parar no pagamento:
+
+    1. InitiateCheckout   antes de cada tentativa -> grava o lead
+    2. donation.completed depois que o pagamento fecha -> fecha o lead
+
+  Os dois vão para a mesma base (o seletor de endpoint vale para as duas).
+  Ligados por padrão: testar o pagamento sem ver o funil responder deixa
+  metade do caminho no escuro.
+
+  ⚠️ São linhas DE VERDADE em `ic_caio_protetor_us`. Alguém vai ter que
+  limpar depois - confira em painel.lusapayments.com/painel/abrigos.
+
+  ⚠️ Quem manda a confirmação no site de verdade é o hook do WordPress
+  (`give_update_payment_status`), e só para `paypal-commerce` e
+  `stripe_payment_element`. Aqui ela sai DA PÁGINA, porque com o Test
+  Donation (`manual`) o hook não dispara e o funil nunca veria o fechamento.
+  Consequência: testando por PayPal/Stripe com o hook ativo, o funil recebe
+  DUAS confirmações. É esperado; desligue o interruptor 2 se quiser só a do
+  hook.
+
+  Ela também não trava o valor no mínimo. O site trava; aqui vai como
+  escolhido, para uma recusa aparecer como recusa em vez de virar outro valor.
+
+  ── Os três gateways ──────────────────────────────────────────────────────
+  `manual`  o "Test Donation" embutido do GiveWP. Fecha a doação na hora, sem
+            chamada externa nenhuma. É o caminho de teste de verdade: não
+            depende de credencial, e por isso está sempre disponível.
+  `paypal`  depende de uma conta conectada NAQUELE modo (ver abaixo).
+  `stripe`  idem, com a chave publicável do modo.
+
+  ⚠️ O PayPal e o Stripe têm credenciais separadas por modo, e o Test Mode do
+  GiveWP troca as duas de uma vez:
+
+    Test Mode LIGADO     PayPal lê a conta *sandbox* - que é outra conta, no
+                         `sandbox.paypal.com`, e precisa ser conectada à
+                         parte. Sem ela o `clientId` volta vazio. O Stripe usa
+                         `pk_test_…`.
+    Test Mode DESLIGADO  PayPal live e Stripe `pk_live_…`: os dois cobram de
+                         verdade.
+
+  Por isso a página lê o `/config` e liga só o que existe, dizendo o motivo
+  quando um deles não está disponível - em vez de tentar carregar um SDK com
+  credencial vazia e morrer com "falha ao carregar".
+
+  ⚠️ O `manual` NÃO aparece no `/config`: a rota não publica a lista de
+  gateways habilitados. Ele é oferecido sempre; se estiver desmarcado no
+  admin, o `/donate` responde "gatewayId must be a valid gateway" e o log
+  mostra a resposta por extenso.
+-->
+
+<style>
+  :root {
+    --bg: #0f1115; --card: #171a21; --linha: #262b36;
+    --texto: #e6e9ef; --fraco: #939cb0;
+    --ok: #3ecf8e; --erro: #ff6b6b; --aviso: #f3b639; --azul: #4c8dff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 64px;
+    background: var(--bg); color: var(--texto);
+    font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .wrap { max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+  h1 { margin: 0; font-size: 1.25rem; letter-spacing: -0.02em; }
+  h2 { margin: 0 0 10px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--fraco); }
+  .card { background: var(--card); border: 1px solid var(--linha); border-radius: 10px; padding: 16px; }
+  .faixa { padding: 12px 14px; border-radius: 0 8px 8px 0; font-size: 0.9rem; border-left: 3px solid var(--fraco); background: rgba(147,156,176,.08); }
+  .faixa--teste { border-color: var(--ok); background: rgba(62,207,142,.08); }
+  .faixa--real  { border-color: var(--erro); background: rgba(255,107,107,.10); }
+  .faixa--aviso { border-color: var(--aviso); background: rgba(243,182,57,.08); }
+  .faixa b { display: block; margin-bottom: 2px; }
+  .faixa--teste b { color: var(--ok); }
+  .faixa--real b  { color: var(--erro); }
+  .faixa--aviso b { color: var(--aviso); }
+  dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; font-size: 0.88rem; }
+  dt { color: var(--fraco); }
+  dd { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; word-break: break-all; }
+  .linhas { display: flex; flex-wrap: wrap; gap: 8px; }
+  .linhas button {
+    flex: 1 1 auto; min-width: 92px; padding: 12px 10px; cursor: pointer;
+    background: #1e222b; color: var(--texto); border: 1px solid var(--linha);
+    border-radius: 8px; font: inherit; font-weight: 700;
+    transition: border-color .15s, background .15s;
+  }
+  .linhas button:hover:not(:disabled) { border-color: var(--azul); }
+  .linhas button[aria-pressed="true"] { border-color: var(--azul); background: rgba(76,141,255,.14); }
+  .linhas button:disabled { opacity: .45; cursor: not-allowed; }
+  .linhas button .nota { display: block; font-size: 0.68rem; font-weight: 600; color: var(--fraco); margin-top: 2px; }
+  .livre { display: flex; gap: 8px; margin-top: 10px; }
+  .livre input, .campo {
+    flex: 1; padding: 11px 12px; border-radius: 8px; font: inherit;
+    background: #1e222b; color: var(--texto); border: 1px solid var(--linha);
+  }
+  .btn {
+    padding: 11px 16px; border-radius: 8px; border: 1px solid var(--linha);
+    background: #1e222b; color: var(--texto); font: inherit; font-weight: 700; cursor: pointer;
+  }
+  .btn--principal { background: var(--azul); border-color: var(--azul); color: #06101f; width: 100%; min-height: 48px; margin-top: 12px; }
+  .btn--principal:disabled { opacity: .5; cursor: not-allowed; }
+  .resumo { margin-top: 12px; font-size: 0.9rem; }
+  .resumo b { font-size: 1.15rem; }
+  #aviso-min { color: var(--erro); font-size: 0.85rem; margin-top: 6px; display: none; }
+  #mount-paypal, #mount-stripe { margin-top: 12px; min-height: 44px; }
+  /* O Payment Element é um iframe de fundo claro: sem isto ele fica ilegível. */
+  #mount-stripe { background: #fff; border-radius: 8px; padding: 12px; }
+  #log {
+    background: #0b0d11; border: 1px solid var(--linha); border-radius: 8px;
+    padding: 12px; max-height: 340px; overflow: auto;
+    font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+    white-space: pre-wrap; word-break: break-word;
+  }
+  .l-ok { color: var(--ok); } .l-erro { color: var(--erro); }
+  .l-info { color: var(--fraco); } .l-passo { color: var(--azul); font-weight: 700; }
+  .indisp { color: var(--fraco); font-size: 0.88rem; }
+  .dica { font-size: 0.82rem; color: var(--fraco); margin-top: 8px; }
+  .dica code { color: var(--texto); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Teste de pagamento · GiveWP</h1>
+
+  <div id="faixa-modo" class="faixa">Lendo o modo do servidor…</div>
+
+  <div class="card">
+    <h2>Configuração lida do servidor</h2>
+    <dl id="cfg"><dt>status</dt><dd>carregando…</dd></dl>
+  </div>
+
+  <div class="card">
+    <h2>Valor</h2>
+    <div class="linhas" id="valores"></div>
+    <div class="livre">
+      <input id="livre" type="text" inputmode="decimal" placeholder="Outro valor em dólares (ex.: 2.50)" />
+      <button type="button" class="btn" id="aplicar-livre">Usar</button>
+    </div>
+    <p class="resumo">Vai ser cobrado: <b id="escolhido">$1.00</b></p>
+    <p id="aviso-min"></p>
+  </div>
+
+  <div class="card">
+    <h2>Funil (InitiateCheckout)</h2>
+    <dl id="cfg-funil"><dt>status</dt><dd>—</dd></dl>
+    <div class="linhas" id="ic-endpoints" style="margin-top:12px"></div>
+    <label class="dica" style="display:flex;align-items:center;gap:8px;margin-top:12px;cursor:pointer">
+      <input type="checkbox" id="enviar-ic" checked style="width:16px;height:16px;cursor:pointer" />
+      <span><b>1.</b> Gravar o InitiateCheckout antes de cada pagamento</span>
+    </label>
+    <label class="dica" style="display:flex;align-items:center;gap:8px;margin-top:6px;cursor:pointer">
+      <input type="checkbox" id="enviar-wh" checked style="width:16px;height:16px;cursor:pointer" />
+      <span><b>2.</b> Mandar a confirmação (<code>donation.completed</code>) depois que o pagamento fechar</span>
+    </label>
+    <button type="button" class="btn" id="ic-agora" style="margin-top:12px">
+      Enviar só um IC agora (sem pagar)
+    </button>
+  </div>
+
+  <div class="card">
+    <h2>Como pagar</h2>
+    <div class="linhas" id="gateways"></div>
+
+    <div id="painel-paypal" hidden>
+      <div id="mount-paypal"></div>
+      <p id="paypal-indisp" class="indisp" hidden></p>
+    </div>
+
+    <div id="painel-manual" hidden>
+      <p class="dica" style="margin-top:0">
+        O gateway <b>Test Donation</b> do GiveWP fecha a doação na hora, sem
+        chamar PayPal nem Stripe. Não passa cartão, não move dinheiro — é o
+        caminho para conferir se a doação nasce certa no painel.
+      </p>
+      <button type="button" class="btn btn--principal" id="pagar-manual">
+        Concluir doação de teste
+      </button>
+    </div>
+
+    <div id="painel-stripe" hidden>
+      <div id="mount-stripe"></div>
+      <button type="button" class="btn btn--principal" id="pagar-stripe">Pagar com cartão</button>
+      <p id="stripe-indisp" class="indisp" hidden></p>
+      <p class="dica" id="dica-cartao" hidden>
+        Cartão de teste da Stripe: <code>4242 4242 4242 4242</code>, validade
+        futura qualquer, CVC qualquer, CEP qualquer.
+      </p>
+    </div>
+
+    <div id="resultado"></div>
+  </div>
+
+  <div class="card">
+    <h2>Log</h2>
+    <div id="log"></div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ── O que apontar ─────────────────────────────────────────────────────
+     ⚠️ `/wp-json/`, nunca `?rest_route=`. Neste nginx o `OPTIONS` de
+     `/?rest_route=…` volta 405 e o de `/wp-json/…` volta 200. Como todo POST
+     manda `Content-Type: application/json`, o navegador dispara um preflight
+     `OPTIONS` antes - e com 405 ele nem chega no PHP, o CORS do
+     `functions.php` não roda, e a chamada morre com "No
+     'Access-Control-Allow-Origin' header is present". O `GET /config`
+     funciona nos dois porque não tem preflight, então testar só a leitura
+     esconde o problema. */
+  var WP_ORIGIN = "https://givewp.kylerescuer.org";
+  var FORM_ID   = 10;
+
+  /* BN Code do GiveWP. Vai como atributo `data-*` na tag <script>, nunca na
+     query string. Sem ele o SDK carrega e desenha só o botão amarelo - o de
+     cartão não aparece, porque a elegibilidade do guest checkout nesta conta
+     é resolvida sobre essa identificação de parceiro. */
+  var BN_CODE = "GiveWP_SP_PPCPV2";
+
+  /* Mínimo que o form 10 valida (`validationRules.min`). O `/config` reporta
+     `minAmount: 10.00`, que é o primeiro nível da grade e NÃO a regra de
+     validação - dois números diferentes para coisas diferentes. */
+  var VALIDACAO_MIN = 1;
+
+  /* ── Funil (Nest) ──────────────────────────────────────────────────────
+     ⚠️ O painel escreve a URL como `/api/nest-relay/api/ic/<slug>`, com
+     `/api/` DUAS vezes. Essa forma devolve **404**: a ponte já injeta esse
+     segmento (`/api/nest-relay/{path}` → `127.0.0.1:3000/api/{path}`). O
+     caminho certo é o de baixo, com um `/api/` só - conferido lado a lado.
+
+     E a armadilha: o preflight `OPTIONS` responde 204 nas DUAS formas, então
+     o navegador libera a chamada e só o POST em si é que dá 404. Quem envia
+     sem olhar a resposta conclui "mandei e não chegou".
+
+     ⚠️ Dois identificadores diferentes, e é de propósito - é o que o
+     WordPress em produção faz:
+       IC_SLUG   vai na URL e é quem ESCOLHE o funil (Kyle Rescuer, id 11)
+       CAMPAIGN  vai no corpo, e continua sendo o slug antigo
+     Igualar os dois muda o funil de destino. */
+  var IC_SLUG  = "caio-protetor-us";
+  var CAMPAIGN = "cp-caio-protetor";
+
+  /* As duas formas ficam à vista para poderem ser comparadas ao vivo. A
+     `com /api/` é a que está escrita no painel; medida aqui, o Nest responde
+     `Cannot GET /api/api/ic/...` - ele mostra o caminho duplicado que
+     recebeu. A `sem` responde 200 e ecoa `"route":"/api/ic/caio-protetor-us"`. */
+  var IC_ENDPOINTS = [
+    { id: "sem",  rotulo: "1 × /api/", nota: "responde 200",
+      url: "https://lusapayments.com/api/nest-relay/ic/" + IC_SLUG },
+    { id: "com",  rotulo: "2 × /api/", nota: "do painel",
+      url: "https://lusapayments.com/api/nest-relay/api/ic/" + IC_SLUG }
+  ];
+  var icEndpoint = IC_ENDPOINTS[0];
+  function IC_URL() { return icEndpoint.url; }
+
+  /* A confirmação vai para a MESMA base do IC, só trocando o caminho - assim
+     o seletor de endpoint vale para as duas pontas de uma vez. É a rota que
+     o hook do WordPress usa (`donation.completed`).
+
+     ⚠️ Aqui a página manda a confirmação NO LUGAR do WordPress. No site de
+     verdade quem manda é o hook `give_update_payment_status` do
+     `functions.php` - e ele só age para `paypal-commerce` e
+     `stripe_payment_element`. Com o Test Donation (`manual`) o hook não
+     dispara, então sem este envio o funil nunca veria a conclusão e o
+     ciclo não teria como ser testado inteiro. */
+  function WH_URL() {
+    return icEndpoint.url.replace(/\/ic\/[^/]+$/, "/wh/givewp");
+  }
+
+  function rota(caminho, params) {
+    var q = new URLSearchParams(params || {}).toString();
+    return WP_ORIGIN + "/wp-json/givewp/v1" + caminho + (q ? "?" + q : "");
+  }
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  function log(msg, classe) {
+    var l = document.createElement("div");
+    l.className = classe || "";
+    l.textContent = "[" + new Date().toTimeString().slice(0, 8) + "] " + msg;
+    $("log").appendChild(l);
+    $("log").scrollTop = $("log").scrollHeight;
+  }
+  function logJson(rotulo, obj) { log(rotulo + " " + JSON.stringify(obj, null, 2), "l-info"); }
+
+  /* ── Estado ────────────────────────────────────────────────────────── */
+  var cfg = null;
+  var valorCents = 100;      // $1.00 - o mínimo que o form aceita
+  var gateway = null;        // "paypal" | "stripe"
+  var stripe = null, elements = null, stripeMontado = false;
+  var paypalMontado = false;
+
+  function dolares() { return (valorCents / 100).toFixed(2); }
+
+  /* ── /config ───────────────────────────────────────────────────────── */
+  function carregarConfig() {
+    log("GET /config?form_id=" + FORM_ID, "l-passo");
+    return fetch(rota("/config", { form_id: String(FORM_ID) }), { headers: { Accept: "application/json" } })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, json: j }; }); })
+      .then(function (res) {
+        if (!res.ok) throw new Error("config: " + JSON.stringify(res.json));
+        cfg = res.json;
+        logJson("/config →", cfg);
+        pintarModo();
+        pintarConfig();
+        return cfg;
+      });
+  }
+
+  function temPaypal() { return !!(cfg && cfg.paypal && cfg.paypal.clientId); }
+  function temStripe() { return !!(cfg && cfg.stripe && cfg.stripe.publishableKey); }
+
+  /* A faixa do topo sai do servidor, nunca de texto fixo. */
+  function pintarModo() {
+    var f = $("faixa-modo");
+    if (cfg.testMode) {
+      f.className = "faixa faixa--teste";
+      f.innerHTML = "<b>Test Mode LIGADO — dinheiro de mentira.</b>" +
+        "Nada é cobrado de verdade. O GiveWP troca as credenciais dos dois gateways de uma vez, " +
+        "então PayPal está em sandbox e Stripe usa a chave de teste. " +
+        "As doações criadas aqui ainda viram registro no painel e disparam os webhooks de conclusão.";
+    } else {
+      f.className = "faixa faixa--real";
+      f.innerHTML = "<b>COBRANÇA REAL — Test Mode desligado.</b>" +
+        "Cada pagamento concluído aqui tira dinheiro de verdade e cria uma doação de verdade no painel. " +
+        "Esta página não manda evento para o funil, então não suja métrica de anúncio.";
+    }
+  }
+
+  function pintarConfig() {
+    var linhas = [
+      ["form", cfg.formId],
+      ["moeda", cfg.currency],
+      ["testMode", String(cfg.testMode)],
+      ["mínimo (/config)", cfg.minAmount],
+      ["mínimo (validação do form)", "$" + VALIDACAO_MIN + ".00"],
+      ["máximo", cfg.maxAmount],
+      ["paypal", temPaypal() ? cfg.paypal.clientId.slice(0, 22) + "… (" + cfg.paypal.mode + ")" : "sem conta conectada (" + cfg.paypal.mode + ")"],
+      ["stripe", temStripe() ? cfg.stripe.publishableKey.slice(0, 18) + "… (" + cfg.stripe.mode + ")" : "sem conta conectada"],
+      ["stripe conta", (cfg.stripe && cfg.stripe.connectedAccountId) || "—"]
+    ];
+    $("cfg").innerHTML = linhas.map(function (l) { return "<dt>" + l[0] + "</dt><dd>" + l[1] + "</dd>"; }).join("");
+  }
+
+  function montarEndpoints() {
+    $("ic-endpoints").innerHTML = "";
+    IC_ENDPOINTS.forEach(function (op) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.innerHTML = op.rotulo + '<span class="nota">' + op.nota + "</span>";
+      b.setAttribute("aria-pressed", String(icEndpoint.id === op.id));
+      b.addEventListener("click", function () {
+        icEndpoint = op;
+        montarEndpoints();
+        pintarFunil();
+        log("endpoint do IC: " + op.url, "l-info");
+      });
+      $("ic-endpoints").appendChild(b);
+    });
+  }
+
+  function pintarFunil() {
+    $("cfg-funil").innerHTML = [
+      ["slug (URL)", IC_SLUG],
+      ["campaign (corpo)", CAMPAIGN],
+      ["tabela", "ic_caio_protetor_us"],
+      ["IC (passo 1)", IC_URL()],
+      ["confirmação (passo 2)", WH_URL()],
+      ["no painel", "painel.lusapayments.com/painel/abrigos"]
+    ].map(function (l) { return "<dt>" + l[0] + "</dt><dd>" + l[1] + "</dd>"; }).join("");
+  }
+
+  /**
+   * ⚠️ **UMA identidade por tentativa, usada nas três pontas.**
+   *
+   * O IC, a doação e a confirmação têm que falar do MESMO doador. Antes cada
+   * um gerava o próprio e-mail com `Date.now()`, e como as chamadas caem com
+   * milissegundos de diferença saíam endereços diferentes
+   * (`…146026` no IC, `…146027` na doação): o funil gravava duas linhas
+   * soltas - uma com `page_url` e sem `paid_at`, outra paga e sem origem.
+   * Visto no painel em 04/09/2026.
+   */
+  var tentativa = null;
+
+  /**
+   * ⚠️ **País, CEP, cidade e estado saem do navegador, nunca chumbados.**
+   *
+   * São os dados de casamento do CAPI: o Meta usa os quatro para achar a
+   * pessoa. Um valor fixo mente para o algoritmo. Esta página já chumbou
+   * `country: "US"` e o painel passou a gravar visitas de Hortolândia como
+   * norte-americanas - exatamente o defeito que ela deveria ajudar a achar.
+   *
+   * Mesma fonte e mesma ordem que o site (`resolveGeoMeta` em
+   * `lib/payments/tracking.ts`): `ipwho.is` primeiro, `ipapi.co` de reserva.
+   *
+   * ⚠️ Dois provedores porque o `ipapi.co` sozinho caiu em silêncio - passou
+   * a responder `{"error":true,"reason":"RateLimited"}` e o `catch` engolia,
+   * mandando tudo vazio sem ninguém perceber. Aqui o log diz qual respondeu.
+   */
+  var geoPromise = null;
+  var GEO_PROVIDERS = ["https://ipwho.is/", "https://ipapi.co/json/"];
+
+  function lerGeo(d) {
+    if (!d || typeof d !== "object") return null;
+    /* `ipwho.is` diz `success: false`; `ipapi.co`, `error: true`. */
+    if (d.success === false || d.error === true) return null;
+    var geo = {
+      zip: d.postal || null,
+      city: d.city || null,
+      state: d.region_code || null,
+      country: d.country_code || null
+    };
+    return geo.country ? geo : null;
+  }
+
+  function resolverGeo() {
+    if (geoPromise) return geoPromise;
+
+    geoPromise = GEO_PROVIDERS.reduce(function (cadeia, url) {
+      return cadeia.then(function (geo) {
+        if (geo) return geo;
+        return fetch(url)
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (d) {
+            var lido = lerGeo(d);
+            if (lido) {
+              log("geo por IP (" + url + "): " + (lido.city || "?") + "/" +
+                  (lido.state || "?") + " " + lido.country + " CEP " + (lido.zip || "?"), "l-ok");
+            } else {
+              log("geo: " + url + " nao resolveu - tentando o proximo", "l-info");
+            }
+            return lido;
+          })
+          .catch(function () {
+            log("geo: " + url + " falhou na rede - tentando o proximo", "l-info");
+            return null;
+          });
+      });
+    }, Promise.resolve(null)).then(function (geo) {
+      if (geo) return geo;
+      log("geo por IP falhou nos dois - os campos vão vazios (melhor que inventados)", "l-erro");
+      return { zip: null, city: null, state: null, country: null };
+    });
+
+    return geoPromise;
+  }
+
+  function novaTentativa() {
+    var carimbo = Date.now();
+    tentativa = {
+      leadId: "lead_" + carimbo + "_" + Math.random().toString(36).slice(2, 8),
+      email: "teste-givewp+" + carimbo + "@example.com",
+      firstName: "Teste",
+      lastName: "Pagamento"
+    };
+    return tentativa;
+  }
+
+  /** A tentativa em curso, criando uma se ainda não houver. */
+  function tentativaAtual() { return tentativa || novaTentativa(); }
+
+  /**
+   * Grava o InitiateCheckout. Mesmos campos que `lib/payments/tracking.ts`
+   * manda no site - por isso a linha de teste sai com a mesma forma da real.
+   *
+   * Diferente do site, aqui a resposta é AGUARDADA e mostrada no log: o
+   * ponto de testar é justamente ver se o Nest aceitou.
+   */
+  function enviarIC(motivo) {
+    /* Abre a tentativa: daqui para a frente, doação e confirmação usam esta
+       mesma identidade. */
+    var t = novaTentativa();
+    var lead = t.leadId;
+
+    return resolverGeo().then(function (geo) {
+    var corpo = {
+      event: "InitiateCheckout",
+      campaign: CAMPAIGN,
+      lead_id: lead,
+      first_name: t.firstName,
+      last_name: t.lastName,
+      email: t.email,
+      phone: null,
+      amount: Number(dolares()),
+      amount_cents: valorCents,
+      currency: cfg ? cfg.currency : "USD",
+      /* Os quatro do casamento do CAPI, todos do navegador. */
+      country: geo.country,
+      zip: geo.zip,
+      city: geo.city,
+      state: geo.state,
+      gateway: gateway || "manual",
+      product_name: "ONE-TIME DONATION",
+      product_description: "Teste pela pagina de diagnostico",
+      event_id: "ic_" + lead,
+      checkout_event_id: "ic_" + lead,
+      event_time: Math.floor(Date.now() / 1000),
+      page_url: window.location.href,
+      page_title: document.title,
+      referrer: document.referrer || null,
+      user_agent: navigator.userAgent
+    };
+
+    log("POST " + IC_URL() + "  (" + motivo + ")", "l-passo");
+    log("  lead_id: " + lead, "l-info");
+
+    return fetch(IC_URL(), {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify(corpo)
+    }).then(function (r) {
+      return r.text().then(function (bruto) {
+        var j; try { j = JSON.parse(bruto); } catch (_) { j = { __naoJson: bruto.slice(0, 300) }; }
+        logJson("← " + r.status + " IC", j);
+        if (r.ok) log("IC gravado no funil (" + IC_SLUG + ")", "l-ok");
+        else log("o funil RECUSOU o IC - status " + r.status, "l-erro");
+        return { ok: r.ok, json: j };
+      });
+    }).catch(function (err) {
+      log("IC falhou na rede: " + err.message, "l-erro");
+      return { ok: false };
+    });
+    });
+  }
+
+  /** Chamado antes de cada pagamento, se o interruptor estiver ligado. */
+  function talvezEnviarIC(motivo) {
+    if (!$("enviar-ic").checked) return Promise.resolve();
+    return enviarIC(motivo);
+  }
+
+  /**
+   * Manda `donation.completed` - o mesmo payload que o hook do WordPress
+   * monta em `kr_givewp_notify_nest_on_complete`, campo a campo, para a
+   * linha de teste sair com a forma da real.
+   *
+   * `donation_id` é a chave de correlação: no PayPal é o Order ID, no Stripe
+   * o Payment Intent, e no Test Donation não existe id externo nenhum - aí
+   * vai o `lead_id` desta tentativa, para o par IC↔confirmação ainda fechar.
+   */
+  function enviarConfirmacao(dados) {
+    if (!$("enviar-wh").checked) return Promise.resolve();
+
+    var corpo = {
+      event: "donation.completed",
+      source: "teste-pagamento.html",
+      donation_id: dados.donationId,
+      form_id: FORM_ID,
+      status: "complete",
+      amount: Number(dados.amount),
+      currency: cfg.currency,
+      email: dados.email,
+      first_name: (tentativa && tentativa.firstName) || "Teste",
+      last_name: (tentativa && tentativa.lastName) || "Pagamento",
+      gateway: dados.gateway,
+      donation_type: "single",
+      site: WP_ORIGIN + "/",
+      created_at: new Date().toISOString().slice(0, 19).replace("T", " "),
+      /* Não vai no payload do WordPress - é extra desta página, para o par
+         IC↔confirmação poder ser conferido no painel. */
+      lead_id: tentativa && tentativa.leadId
+    };
+
+    log("POST " + WH_URL() + "  (confirmação)", "l-passo");
+    return fetch(WH_URL(), {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify(corpo)
+    }).then(function (r) {
+      return r.text().then(function (bruto) {
+        var j; try { j = JSON.parse(bruto); } catch (_) { j = { __naoJson: bruto.slice(0, 300) }; }
+        logJson("← " + r.status + " confirmação", j);
+        if (r.ok) log("CONFIRMAÇÃO ACEITA pelo funil", "l-ok");
+        else log("o funil RECUSOU a confirmação - status " + r.status, "l-erro");
+        return { ok: r.ok, json: j };
+      });
+    }).catch(function (err) {
+      log("confirmação falhou na rede: " + err.message, "l-erro");
+      return { ok: false };
+    });
+  }
+
+  $("ic-agora").addEventListener("click", function () {
+    var b = $("ic-agora");
+    b.disabled = true;
+    enviarIC("manual, pelo botao").then(function () { b.disabled = false; });
+  });
+
+  /* ── Valores ───────────────────────────────────────────────────────── */
+  var OPCOES = [
+    { cents: 1,    rotulo: "$0.01", nota: "abaixo do mínimo" },
+    { cents: 100,  rotulo: "$1.00", nota: "mínimo real" },
+    { cents: 1000, rotulo: "$10.00", nota: "1º nível" }
+  ];
+
+  function montarValores() {
+    $("valores").innerHTML = "";
+    OPCOES.forEach(function (op) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.innerHTML = op.rotulo + '<span class="nota">' + op.nota + "</span>";
+      b.setAttribute("aria-pressed", String(op.cents === valorCents));
+      b.addEventListener("click", function () { escolherValor(op.cents); });
+      $("valores").appendChild(b);
+    });
+  }
+
+  function escolherValor(cents) {
+    if (cents === valorCents) return;   // não refaz o que já está montado
+    valorCents = cents;
+    montarValores();
+    atualizarResumo();
+    remontarGateway();
+  }
+
+  function atualizarResumo() {
+    $("escolhido").textContent = "$" + dolares();
+    var abaixo = valorCents < VALIDACAO_MIN * 100;
+    $("aviso-min").style.display = abaixo ? "block" : "none";
+    if (abaixo) {
+      $("aviso-min").textContent =
+        "⚠ O form 10 valida mínimo de $" + VALIDACAO_MIN + ".00. O pagamento vai " +
+        "abrir normalmente e o /donate deve recusar no fim - no PayPal isso acontece " +
+        "DEPOIS de o pedido ser aprovado. Para testar centavos, baixe o mínimo do " +
+        "campo de valor no admin do GiveWP antes.";
+    }
+  }
+
+  $("aplicar-livre").addEventListener("click", function () {
+    var bruto = ($("livre").value || "").trim().replace(",", ".").replace(/[^\d.]/g, "");
+    var n = parseFloat(bruto);
+    if (!isFinite(n) || n <= 0) {
+      log('valor livre inválido: "' + $("livre").value + '" (escreva em dólares, ex.: 2.50)', "l-erro");
+      return;
+    }
+    var cents = Math.round(n * 100);
+    log("valor livre: $" + (cents / 100).toFixed(2), "l-info");
+    escolherValor(cents);
+  });
+
+  /* ── Escolha do gateway ────────────────────────────────────────────── */
+  function montarGateways() {
+    /* `manual` é o "Test Donation" embutido do GiveWP. Vem primeiro quando o
+       Test Mode está ligado porque é o único que não depende de credencial
+       nenhuma: fecha a doação sem chamar PayPal nem Stripe.
+
+       Note que ele NÃO aparece no `/config` - a rota não publica a lista de
+       gateways habilitados. Ele é oferecido sempre, e se estiver desmarcado
+       no admin o `/donate` responde "gatewayId must be a valid gateway", que
+       o log mostra por extenso. */
+    var opcoes = [
+      { id: "manual", rotulo: "Test Donation", disp: true, nota: "sem dinheiro" },
+      { id: "paypal", rotulo: "PayPal", disp: temPaypal(),
+        motivo: "sem conta " + (cfg.paypal.mode === "sandbox" ? "sandbox" : "live") + " conectada" },
+      { id: "stripe", rotulo: "Cartão (Stripe)", disp: temStripe(),
+        motivo: "sem conta conectada" }
+    ];
+    if (!cfg.testMode) opcoes.push(opcoes.shift());   // fora do teste, ele desce
+
+    $("gateways").innerHTML = "";
+    opcoes.forEach(function (op) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.disabled = !op.disp;
+      b.innerHTML = op.rotulo + '<span class="nota">' + (op.disp ? (op.nota || "disponível") : op.motivo) + "</span>";
+      b.setAttribute("aria-pressed", String(gateway === op.id));
+      b.addEventListener("click", function () { escolherGateway(op.id); });
+      $("gateways").appendChild(b);
+    });
+
+    /* Liga sozinho no que existe - com um gateway só, não há escolha a fazer. */
+    if (!gateway) {
+      var primeiro = opcoes.filter(function (o) { return o.disp; })[0];
+      if (primeiro) escolherGateway(primeiro.id);
+      else log("nenhum gateway disponível: nem PayPal nem Stripe têm conta conectada neste modo", "l-erro");
+    }
+  }
+
+  function escolherGateway(id) {
+    gateway = id;
+    montarGateways();
+    $("painel-manual").hidden = id !== "manual";
+    $("painel-paypal").hidden = id !== "paypal";
+    $("painel-stripe").hidden = id !== "stripe";
+    $("dica-cartao").hidden = !(id === "stripe" && cfg.testMode);
+    remontarGateway();
+  }
+
+  function remontarGateway() {
+    $("resultado").innerHTML = "";
+    /* O `manual` não monta nada: é um POST direto no clique. */
+    if (gateway === "paypal") { paypalMontado = false; $("mount-paypal").innerHTML = ""; montarPaypal(); }
+    if (gateway === "stripe") { stripeMontado = false; $("mount-stripe").innerHTML = ""; montarStripe(); }
+  }
+
+  /* ── POST nas rotas ────────────────────────────────────────────────── */
+  function apiPost(caminho, corpo) {
+    log("POST " + caminho + " " + JSON.stringify(corpo), "l-passo");
+    return fetch(rota(caminho), {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify(corpo)
+    }).then(function (r) {
+      return r.text().then(function (bruto) {
+        var j; try { j = JSON.parse(bruto); } catch (_) { j = { __naoJson: bruto.slice(0, 400) }; }
+        logJson("← " + r.status + " " + caminho, j);
+        return { ok: r.ok, status: r.status, json: j };
+      });
+    });
+  }
+
+  /**
+   * Os dados do doador da tentativa em curso - os MESMOS que o IC gravou.
+   * Se o IC não rodou (interruptor 1 desligado), abre uma tentativa aqui.
+   */
+  function doador() {
+    var t = tentativaAtual();
+    return {
+      form_id: FORM_ID,
+      amount: dolares(),
+      first_name: t.firstName,
+      last_name: t.lastName,
+      email: t.email
+    };
+  }
+
+  function sucesso(titulo, linhas) {
+    $("resultado").innerHTML =
+      '<div class="faixa faixa--teste" style="margin-top:14px"><b>' + titulo + "</b>" +
+      linhas.join("<br>") + "</div>";
+  }
+  function alerta(titulo, texto) {
+    $("resultado").innerHTML =
+      '<div class="faixa faixa--aviso" style="margin-top:14px"><b>' + titulo + "</b>" + texto + "</div>";
+  }
+
+  /* ── PayPal ────────────────────────────────────────────────────────── */
+  var sdkPaypal = null;
+  function carregarSdkPaypal(clientId, moeda) {
+    if (sdkPaypal) return sdkPaypal;
+    sdkPaypal = new Promise(function (resolve, reject) {
+      if (window.paypal) { resolve(window.paypal); return; }
+      var s = document.createElement("script");
+      s.src = "https://www.paypal.com/sdk/js?client-id=" + encodeURIComponent(clientId) +
+              "&currency=" + encodeURIComponent(moeda) +
+              "&intent=capture&components=buttons&disable-funding=credit";
+      s.setAttribute("data-partner-attribution-id", BN_CODE);
+      s.onload = function () { window.paypal ? resolve(window.paypal) : reject(new Error("SDK carregou mas não registrou window.paypal")); };
+      s.onerror = function () { sdkPaypal = null; reject(new Error("o PayPal recusou o carregamento do SDK")); };
+      document.head.appendChild(s);
+      log("carregando SDK do PayPal (BN " + BN_CODE + ")", "l-passo");
+    });
+    return sdkPaypal;
+  }
+
+  function montarPaypal() {
+    if (paypalMontado) return;
+
+    /* A checagem que faltava: com `clientId` vazio o SDK falha com uma
+       mensagem que não diz nada. Melhor dizer o motivo de verdade. */
+    if (!temPaypal()) {
+      $("paypal-indisp").hidden = false;
+      $("paypal-indisp").textContent =
+        "PayPal indisponível: o /config devolveu clientId vazio no modo " +
+        cfg.paypal.mode + ". " +
+        (cfg.testMode
+          ? "Com o Test Mode ligado o GiveWP usa a conta sandbox do PayPal, e não há nenhuma conectada. Desligue o Test Mode para usar a conta live, ou teste por cartão."
+          : "Conecte a conta PayPal em Give → Settings → Payment Gateways.");
+      log("PayPal indisponível (clientId vazio, modo " + cfg.paypal.mode + ")", "l-erro");
+      return;
+    }
+    $("paypal-indisp").hidden = true;
+
+    carregarSdkPaypal(cfg.paypal.clientId, cfg.currency).then(function (paypal) {
+      if (paypalMontado) return;
+      paypalMontado = true;
+      var d = null;
+
+      var botoes = paypal.Buttons({
+        style: { layout: "vertical", color: "gold", shape: "rect", label: "paypal" },
+
+        createOrder: function () {
+          d = doador();
+          return talvezEnviarIC("antes do PayPal").then(function () {
+            return apiPost("/paypal/create-order", d);
+          }).then(function (res) {
+            /* O id vem em json.data.id: a rota faz proxy cru do admin-ajax,
+               que responde no envelope {success, data} do WordPress. */
+            var id = res.json && res.json.data && res.json.data.id;
+            if (!res.ok || !id) throw new Error("create-order falhou");
+            log("pedido criado no PayPal: " + id, "l-ok");
+            return id;
+          });
+        },
+
+        onApprove: function (data) {
+          var orderId = data.orderID;
+          log("aprovado no PayPal: " + orderId, "l-ok");
+          /* `paypal_order_id`, nunca `order_id`: a chave literal `order_id`
+             num corpo JSON é bloqueada por regra de WAF no nginx. */
+          return apiPost("/paypal/approve-order", { form_id: FORM_ID, paypal_order_id: orderId })
+            .then(function (res) {
+              if (!res.ok || (res.json && res.json.success === false)) throw new Error("approve-order falhou");
+              return apiPost("/donate", {
+                form_id: FORM_ID, gateway_id: "paypal-commerce",
+                amount: d.amount, currency: cfg.currency,
+                first_name: d.first_name, last_name: d.last_name, email: d.email,
+                origin_url: window.location.href, paypal_order_id: orderId
+              });
+            })
+            .then(function (res) {
+              if (!res.ok || (res.json && res.json.ok === false)) throw new Error("donate falhou");
+              log("DOAÇÃO CRIADA NO GIVEWP", "l-ok");
+              /* ⚠️ No site de verdade o hook do WordPress também manda esta
+                 confirmação para o PayPal. Aqui ela sai da página para o
+                 ciclo poder ser conferido de ponta a ponta - o que significa
+                 que, com o hook ativo, o funil recebe DUAS. É esperado neste
+                 teste; desligue o interruptor 2 se quiser só a do hook. */
+              enviarConfirmacao({
+                donationId: orderId, amount: d.amount,
+                email: d.email, gateway: "paypal-commerce"
+              });
+              sucesso("Doação concluída pelo PayPal.", [
+                "Valor: $" + d.amount,
+                "Order ID: <code>" + orderId + "</code>",
+                "E-mail: <code>" + d.email + "</code>",
+                "Confira no painel do GiveWP e, se o Test Mode estiver desligado, em qual conta PayPal caiu."
+              ]);
+            })
+            .catch(function (err) {
+              log("ERRO depois da aprovação: " + err.message, "l-erro");
+              alerta("O PayPal aprovou, mas o registro falhou.",
+                "O dinheiro pode ter saído. Order ID <code>" + orderId + "</code>. Confira no PayPal e no GiveWP antes de tentar de novo — não repita o pagamento às cegas.");
+            });
+        },
+
+        onCancel: function () { log("cancelado pelo doador", "l-info"); },
+        onError: function (err) { log("erro do SDK do PayPal: " + (err && err.message ? err.message : String(err)), "l-erro"); }
+      });
+
+      if (botoes.isEligible && !botoes.isEligible()) {
+        log("nenhuma fonte de pagamento elegível para este país/moeda", "l-erro");
+        return;
+      }
+      botoes.render("#mount-paypal").then(function () { log("botões do PayPal renderizados", "l-ok"); });
+    }).catch(function (err) {
+      log("falha ao montar o PayPal: " + err.message, "l-erro");
+    });
+  }
+
+  /* ── Stripe (Payment Element) ──────────────────────────────────────── */
+  var sdkStripe = null;
+  function carregarSdkStripe() {
+    if (sdkStripe) return sdkStripe;
+    sdkStripe = new Promise(function (resolve, reject) {
+      if (window.Stripe) { resolve(); return; }
+      var s = document.createElement("script");
+      s.src = "https://js.stripe.com/v3/";
+      s.onload = function () { window.Stripe ? resolve() : reject(new Error("SDK carregou mas não registrou window.Stripe")); };
+      s.onerror = function () { sdkStripe = null; reject(new Error("falha ao carregar o SDK da Stripe")); };
+      document.head.appendChild(s);
+      log("carregando SDK da Stripe", "l-passo");
+    });
+    return sdkStripe;
+  }
+
+  function montarStripe() {
+    if (stripeMontado) return;
+
+    if (!temStripe()) {
+      $("stripe-indisp").hidden = false;
+      $("stripe-indisp").textContent =
+        "Cartão indisponível: o /config devolveu publishableKey vazia. Conecte a conta Stripe em Give → Settings → Payment Gateways.";
+      $("pagar-stripe").disabled = true;
+      log("Stripe indisponível (publishableKey vazia)", "l-erro");
+      return;
+    }
+    $("stripe-indisp").hidden = true;
+    $("pagar-stripe").disabled = false;
+
+    carregarSdkStripe().then(function () {
+      if (stripeMontado) return;
+      stripeMontado = true;
+
+      /* `stripeAccount` é a conta conectada que o /config publica - a
+         cobrança nasce nela, e não na conta da plataforma. */
+      stripe = window.Stripe(cfg.stripe.publishableKey, {
+        stripeAccount: cfg.stripe.connectedAccountId || undefined
+      });
+
+      /* `mode: "payment"` SEM clientSecret: é o Payment Intent "diferido".
+         O Intent só nasce de verdade lá dentro do /donate, no clique. */
+      elements = stripe.elements({
+        mode: "payment",
+        amount: valorCents,
+        currency: cfg.currency.toLowerCase()
+      });
+      elements.create("payment").mount("#mount-stripe");
+      log("Payment Element montado ($" + dolares() + ")", "l-ok");
+    }).catch(function (err) {
+      log("falha ao montar a Stripe: " + err.message, "l-erro");
+    });
+  }
+
+  $("pagar-stripe").addEventListener("click", function () {
+    if (!stripe || !elements) { log("Stripe ainda não montou", "l-erro"); return; }
+    var botao = $("pagar-stripe");
+    botao.disabled = true;
+    botao.textContent = "Processando…";
+
+    var d = doador();
+
+    /* Valida os campos no navegador. Ainda não chama a Stripe de verdade. */
+    talvezEnviarIC("antes do cartão").then(function () {
+      return elements.submit();
+    }).then(function (r) {
+      if (r.error) throw new Error(r.error.message || "confira os dados do cartão");
+
+      /* As 4 chaves de gatewayData são montadas no PHP a partir destes
+         campos; `stripeConnectedAccountId` vem do SERVIDOR, nunca do corpo -
+         o cliente não decide em qual conta a cobrança nasce. */
+      return apiPost("/donate", {
+        form_id: FORM_ID,
+        gateway_id: "stripe_payment_element",
+        amount: d.amount, currency: cfg.currency,
+        first_name: d.first_name, last_name: d.last_name, email: d.email,
+        origin_url: window.location.href,
+        success_url: window.location.href,
+        stripe_payment_method: "card",
+        stripe_payment_method_is_credit_card: true
+      });
+    }).then(function (res) {
+      if (!res.ok || (res.json && res.json.ok === false)) throw new Error("donate falhou");
+
+      /* ⚠️ DUAS camadas de `data`. A rota embrulha a resposta do GiveWP em
+         `{ok, data}`, e a resposta do GiveWP para o Stripe (RespondToBrowser)
+         já vem como `{data: {clientSecret…}}`. Daí `json.data.data`. Ler um
+         nível raso demais dá "não devolveu o clientSecret" com o Payment
+         Intent já criado do lado da Stripe. */
+      var interno = res.json && res.json.data && res.json.data.data;
+      var clientSecret = interno && interno.clientSecret;
+      if (!clientSecret) throw new Error("o GiveWP não devolveu o clientSecret");
+
+      var intentId = String(clientSecret).split("_secret_")[0];
+      log("Payment Intent criado: " + intentId, "l-ok");
+
+      return stripe.confirmPayment({
+        elements: elements,
+        clientSecret: clientSecret,
+        confirmParams: { return_url: (interno.returnUrl || window.location.href) },
+        /* Cartão comum fica na mesma página; só navega se o método exigir
+           página inteira. */
+        redirect: "if_required"
+      }).then(function (conf) {
+        if (conf.error) throw new Error(conf.error.message || "a Stripe recusou o pagamento");
+        log("PAGAMENTO CONFIRMADO NA STRIPE", "l-ok");
+        /* Mesmo aviso do PayPal: o hook do WordPress também manda a dele
+           quando o webhook da Stripe fechar a doação. */
+        enviarConfirmacao({
+          donationId: intentId, amount: d.amount,
+          email: d.email, gateway: "stripe_payment_element"
+        });
+        sucesso("Pagamento confirmado pela Stripe.", [
+          "Valor: $" + d.amount,
+          "Payment Intent: <code>" + intentId + "</code>",
+          "E-mail: <code>" + d.email + "</code>",
+          "⚠️ A doação fica <b>processing</b> no GiveWP até o webhook da Stripe confirmar. Se ela não virar completa em alguns minutos, falta cadastrar o endpoint <code>?give-listener=stripe</code> no dashboard da Stripe (a aba Test e a Live são cadastros separados)."
+        ]);
+      });
+    }).catch(function (err) {
+      log("erro no cartão: " + err.message, "l-erro");
+      alerta("O pagamento por cartão não foi concluído.", err.message);
+    }).then(function () {
+      botao.disabled = false;
+      botao.textContent = "Pagar com cartão";
+    });
+  });
+
+  /* ── Test Donation (gateway `manual`) ──────────────────────────────
+     Um POST só: o GiveWP cria e conclui a doação de forma síncrona, sem
+     chamada externa. ⚠️ A doação é REAL do ponto de vista do painel - vira
+     post, vira doador e dispara `give_update_payment_status`. O que ela NÃO
+     faz aqui é notificar o funil: o hook do `functions.php` só age para
+     `paypal-commerce` e `stripe_payment_element` (conferido no servidor). */
+  $("pagar-manual").addEventListener("click", function () {
+    var botao = $("pagar-manual");
+    botao.disabled = true;
+    botao.textContent = "Enviando…";
+
+    var d = doador();
+    talvezEnviarIC("antes do Test Donation").then(function () {
+    return apiPost("/donate", {
+      form_id: FORM_ID,
+      gateway_id: "manual",
+      amount: d.amount,
+      currency: cfg.currency,
+      first_name: d.first_name,
+      last_name: d.last_name,
+      email: d.email,
+      origin_url: window.location.href
+    }).then(function (res) {
+      if (!res.ok || (res.json && res.json.ok === false)) {
+        throw new Error(
+          (res.json && res.json.message) ||
+          "o /donate recusou a doação de teste — veja a resposta no log"
+        );
+      }
+      log("DOAÇÃO DE TESTE CRIADA NO GIVEWP", "l-ok");
+      /* O Test Donation não passa pelo hook do WordPress (ele só age para
+         paypal/stripe), então a confirmação sai daqui - senão o funil só
+         veria o IC e nunca o fechamento. */
+      enviarConfirmacao({
+        donationId: (tentativa && tentativa.leadId) || ("manual_" + Date.now()),
+        amount: d.amount, email: d.email, gateway: "manual"
+      });
+      sucesso("Doação de teste concluída.", [
+        "Valor: $" + d.amount,
+        "Gateway: <code>manual</code> (Test Donation)",
+        "E-mail: <code>" + d.email + "</code>",
+        "Ela deve aparecer no painel do GiveWP como concluída. Nenhum dinheiro se moveu e o funil não foi notificado."
+      ]);
+    });
+    }).catch(function (err) {
+      log("erro no Test Donation: " + err.message, "l-erro");
+      alerta("A doação de teste não foi criada.", err.message);
+    }).then(function () {
+      botao.disabled = false;
+      botao.textContent = "Concluir doação de teste";
+    });
+  });
+
+  /* ── Início ────────────────────────────────────────────────────────── */
+  montarValores();
+  atualizarResumo();
+  montarEndpoints();
+  pintarFunil();
+  /* Resolve o geo já na abertura: assim o log diz se ele funciona ANTES de
+     você mandar qualquer coisa, em vez de descobrir pelo painel depois. */
+  resolverGeo();
+  carregarConfig().then(montarGateways).catch(function (err) {
+    log("não foi possível ler /config: " + err.message, "l-erro");
+    $("cfg").innerHTML = "<dt>erro</dt><dd>" + err.message + "</dd>";
+    $("faixa-modo").className = "faixa faixa--aviso";
+    $("faixa-modo").innerHTML = "<b>Não foi possível ler o servidor.</b>" + err.message;
+  });
+})();
+</script>
+</body>
+</html>

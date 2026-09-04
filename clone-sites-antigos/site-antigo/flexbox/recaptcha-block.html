@@ -1,0 +1,35 @@
+<!-- KYLE RESCUER US | 16 - RECAPTCHA BLOCK -->
+<style>
+  .grecaptcha-badge {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    display: none !important;
+    pointer-events: none !important;
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    function hideRecaptchaBadge() {
+      const badge = document.querySelector(".grecaptcha-badge");
+
+      if (badge) {
+        badge.style.setProperty("display", "none", "important");
+        badge.style.setProperty("opacity", "0", "important");
+        badge.style.setProperty("visibility", "hidden", "important");
+        badge.style.setProperty("pointer-events", "none", "important");
+      }
+    }
+
+    hideRecaptchaBadge();
+
+    const observer = new MutationObserver(function () {
+      hideRecaptchaBadge();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+  });
+</script>

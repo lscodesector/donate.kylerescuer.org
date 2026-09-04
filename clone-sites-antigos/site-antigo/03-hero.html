@@ -1,0 +1,438 @@
+<!-- KYLE RESCUER US | 2 - HERO -->
+<style>
+  .hv-section {
+    width: 100%;
+    font-family: "Nunito", sans-serif;
+    margin: 0;
+    background: #ffffff;
+  }
+
+  .vA-wrap {
+    width: 100%;
+    margin: 0;
+    background: #ffffff;
+    overflow: hidden;
+  }
+
+  /* Pre-video header */
+  .vA-prehead {
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 0 20px 18px;
+  }
+
+  /* Eyebrow pill */
+  .vA-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: rgba(191, 5, 33, 0.07);
+    border: 1px solid rgba(191, 5, 33, 0.15);
+    border-radius: 999px;
+    margin-bottom: 12px;
+    color: #bf0521;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-family: "Nunito", sans-serif;
+    display: inline-flex;
+  }
+  .vA-eyebrow::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: #f3b639;
+    box-shadow: 0 0 0 3px rgba(243, 182, 57, 0.15);
+    flex: 0 0 auto;
+  }
+
+  /* Title */
+  .vA-h1 {
+    margin: 0;
+    font-family: "Nunito", sans-serif;
+    font-size: clamp(1.58rem, 4.97vw, 2.53rem);
+    font-weight: 900;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    color: #0d0d0d;
+  }
+  .vA-h1 em {
+    font-style: italic;
+    color: #bf0521;
+  }
+
+  /* Video zone */
+  .vA-vid-section {
+    width: 100%;
+    background: transparent;
+    position: relative;
+  }
+  .vA-vid-inner {
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  @media (min-width: 640px) {
+    .vA-vid-inner {
+      padding: 0 28px;
+    }
+  }
+
+  /* Post-video content */
+  .vA-content {
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 24px 20px 32px;
+  }
+
+  /* Counter card */
+  .vA-counter {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0 0 18px;
+    box-shadow: none;
+    margin-bottom: 0;
+  }
+  .vA-counter__label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 10px;
+    font-family: "Nunito", sans-serif;
+  }
+  .vA-counter__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4px;
+  }
+  .vA-counter__labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+  }
+  .vA-counter__amount {
+    font-family: "Nunito", sans-serif;
+    font-size: clamp(1.17rem, 3.8vw, 1.52rem);
+    font-weight: 800;
+    line-height: 1;
+    color: #3e3e3e;
+    letter-spacing: -0.03em;
+  }
+  .vA-counter__raised-lbl {
+    font-family: "Nunito", sans-serif;
+    font-size: 0.84rem;
+    color: #323232;
+    font-weight: 600;
+  }
+  .vA-counter__goal-val {
+    font-size: clamp(1.17rem, 3.8vw, 1.52rem);
+    font-weight: 800;
+    color: #3e3e3e;
+    font-family: "Nunito", sans-serif;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .vA-counter__goal-lbl {
+    font-size: 0.84rem;
+    color: #323232;
+    font-weight: 600;
+    font-family: "Nunito", sans-serif;
+  }
+
+  .vA-counter__bar-wrap {
+    height: 9px;
+    background: #ebebeb;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .vA-counter__bar {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #f3b639 0%, #e0a020 100%);
+    width: 0;
+    transition: width 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    overflow: hidden;
+  }
+  .vA-counter__bar::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    left: -45%;
+    width: 40%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent
+    );
+    animation: lnProgressLight 2.2s ease-in-out infinite;
+  }
+  .vA-counter__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .vA-counter__pct {
+    font-size: 0.74rem;
+    color: #bf0521;
+    font-weight: 800;
+    font-family: "Nunito", sans-serif;
+  }
+  .vA-counter__supporters {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.74rem;
+    color: #888;
+    font-weight: 700;
+    font-family: "Nunito", sans-serif;
+  }
+  .vA-counter__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: #18b85b;
+    animation: lnBlink 1s ease-in-out infinite;
+    flex: 0 0 auto;
+  }
+
+  /* Secure note */
+  .vA-secure {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.84rem;
+    color: #555;
+    margin-top: 14px;
+    margin-bottom: 0;
+    font-family: "Nunito", sans-serif;
+    font-weight: 600;
+  }
+  .vA-secure svg {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+  }
+
+  /* Buttons */
+  .vA-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .vA-cta-pri {
+    width: 100%;
+    min-height: 54px;
+    border: 0;
+    border-radius: 6px;
+    background: #f3b639;
+    color: #2c1a0a;
+    font-family: "Nunito", sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    animation: lnGlow 1.45s ease-in-out infinite;
+    transition:
+      background 0.2s,
+      transform 0.2s;
+  }
+  .vA-cta-pri:hover {
+    background: #e0a020;
+    transform: translateY(-2px);
+  }
+  .vA-cta-pri svg {
+    fill: #4a1a00;
+    width: 20px;
+    height: 20px;
+    flex: 0 0 auto;
+  }
+
+  .vA-cta-sec {
+    width: 100%;
+    min-height: 50px;
+    border: 1.5px solid #e2e2e2;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #bf0521;
+    font-family: "Nunito", sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    transition:
+      border-color 0.2s,
+      background 0.2s,
+      transform 0.2s;
+  }
+  .vA-cta-sec:hover {
+    border-color: rgba(191, 5, 33, 0.3);
+    background: #fdf0f1;
+    transform: translateY(-2px);
+  }
+
+  @media (min-width: 640px) {
+    .vA-prehead {
+      padding: 32px 28px 20px;
+    }
+    .vA-content {
+      padding: 28px 28px 40px;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .hv-section {
+      margin-top: 30px;
+    }
+  }
+</style>
+
+<section class="hv-section ln-section-anchor" id="home">
+  <div class="vA-wrap">
+    <!-- Title + eyebrow ABOVE the video -->
+    <div class="vA-prehead">
+      <h1 class="vA-h1">
+        <span style="font-weight: 600">A desperate rescuer!</span><br />
+        <em
+          >400 little ones suffering every day. Help Kyle bring relief before
+          it's too late.</em
+        >
+      </h1>
+    </div>
+
+    <!-- Video — max 800px -->
+    <div class="vA-vid-section">
+      <div class="vA-vid-inner">
+        <vturb-smartplayer
+          id="vid-6a6377b0031b3f35da8c0570"
+          style="display: block; margin: 0 auto; width: 100%"
+          ><div
+            class="vturb-player-placeholder"
+            style="
+              position: relative;
+              width: 100%;
+              padding: 78.14761215629522% 0 0;
+              z-index: 0;
+              background-color: black;
+            "
+          ></div
+        ></vturb-smartplayer>
+        <script type="text/javascript">
+          var s = document.createElement("script");
+          s.src =
+            "https://scripts.converteai.net/25b0cdcd-2b93-4910-aa45-91b9a6275957/players/6a6377b0031b3f35da8c0570/v4/player.js";
+          s.async = true;
+          s.fetchPriority = "high";
+          document.head.appendChild(s);
+        </script>
+      </div>
+    </div>
+
+    <!-- Post-video content: counter → secure note → buttons -->
+    <div class="vA-content">
+      <!-- Counter -->
+      <div class="vA-counter">
+        <div class="vA-counter__row">
+          <span class="vA-counter__amount" data-cp-raised>xx</span>
+          <span class="vA-counter__goal-val" data-cp-goal>xx</span>
+        </div>
+        <div class="vA-counter__labels">
+          <span class="vA-counter__raised-lbl">Raised</span>
+          <span class="vA-counter__goal-lbl">Goal</span>
+        </div>
+        <div class="vA-counter__bar-wrap">
+          <div
+            class="vA-counter__bar"
+            id="vACounterBar"
+            data-cp-progress-fill
+            style="width: 0%"
+          ></div>
+        </div>
+        <div class="vA-counter__footer">
+          <span class="vA-counter__pct" data-cp-progress-label>xx</span>
+          <span class="vA-counter__supporters">
+            <span class="vA-counter__dot"></span>
+            <span data-cp-supporters-label>xx</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="vA-btns">
+        <button
+          class="vA-cta-pri"
+          type="button"
+          onclick="document.dispatchEvent(new CustomEvent('cp:openDonation'))"
+        >
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+            />
+          </svg>
+          I Want To Help Now
+        </button>
+      </div>
+
+      <!-- Projeto 100% seguro -->
+      <p class="vA-secure">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path
+            d="M12 3L4 6V12C4 16.4 7.4 20.5 12 22C16.6 20.5 20 16.4 20 12V6L12 3Z"
+            fill="#18b85b"
+          />
+          <path
+            d="M9 12L11 14L15 10"
+            stroke="#fff"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        100% secure and verified project
+      </p>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    // Values come from window.CP_CONFIG defined in 1 - MENU.html
+    var bar = document.getElementById("vACounterBar");
+    if (!bar) return;
+    var pct = (window.CP_CONFIG && window.CP_CONFIG.progressPercent) || 0;
+    var fired = false;
+    var obs = new IntersectionObserver(
+      function (entries) {
+        if (entries[0].isIntersecting && !fired) {
+          fired = true;
+          bar.style.width = pct + "%";
+          obs.disconnect();
+        }
+      },
+      { threshold: 0.2 },
+    );
+    obs.observe(bar);
+  })();
+</script>

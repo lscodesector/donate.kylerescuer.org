@@ -90,7 +90,7 @@ const IconPaw = ({ size = 20, ...rest }: IconProps) => (
  * `next.config.ts`), o `next/image` passa o `src` adiante sem tocar nele. É
  * comportamento documentado: o prefixo de `basePath` só acontece na URL do
  * otimizador (`/_next/image?url=…`), e sem otimizador não há essa URL para
- * prefixar. Sem este envelope, publicado em `doe.caioprotetor.org/v2`, toda
+ * prefixar. Sem este envelope, publicado em `donate.kylerescuer.org/v2`, toda
  * imagem apontaria para a raiz do domínio - que é outro site (WordPress) - e
  * simplesmente não carregaria.
  *
@@ -102,7 +102,7 @@ function Image({ src, ...props }: ImageProps) {
 }
 
 export const metadata: Metadata = {
-  title: "Obrigado pela sua doação | Caio Protetor",
+  title: "Thank you for your donation | Kyle Rescuer",
   robots: { index: false, follow: false },
 };
 
@@ -141,10 +141,10 @@ export default function ObrigadoPage() {
                 explícito, não faz parte da escala `text-fs*` do resto do
                 site. */}
             <h1 className="text-[clamp(1.663rem,1.391rem+1.209vw,2.055rem)] font-extrabold leading-[1.15] text-ink-900">
-              Seu Pix salvou o dia de hoje. ❤️
+              Your donation saved today. ❤️
             </h1>
             <p className="mx-auto max-w-[42ch] text-[clamp(1.015rem,0.984rem+0.109vw,1.097rem)] leading-[1.55] text-ink-600">
-              Mas amanhã eles vão precisar comer de novo.
+              But tomorrow they will need to eat again.
             </p>
           </div>
 
@@ -159,22 +159,22 @@ export default function ObrigadoPage() {
               está olhando. */}
           <div className="flex flex-col items-center gap-2">
             <p className="text-[clamp(0.935rem,0.902rem+0.142vw,1.015rem)] leading-[1.5] text-ink-600">
-              Com uma doação mensal, o Caio consegue garantir ração, remédios
-              e cuidados{" "}
+              With a monthly donation, Kyle can secure food, medicine and
+              care{" "}
               <strong className="font-extrabold text-ink-900">
-                antes que faltem
+                before they run out
               </strong>
               .
             </p>
             <p className="flex items-center gap-1.5 text-[clamp(0.935rem,0.902rem+0.142vw,1.015rem)] font-extrabold text-action">
               <IconHeartFilled size={15} />
-              Ajude a manter os potes cheios todos os meses.
+              Help keep the bowls full every month.
             </p>
           </div>
 
           <MonthlyButton className="inline-flex min-h-[52px] w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-action px-6 text-[clamp(1.057rem,1.017rem+0.177vw,1.158rem)] font-extrabold uppercase tracking-[0.03em] text-action-ink shadow-[0_10px_30px_-8px_rgba(191,5,33,.5)] transition-colors hover:bg-action-hover">
             <IconPaw size={18} />
-            Quero ajudar todo mês
+            I want to help every month
           </MonthlyButton>
 
           <Link
@@ -182,14 +182,14 @@ export default function ObrigadoPage() {
             className="inline-flex min-h-[44px] items-center gap-1.5 text-[clamp(0.935rem,0.902rem+0.142vw,1.015rem)] font-extrabold text-ink-600 transition-colors hover:text-action"
           >
             <IconHeart size={14} />
-            Prefiro fazer outra doação agora
+            I would rather make another donation now
           </Link>
 
           <Link
             href="/"
             className="inline-flex items-center gap-1 text-[clamp(0.894rem,0.878rem+0.07vw,0.935rem)] text-ink-600 transition-colors hover:text-action"
           >
-            Voltar para a campanha
+            Back to the campaign
             <IconArrowRight size={13} />
           </Link>
         </div>

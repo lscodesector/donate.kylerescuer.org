@@ -82,7 +82,7 @@ const IconArrowLeft = (p: IconProps) => (
  * `next.config.ts`), o `next/image` passa o `src` adiante sem tocar nele. É
  * comportamento documentado: o prefixo de `basePath` só acontece na URL do
  * otimizador (`/_next/image?url=…`), e sem otimizador não há essa URL para
- * prefixar. Sem este envelope, publicado em `doe.caioprotetor.org/v2`, toda
+ * prefixar. Sem este envelope, publicado em `donate.kylerescuer.org/v2`, toda
  * imagem apontaria para a raiz do domínio - que é outro site (WordPress) - e
  * simplesmente não carregaria.
  *
@@ -171,7 +171,7 @@ export default function ModalDocumento() {
             ref={fecharRef}
             type="button"
             onClick={fechar}
-            aria-label="Voltar"
+            aria-label="Back"
             className="flex h-[40px] w-[40px] shrink-0 items-center justify-center rounded-full text-ink-600 transition-colors hover:bg-surface-alt hover:text-ink-900"
           >
             <IconArrowLeft size={20} />

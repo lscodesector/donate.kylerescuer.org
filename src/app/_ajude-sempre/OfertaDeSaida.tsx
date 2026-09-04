@@ -8,7 +8,7 @@ import {
   openCheckout,
 } from "@/lib/checkout-bus";
 import { donationAmountsMensal } from "@/lib/config";
-import { formatBRLCurto } from "@/lib/format";
+import { formatUSDCurto } from "@/lib/format";
 import { useScrollLock } from "@/lib/scroll-lock";
 
 /**
@@ -88,18 +88,18 @@ let entradaEmpurrada = false;
 
 const copySaida = {
   /** Vermelho e curto - é a única palavra que precisa ser lida na hora. */
-  alerta: "Espera",
-  title: "E se fossem 50 centavos?",
+  alerta: "Wait",
+  title: "What if it were 50 cents?",
   /* `{porDia}` é trocado na renderização: a frase não pode escrever o valor,
      porque ele sai da escada. */
-  lead: "Menos do que você paga num café, todo mês, sem pensar nisso de novo.",
-  unidade: "por dia",
+  lead: "Less than you pay for a coffee, every month, without thinking about it again.",
+  unidade: "per day",
   /* ⚠️ A cifra mensal, pelo mesmo motivo da faixa vermelha: quem vê "50
      centavos" precisa ler, na mesma tela, quanto sai da conta. É o preço, não
      uma explicação - ver `copyPorDia` em `TodoMes.tsx`. */
-  mes: "{valor} por mês",
-  cta: "Quero ajudar com {porDia} por dia",
-  recusa: "Não, obrigado",
+  mes: "{valor} per month",
+  cta: "I want to help with {porDia} a day",
+  recusa: "No, thanks",
 };
 
 /* ─────────────────────────────────────────────────────────── ícones ──── */
@@ -215,7 +215,7 @@ export default function OfertaDeSaida() {
   if (!aberta) return null;
 
   const centsMes = degrauDaSaida.cents;
-  const valorDia = formatBRLCurto(Math.round(centsMes / DIAS_DO_MES));
+  const valorDia = formatUSDCurto(Math.round(centsMes / DIAS_DO_MES));
 
   const doar = () => {
     setAberta(false);
@@ -254,7 +254,7 @@ export default function OfertaDeSaida() {
           ref={fecharRef}
           type="button"
           onClick={fechar}
-          aria-label="Fechar"
+          aria-label="Close"
           className="absolute right-2.5 top-2.5 flex h-[34px] w-[34px] items-center justify-center rounded-full bg-surface-alt text-ink-600 transition-colors hover:bg-ink-900/10"
         >
           <IconClose size={17} />
@@ -292,7 +292,7 @@ export default function OfertaDeSaida() {
 
           {/* ⚠️ Quanto sai da conta. Ver `copySaida.mes`. */}
           <p className="text-fs13 font-semibold text-ink-900">
-            {copySaida.mes.replace("{valor}", formatBRLCurto(centsMes))}
+            {copySaida.mes.replace("{valor}", formatUSDCurto(centsMes))}
           </p>
 
           <button

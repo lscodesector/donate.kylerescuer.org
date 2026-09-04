@@ -10,8 +10,14 @@
  * começa em `INITIAL_RAISED` e ganha um valor por dia decorrido. Não há
  * consulta a lugar nenhum, e ninguém aqui sabe quanto entrou de verdade.
  *
+ * ── As constantes foram conferidas contra a produção ──────────────────────
+ * Em 04/09/2026 a página no ar mostrava **$10,879.14 · 22% · 412 apoiadores**.
+ * Com `startDate: "2026-07-10"`, `initialRaised: 10`, incremento de 100 a 300
+ * e meta de 50.000, esta conta devolve exatamente esses três números no mesmo
+ * dia. Mexer em qualquer um deles descasa as duas páginas de novo.
+ *
  * Isto é a transcrição literal do que a página em produção
- * (`doe.caioprotetor.org`) já faz - mesmas constantes, mesmo gerador
+ * (`donate.kylerescuer.org`) já faz - mesmas constantes, mesmo gerador
  * pseudoaleatório, mesma conta -, para que as duas mostrem o mesmo número no
  * mesmo dia. Um valor diferente em cada endereço da mesma campanha seria pior
  * do que o que já existe.
@@ -39,7 +45,7 @@
  * qualquer uma aqui **descasa** as duas páginas.
  */
 export type CampaignState = {
-  /** Em reais, já arredondado aos centavos. */
+  /** Em dólares, já arredondado aos centavos. */
   raised: number;
   goal: number;
   /** Inteiro de 1 a 100. Nunca 0 enquanto houver algum valor. */
@@ -61,16 +67,23 @@ export type CampaignParams = {
 
 export const campaign: CampaignParams = {
   /** Início da campanha, em UTC. É o dia zero da conta. */
-  startDate: "2026-06-15",
-  /** Valor de partida, em reais. */
-  initialRaised: 60,
-  /** Faixa do incremento diário, em reais - sorteado dentro dela. */
+  startDate: "2026-07-10",
+  /** Valor de partida, em dólares. */
+  initialRaised: 10,
+  /** Faixa do incremento diário, em dólares - sorteado dentro dela. */
   dailyMin: 100,
   dailyMax: 300,
   /** De quantos em quantos dias o valor anda. */
   updateEveryDays: 1,
-  /** Meta, em reais. É a mesma soma de `monthlyCosts` (R$ 58.000). */
-  goal: 58000,
+  /**
+   * Meta, em dólares.
+   *
+   * ⚠️ **Não é mais a soma de `monthlyCosts`** ($48,587): é o número redondo
+   * que a campanha em produção publica como meta, e a tabela de custos ficou
+   * logo abaixo dele. A folga entre os dois é de propósito - a meta cobre o
+   * mês inteiro com sobra, e não só a conta fechada no centavo.
+   */
+  goal: 50000,
   /** Ticket médio usado para estimar quantos apoiadores dariam aquele total. */
   avgTicket: 30,
   /** Variação aplicada ao ticket médio, para ele não ser redondo demais. */
@@ -121,7 +134,7 @@ function daysElapsed(nowMs: number) {
 }
 
 /**
- * O total "arrecadado" naquele instante, em reais.
+ * O total "arrecadado" naquele instante, em dólares.
  *
  * Soma um sorteio por dia decorrido, cada um semeado pelo índice do dia - por
  * isso o histórico nunca muda: o dia 12 vale hoje o mesmo que valia ontem. Para

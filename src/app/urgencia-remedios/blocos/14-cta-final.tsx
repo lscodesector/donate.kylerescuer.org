@@ -25,18 +25,18 @@ import { openDonationModal, type DonationIntent } from "@/lib/modais";
 const copyFinal = {
   /* Uma frase só, e ela é o `h2` da seção. O fechamento tinha duas linhas -
      "Abandonar esses animais não é uma opção." como título e esta como apoio
-     -, e a primeira já é a última frase da história do Caio, dita alguns
+     -, e a primeira já é a última frase da história do Kyle, dita alguns
      blocos acima. No fim da página o que falta não é repetir o argumento: é
      dizer o que a doação faz e apontar os dois botões. */
-  title: "Sua ajuda hoje pode ser a diferença entre a vida e a morte. Doe agora!",
+  title: "Your help today can be the difference between life and death. Donate now!",
   /* "Escolher um valor", e não "quero ajudar agora": o botão abre a grade de
      valores, e o rótulo agora diz exatamente o que acontece no clique. */
-  ctaPrimary: "Escolher um valor",
+  ctaPrimary: "Choose an amount",
   /* Doação mensal, e não mais "tenho uma dúvida": no fechamento a pessoa já
      passou pelo FAQ, e o que falta oferecer é a doação que os abrigos podem
      planejar - não mais um desvio para tirar dúvida. */
-  ctaSecondary: "Ajudar todo mês",
-  seal: "Doação segura · CNPJ verificado",
+  ctaSecondary: "Help every month",
+  seal: "Secure donation · Verified nonprofit ID",
 };
 
 /* ─────────────────────────────────────────────────────────── ícones ──── */
@@ -277,7 +277,7 @@ function MonthlyDonateButton({
  * ── Fundo branco, e não mais a foto escura ────────────────────────────────
  * A foto de fundo saiu junto com as duas camadas de véu que existiam só para
  * proteger o texto dela. Uma foto no fim da página competia com a decisão que
- * este bloco pede: a essa altura a pessoa já viu seis fotos do Caio e cinco
+ * este bloco pede: a essa altura a pessoa já viu seis fotos do Kyle e cinco
  * vídeos de protetores, e mais uma imagem aqui só divide a atenção com os dois
  * botões. No branco eles são a única coisa colorida da tela.
  *

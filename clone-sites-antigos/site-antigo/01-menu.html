@@ -1,0 +1,973 @@
+<!-- KYLE RESCUER US | 1 - MENU -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="stylesheet"
+  fetchpriority="high"
+  href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Serif+Display:ital@0;1&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400&display=swap"
+/>
+
+<style>
+  :root {
+    --ln-pri-900: #9b1b2d;
+    --ln-pri-800: #b52030;
+    --ln-pri-700: #bf0521;
+    --ln-pri-500: #cc2030;
+    --ln-pri-300: #f0c8cc;
+    --ln-pri-100: #fdf0f1;
+    --ln-gold-500: #f3b639;
+    --ln-gold-600: #e0a020;
+    --ln-green-500: #18b85b;
+    --ln-green-100: #effcf4;
+    --ln-err-500: #e84a4a;
+    --ln-err-100: #fff1f1;
+    --ln-text: #0d0d0d;
+    --ln-muted: #6b6b6b;
+    --ln-border: #e2e2e2;
+    --ln-bg: #ffffff;
+    --ln-surface: #ffffff;
+    --ln-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    --ln-radius-xl: 8px;
+    --ln-radius-lg: 6px;
+    --ln-radius-md: 5px;
+    --ln-max: 650px;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--ln-bg);
+    color: var(--ln-text);
+    font-family: "Nunito", sans-serif;
+  }
+
+  body.hu-menu-open,
+  body.ln-lock-scroll {
+    overflow: hidden;
+  }
+
+  .ln-section {
+    width: 100%;
+    margin: 0;
+    font-family: "Nunito", sans-serif;
+    color: var(--ln-text);
+  }
+
+  /* Full-width — sem card */
+  .ln-card {
+    width: 100%;
+    margin: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    overflow: hidden;
+  }
+
+  .ln-card-inner {
+    max-width: var(--ln-max);
+    margin: 0 auto;
+    padding: 36px 20px;
+  }
+
+  .ln-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: rgba(191, 5, 33, 0.07);
+    color: var(--ln-pri-700);
+    border: 1px solid rgba(191, 5, 33, 0.15);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-family: "Nunito", sans-serif;
+  }
+  .ln-kicker::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--ln-gold-500);
+    box-shadow: 0 0 0 3px rgba(243, 182, 57, 0.15);
+  }
+
+  .ln-display {
+    margin: 12px 0 0;
+    font-family: "Nunito", sans-serif;
+    font-size: clamp(1.9rem, 5.5vw, 3rem);
+    font-weight: 900;
+    line-height: 1.06;
+    color: var(--ln-pri-900);
+    letter-spacing: -0.02em;
+  }
+
+  /* Section title — no icon box */
+  .ln-section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .ln-section-icon {
+    width: 28px;
+    height: 28px;
+    background: transparent !important;
+    border-radius: 0 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+  }
+  .ln-section-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+  .ln-section-title span {
+    font-family: "Nunito", sans-serif;
+    font-size: 1.55rem;
+    line-height: 1.1;
+    color: #0d0d0d;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+  }
+
+  .ln-copy {
+    color: var(--ln-text);
+    font-size: 0.97rem;
+    line-height: 1.75;
+    font-family: "Nunito", sans-serif;
+  }
+  .ln-copy p {
+    margin: 0;
+  }
+  .ln-copy p + p {
+    margin-top: 12px;
+  }
+  .ln-copy strong {
+    color: var(--ln-pri-900);
+  }
+
+  .ln-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .ln-btn-primary,
+  .ln-btn-secondary,
+  .ln-doc-button {
+    width: 100%;
+    min-height: 54px;
+    border: 0;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 18px;
+    text-decoration: none;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      background 0.2s ease,
+      border-color 0.2s ease;
+    font-family: "Nunito", sans-serif;
+  }
+  .ln-btn-primary {
+    background: var(--ln-gold-500);
+    color: #2c1a0a;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    animation: lnGlow 1.45s ease-in-out infinite;
+  }
+  .ln-btn-primary:hover {
+    background: var(--ln-gold-600);
+    transform: translateY(-2px);
+  }
+  .ln-btn-primary svg {
+    width: 20px;
+    height: 20px;
+    fill: #4a1a00;
+    flex: 0 0 auto;
+  }
+
+  .ln-btn-secondary,
+  .ln-doc-button {
+    background: #ffffff;
+    border: 1.5px solid var(--ln-border);
+    color: var(--ln-pri-700);
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+  .ln-btn-secondary:hover,
+  .ln-doc-button:hover {
+    border-color: rgba(191, 5, 33, 0.3);
+    background: var(--ln-pri-100);
+    transform: translateY(-2px);
+  }
+
+  .ln-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .ln-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 34px;
+    padding: 6px 10px;
+    background: #f0f0f0;
+    border: 1px solid rgba(220, 220, 220, 0.95);
+    border-radius: 4px;
+    color: #1a1a1a;
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-family: "Nunito", sans-serif;
+  }
+  .ln-chip svg {
+    width: 14px;
+    height: 14px;
+    flex: 0 0 auto;
+  }
+
+  .ln-grid-2,
+  .ln-grid-3 {
+    display: grid;
+    gap: 14px;
+  }
+  .ln-grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .ln-grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .ln-mini-note {
+    margin-top: 12px;
+    color: var(--ln-muted);
+    font-size: 0.86rem;
+    line-height: 1.6;
+    font-family: "Nunito", sans-serif;
+  }
+
+  .ln-divider {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(220, 220, 220, 1),
+      transparent
+    );
+    margin: 20px 0;
+  }
+
+  .ln-progress {
+    width: 100%;
+    height: 10px;
+    background: #ebebeb;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .ln-progress-fill {
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      var(--ln-pri-900) 0%,
+      var(--ln-pri-700) 58%,
+      var(--ln-pri-500) 100%
+    );
+    border-radius: 999px;
+    position: relative;
+    overflow: hidden;
+  }
+  .ln-progress-fill::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    left: -45%;
+    width: 40%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.2) 25%,
+      rgba(255, 255, 255, 0.85) 50%,
+      rgba(255, 255, 255, 0.2) 75%,
+      transparent 100%
+    );
+    animation: lnProgressLight 2.2s ease-in-out infinite;
+  }
+
+  .ln-progress-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 12px;
+    color: var(--ln-muted);
+    font-size: 0.84rem;
+    font-weight: 700;
+    flex-wrap: wrap;
+    font-family: "Nunito", sans-serif;
+  }
+  .ln-progress-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ln-pri-700);
+  }
+  .ln-progress-live::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    background: var(--ln-pri-500);
+    border-radius: 999px;
+    animation: lnBlink 1s ease-in-out infinite;
+  }
+
+  .ln-support-card,
+  .ln-cost-card,
+  .ln-quote-card,
+  .ln-timeline-card,
+  .ln-donor-card,
+  .ln-doc-card,
+  .ln-legal-item {
+    background: #ffffff;
+    border: 1px solid rgba(220, 220, 220, 0.95);
+    border-radius: var(--ln-radius-lg);
+    box-shadow: var(--ln-shadow);
+  }
+
+  .ln-section-anchor {
+    scroll-margin-top: 70px;
+  }
+
+  @keyframes lnGlow {
+    0%,
+    100% {
+      box-shadow: 0 0 6px 0 rgba(247, 185, 54, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 13px 1px rgba(247, 185, 54, 0.8);
+    }
+  }
+  @keyframes lnProgressLight {
+    0% {
+      left: -45%;
+    }
+    100% {
+      left: 115%;
+    }
+  }
+  @keyframes lnBlink {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.4;
+      transform: scale(1.35);
+    }
+  }
+
+  /* ── MENU ── */
+  #lnHeader {
+    position: sticky;
+    top: 0;
+    z-index: 80;
+    margin-bottom: 0;
+    height: 0;
+    overflow: visible;
+  }
+  #lnMenuRoot {
+    background: transparent;
+  }
+
+  .ln-header-wrap {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    background: #ffffff;
+    border-bottom: 1px solid rgba(220, 220, 220, 0.96);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    z-index: 95;
+  }
+
+  .ln-header {
+    max-width: var(--ln-max);
+    width: 100%;
+    height: 66px;
+    padding: 0 20px;
+    margin: 0 auto;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .ln-header-left,
+  .ln-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  .ln-header-left {
+    flex: 0 0 auto;
+    width: 50px;
+  }
+  .ln-header-right {
+    flex: 0 0 auto;
+    justify-content: flex-end;
+  }
+
+  .ln-menu-btn,
+  .ln-menu-close {
+    width: 42px;
+    height: 42px;
+    border: 0;
+    background: transparent;
+    border-radius: 999px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  .ln-menu-btn span,
+  .ln-menu-btn span::before,
+  .ln-menu-btn span::after {
+    width: 24px;
+    height: 2.5px;
+    border-radius: 999px;
+    background: var(--ln-pri-900);
+    display: block;
+    position: relative;
+    content: "";
+  }
+  .ln-menu-btn span::before {
+    position: absolute;
+    top: -8px;
+    left: 0;
+  }
+  .ln-menu-btn span::after {
+    position: absolute;
+    top: 8px;
+    left: 0;
+  }
+
+  .ln-header-logo {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 6px 0;
+    text-decoration: none;
+  }
+  .cp-logo-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    background: var(--ln-pri-900);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .cp-logo-icon svg {
+    width: 17px;
+    height: 17px;
+    fill: white;
+  }
+  .cp-logo-name {
+    font-family: "Nunito", sans-serif;
+    font-size: 1.05rem;
+    line-height: 1;
+    color: var(--ln-pri-900);
+    white-space: nowrap;
+    font-weight: 800;
+  }
+  .cp-logo-name em {
+    font-style: normal;
+    color: inherit;
+  }
+
+  .ln-share-pill {
+    width: 46px;
+    height: 46px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ln-pri-700);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .ln-share-pill:hover {
+    background: rgba(191, 5, 33, 0.07);
+  }
+  .ln-share-pill svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .ln-menu-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.52);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.28s ease,
+      visibility 0.28s ease;
+    z-index: 98;
+  }
+
+  .ln-menu-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: min(360px, 90vw);
+    height: 100vh;
+    height: 100dvh;
+    background: #ffffff;
+    transform: translateX(-105%);
+    transition: transform 0.3s ease;
+    z-index: 99;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 10px 0 40px rgba(0, 0, 0, 0.12);
+  }
+  .ln-menu-open .ln-menu-overlay {
+    opacity: 1;
+    visibility: visible;
+  }
+  .ln-menu-open .ln-menu-panel {
+    transform: translateX(0);
+  }
+
+  .ln-menu-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 22px 20px 16px;
+  }
+  .ln-menu-top .cp-logo-name-panel {
+    font-family: "Nunito", sans-serif;
+    font-size: 1.2rem;
+    color: var(--ln-pri-900);
+    font-weight: 800;
+  }
+  .ln-menu-top .cp-logo-name-panel em {
+    font-style: normal;
+    color: inherit;
+  }
+
+  .ln-menu-close {
+    background: #f2f2f2;
+    color: #555;
+    font-size: 28px;
+    line-height: 1;
+  }
+
+  .ln-menu-links {
+    padding: 10px 20px 22px;
+    overflow-y: auto;
+    flex: 1;
+  }
+  .ln-menu-links ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .ln-menu-links li + li {
+    margin-top: 4px;
+  }
+  .ln-menu-links a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 52px;
+    padding: 10px 0;
+    color: var(--ln-text);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: "Nunito", sans-serif;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .ln-menu-links a:hover {
+    color: var(--ln-pri-700);
+  }
+  .ln-menu-links svg {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 auto;
+    color: var(--ln-pri-500);
+  }
+
+  .ln-menu-footer {
+    padding: 16px 20px 22px;
+    border-top: 1px solid var(--ln-border);
+    color: var(--ln-muted);
+    font-size: 0.84rem;
+    line-height: 1.5;
+    font-family: "Nunito", sans-serif;
+  }
+  .ln-menu-footer strong {
+    color: var(--ln-pri-900);
+  }
+
+  @media (min-width: 768px) {
+    .ln-grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .ln-grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .ln-actions {
+      flex-direction: row;
+    }
+    .ln-actions > * {
+      flex: 1 1 0;
+    }
+    .ln-card-inner {
+      padding: 44px 20px;
+    }
+  }
+  .ln-header-logo {
+    padding: 0;
+  }
+  .ln-header-logo img {
+    height: 56px;
+  }
+
+  @media (max-width: 767px) {
+    #lnHeader {
+      height: auto;
+      overflow: hidden;
+    }
+    .ln-header-wrap {
+      position: sticky;
+      top: 0;
+    }
+    .ln-header {
+      height: 60px;
+      padding: 0 14px;
+    }
+    .ln-share-pill {
+      width: 41px;
+      height: 41px;
+      padding: 0;
+      min-height: unset;
+    }
+    .ln-share-pill svg {
+      width: 23px;
+      height: 23px;
+    }
+    .ln-header-left {
+      width: 44px;
+    }
+    .ln-card-inner {
+      padding: 28px 16px;
+    }
+    .ln-header-logo img {
+      height: 50px;
+    }
+  }
+</style>
+
+<div id="lnMenuRoot">
+  <div id="lnHeader">
+    <div class="ln-header-wrap">
+      <div class="ln-header">
+        <div class="ln-header-left">
+          <button
+            class="ln-menu-btn"
+            type="button"
+            aria-label="Open menu"
+            aria-expanded="false"
+          >
+            <span></span>
+          </button>
+        </div>
+
+        <a class="ln-header-logo" href="#home" aria-label="Kyle Rescuer · Home">
+          <img
+            src="http://donate.kylerescuer.org/wp-content/uploads/2026/07/Logo-sem-fundo-v2.webp"
+            alt="Kyle Rescuer"
+            fetchpriority="high"
+            decoding="async"
+            style="width: auto; display: block; flex-shrink: 0"
+          />
+          <span
+            style="
+              font-family: &quot;Nunito&quot;, sans-serif;
+              font-weight: 800;
+              font-size: 0.95rem;
+              color: #9b1b2d;
+              white-space: nowrap;
+              line-height: 1;
+            "
+            >Kyle Rescuer</span
+          >
+        </a>
+
+        <div class="ln-header-right">
+          <button
+            class="ln-share-pill"
+            type="button"
+            onclick="window.cpShare && window.cpShare()"
+            aria-label="Share"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="18" cy="5" r="3" />
+              <circle cx="6" cy="12" r="3" />
+              <circle cx="18" cy="19" r="3" />
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ln-menu-overlay"></div>
+
+  <aside class="ln-menu-panel" aria-hidden="true">
+    <div class="ln-menu-top">
+      <span class="cp-logo-name-panel">Kyle <em>Rescuer</em></span>
+      <button class="ln-menu-close" type="button" aria-label="Close menu">
+        &times;
+      </button>
+    </div>
+
+    <nav class="ln-menu-links" aria-label="Campaign menu">
+      <ul>
+        <li>
+          <a href="#story">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+            </svg>
+            <span>The Story</span>
+          </a>
+        </li>
+        <li>
+          <a href="#shelters">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              <polyline points="9 22 9 12 15 12 15 22" />
+            </svg>
+            <span>Shelters</span>
+          </a>
+        </li>
+        <li>
+          <a href="#impact">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+              />
+            </svg>
+            <span>Impact</span>
+          </a>
+        </li>
+        <li>
+          <a href="#transparency">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"
+              />
+            </svg>
+            <span>Transparency</span>
+          </a>
+        </li>
+        <li>
+          <a href="#testimonials">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            <span>Testimonials</span>
+          </a>
+        </li>
+        <li>
+          <a href="#faq">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M9.09 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3" />
+              <path d="M12 17h.01" />
+            </svg>
+            <span>FAQ</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="ln-menu-footer">
+      <strong>Kyle Rescuer</strong> &middot; Supported by
+      <strong>SOS Animal Help</strong><br />
+      400+ animals depend on every donation.
+    </div>
+  </aside>
+</div>
+
+<script>
+  (function () {
+    // Valores definidos em "1.5 - AJUSTAR VALORES.html"
+    function applyCPConfig() {
+      var config = window.CP_CONFIG || {};
+      var pct = config.progressPercent || 0;
+
+      // Generic text via data-attribute
+      document.querySelectorAll("[data-cp-raised]").forEach(function (el) {
+        el.textContent = config.raised || "";
+      });
+      document.querySelectorAll("[data-cp-goal]").forEach(function (el) {
+        // The sticky bar uses "of $X" — uses goalSticky if available
+        var isSticky = el.closest("#cpStickyBar");
+        el.textContent =
+          isSticky && config.goalSticky ? config.goalSticky : config.goal || "";
+      });
+      document.querySelectorAll("[data-cp-supporters]").forEach(function (el) {
+        el.textContent = config.supporters || "";
+      });
+      document
+        .querySelectorAll("[data-cp-supporters-label]")
+        .forEach(function (el) {
+          el.textContent = config.supportersLabel || "";
+        });
+      document
+        .querySelectorAll("[data-cp-progress-label]")
+        .forEach(function (el) {
+          el.textContent = config.progressLabel || "";
+        });
+
+      // Sticky bar: fill and % text (by ID, no data-attribute)
+      var stickyFill = document.getElementById("cpStickyFill");
+      var stickyPct = document.getElementById("cpStickyPct");
+      if (stickyFill) stickyFill.style.width = pct + "%";
+      if (stickyPct) stickyPct.textContent = pct + "% da meta";
+
+      // Hero bar: just the animated-fill data-attribute
+      // (the animation itself is handled by the IntersectionObserver in the hero script)
+    }
+
+    window.applyCPConfig = applyCPConfig;
+    document.addEventListener("DOMContentLoaded", applyCPConfig);
+
+    window.cpShare = function () {
+      var shareData = {
+        title: "Kyle Rescuer · 400 animals need you",
+        text: "Learn Kyle's story and support this campaign.",
+        url: window.location.href,
+      };
+      if (navigator.share) {
+        navigator.share(shareData).catch(function () {});
+        return;
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(window.location.href).then(function () {
+          alert("Link copied!");
+        });
+      }
+    };
+
+    (function () {
+      var root = document.getElementById("lnMenuRoot");
+      if (!root) return;
+      var openBtn = root.querySelector(".ln-menu-btn");
+      var closeBtn = root.querySelector(".ln-menu-close");
+      var overlay = root.querySelector(".ln-menu-overlay");
+      var panel = root.querySelector(".ln-menu-panel");
+      var links = root.querySelectorAll(".ln-menu-links a");
+
+      function openMenu() {
+        root.classList.add("ln-menu-open");
+        document.body.classList.add("hu-menu-open");
+        openBtn.setAttribute("aria-expanded", "true");
+        panel.setAttribute("aria-hidden", "false");
+      }
+      function closeMenu() {
+        root.classList.remove("ln-menu-open");
+        document.body.classList.remove("hu-menu-open");
+        openBtn.setAttribute("aria-expanded", "false");
+        panel.setAttribute("aria-hidden", "true");
+      }
+
+      openBtn.addEventListener("click", openMenu);
+      closeBtn.addEventListener("click", closeMenu);
+      overlay.addEventListener("click", closeMenu);
+      links.forEach(function (link) {
+        link.addEventListener("click", closeMenu);
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && root.classList.contains("ln-menu-open"))
+          closeMenu();
+      });
+    })();
+  })();
+</script>

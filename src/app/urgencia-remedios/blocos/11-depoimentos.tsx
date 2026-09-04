@@ -26,8 +26,8 @@ import { withBasePath } from "@/lib/base-path";
 
 /** "Depoimentos" - os vídeos gravados pelos próprios abrigos. */
 const copyDepoimentos = {
-  eyebrow: "Depoimentos",
-  title: "Quem recebe, falando por si",
+  eyebrow: "Testimonials",
+  title: "Testimonials from the shelters Kyle helps",
   /* Sem `lead`: os cinco vídeos logo abaixo já mostram cinco protetores de
      cinco abrigos, cada um com nome e cidade na legenda. A linha só narrava
      em texto o que a fileira mostra em vídeo. */
@@ -36,8 +36,10 @@ const copyDepoimentos = {
 /**
  * Depoimentos - os vídeos gravados pelos próprios protetores.
  *
- * Os arquivos foram baixados da campanha para `/public/caio/depoimentos/` (ver
- * o motivo em `historiaPhotos`). São ~52 MB somados, e é por isso que o
+ * Os arquivos são as versões **em inglês** publicadas em
+ * `donate.kylerescuer.org/wp-content/uploads/2026/07/`, baixadas para
+ * `/public/caio/depoimentos/` (ver o motivo em `historiaPhotos`). São ~46 MB
+ * somados, e é por isso que o
  * componente usa `preload="none"`: nenhum byte de vídeo é baixado antes de a
  * pessoa apertar o play - o que aparece na tela é o `poster`, que pesa ~30 KB.
  */
@@ -48,39 +50,39 @@ const depoimentos = [
     poster: "/caio/depoimentos/joana.webp",
     name: "Joana",
     shelter: "SOS Joana Darc",
-    detail: "200 animais · Santa Luzia, MG",
+    detail: "200 animals · Santa Luzia, MG",
   },
   {
     id: "salvecao",
     src: "/caio/depoimentos/salvecao.mp4",
     poster: "/caio/depoimentos/salvecao.webp",
     name: "Andrezza",
-    shelter: "Abrigo Salve Cão",
-    detail: "92 animais · Floresta Azul, BA",
+    shelter: "Save Dog Shelter",
+    detail: "92 animals · Floresta Azul, BA",
   },
   {
     id: "milena",
     src: "/caio/depoimentos/milena.mp4",
     poster: "/caio/depoimentos/milena.webp",
     name: "Milena",
-    shelter: "Casa da Mili",
-    detail: "74 animais · Tambaú, SP",
+    shelter: "Millie Home",
+    detail: "74 animals · Tambaú, SP",
   },
   {
     id: "siulsan",
     src: "/caio/depoimentos/siulsan.mp4",
     poster: "/caio/depoimentos/siulsan.webp",
     name: "Siulsan",
-    shelter: "Siulsan Resgate",
-    detail: "53 cães · Tatuí, SP",
+    shelter: "Susan Pet Rescue",
+    detail: "53 dogs · Tatuí, SP",
   },
   {
     id: "rose",
     src: "/caio/depoimentos/rose.mp4",
     poster: "/caio/depoimentos/rose.webp",
     name: "Rose",
-    shelter: "Abrigo Dona Rose",
-    detail: "95 animais · Serra, ES",
+    shelter: "Rose's Shelter",
+    detail: "95 animals · Serra, ES",
   },
 ];
 
@@ -403,7 +405,7 @@ function CardsCarousel({
             type="button"
             onClick={() => andar(-1)}
             disabled={!nav.voltar}
-            aria-label={`${label}: ver anteriores`}
+            aria-label={`${label}: see previous`}
             className={botao}
           >
             <IconArrowLeft size={20} />
@@ -413,7 +415,7 @@ function CardsCarousel({
             type="button"
             onClick={() => andar(1)}
             disabled={!nav.avancar}
-            aria-label={`${label}: ver próximos`}
+            aria-label={`${label}: see next`}
             className={botao}
           >
             <IconArrowRight size={20} />
@@ -518,7 +520,7 @@ export default function Depoimentos() {
                   {!iniciado && (
                     <button
                       type="button"
-                      aria-label={`Reproduzir o depoimento de ${item.name}, do ${item.shelter}`}
+                      aria-label={`Play the testimonial from ${item.name}, of ${item.shelter}`}
                       onClick={(e) => {
                         const video =
                           e.currentTarget.parentElement?.querySelector("video");

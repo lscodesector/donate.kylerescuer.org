@@ -19,7 +19,7 @@ import {
   subscribeCampaign,
 } from "@/lib/campaign";
 import { DOAR_HREF } from "@/lib/config";
-import { formatBRL } from "@/lib/format";
+import { formatUSD } from "@/lib/format";
 import { openDonationModal } from "@/lib/modais";
 
 /**
@@ -46,18 +46,18 @@ import { openDonationModal } from "@/lib/modais";
  * campanha, sem edição: ela é o que dá o tom da página inteira.
  */
 const heroCopy = {
-  headline: "Um protetor desesperado!",
-  headlineAccent: "400 filhinhos que sofrem todos os dias.",
+  headline: "A desperate rescuer!",
+  headlineAccent: "400 little ones suffering every day.",
   /** Linha de apoio, logo abaixo da manchete. */
-  lead: "Ajude o Caio a levar ajuda antes que seja tarde.",
-  ctaPrimary: "Quero ajudar agora",
+  lead: "Help Kyle bring relief before it's too late.",
+  ctaPrimary: "I want to help now",
   /**
    * O pedido mensal na **página raiz**, onde ele é o segundo botão da dobra e
    * divide a linha com o "Quero ajudar agora". Aqui a frase precisa gastar a
    * palavra "todo mês": é ela que diferencia os dois botões um do outro, e é
    * a mesma frase do menu e do fechamento.
    */
-  ctaMensal: "Quero ajudar todo mês",
+  ctaMensal: "I want to help every month",
   /**
    * O mesmo pedido em `/ajude-sempre`, onde ele é o **único** botão da dobra.
    *
@@ -69,12 +69,12 @@ const heroCopy = {
    * frase passa a ser a única coisa entre a pessoa e uma recorrência que ela
    * não viu chegar.
    */
-  ctaMensalSozinho: "Faça a diferença",
-  seal: "Projeto 100% seguro e verificado",
+  ctaMensalSozinho: "Make a difference",
+  seal: "100% secure and verified project",
 };
 
 /**
- * As fotos da história do Caio - o carrossel da seção "Quem é o Caio".
+ * As fotos da história do Kyle - o carrossel da seção "Quem é o Kyle".
  *
  * São as seis fotos da campanha original, na mesma ordem, com as legendas que
  * elas tinham lá. Baixadas para `/public/caio/historia/`: o site é exportado
@@ -95,15 +95,15 @@ const heroCopy = {
 const historiaPhotos = [
   {
     src: "/caio/historia/caio-1.webp",
-    alt: "Caio Protetor com um cão resgatado no colo",
-    caption: "Um protetor. Uma missão. 400 vidas que dependem da sua ajuda.",
+    alt: "Kyle Rescuer holding a rescued dog",
+    caption: "One rescuer. One mission. 400 lives that depend on your help.",
     /* Agachado, de frente: cabeça 9%, queixo 31%. */
     focusY: 20,
   },
   {
     src: "/caio/historia/caio-2.webp",
-    alt: "Caio entre os animais de que cuida todos os dias",
-    caption: "Caio com os animais que cuida todo dia · ração, remédios e amor",
+    alt: "Kyle among the animals he cares for every day",
+    caption: "Kyle with the animals he cares for daily · food, medicine and love",
     /* O cabelo começa a 3% da borda de cima: qualquer corte no topo
        decapita. Daí o número mais baixo das seis - num 4:3 ele deixa a
        faixa visível começar em 2,8%, com folga de sobra para a cabeça. O
@@ -112,32 +112,32 @@ const historiaPhotos = [
   },
   {
     src: "/caio/historia/caio-3.webp",
-    alt: "Cão resgatado recebendo cuidado depois do resgate",
-    caption: "Cada resgate é uma segunda chance de vida",
+    alt: "Rescued dog receiving care after the rescue",
+    caption: "Every rescue is a second chance at life",
     /* A única em que o rosto está na metade de baixo (55% a 80%), com o cão
        no ombro logo acima - o par ocupa de 20% a 80%. */
     focusY: 55,
   },
   {
     src: "/caio/historia/caio-4.webp",
-    alt: "Abrigo lotado, com animais aguardando atendimento",
-    caption: "Abrigos no limite · animais esperando por cuidado urgente",
+    alt: "Overcrowded shelter, with animals waiting for care",
+    caption: "Shelters at their limit · animals waiting for urgent care",
     /* Rosto grande e centralizado na largura: cabelo 6,6%, queixo 48%. O 22
        (e não 27) é o que mantém o topo do cabelo dentro num quadro 4:3. */
     focusY: 22,
   },
   {
     src: "/caio/historia/caio-5.webp",
-    alt: "Sacos de ração e medicamentos entregues no abrigo",
+    alt: "Bags of food and medicine delivered to the shelter",
     caption:
-      "Ração, remédios e veterinário · cada doação chega direta aos animais",
+      "Food, medicine and vet care · every donation reaches the animals directly",
     /* Sentado no chão, rosto pequeno e alto no quadro: 12% a 27%. */
     focusY: 20,
   },
   {
     src: "/caio/historia/caio-6.webp",
-    alt: "Cães resgatados no pátio de um dos abrigos apoiados",
-    caption: "400+ animais que não teriam outra chance sem o seu apoio",
+    alt: "Rescued dogs in the yard of one of the supported shelters",
+    caption: "400+ animals that would have no other chance without your support",
     /* De lado, beijando o cão preto: cabeça 19%, queixo 33%. */
     focusY: 26,
   },
@@ -187,24 +187,25 @@ const heroVideo: {
   aspect: string;
 } = {
   vturb: {
-    playerId: "vid-6a3dcba6fcb54795331ecb9f",
+    playerId: "vid-6a6377b0031b3f35da8c0570",
     scriptSrc:
-      "https://scripts.converteai.net/25b0cdcd-2b93-4910-aa45-91b9a6275957/players/6a3dcba6fcb54795331ecb9f/v4/player.js",
+      "https://scripts.converteai.net/25b0cdcd-2b93-4910-aa45-91b9a6275957/players/6a6377b0031b3f35da8c0570/v4/player.js",
     smartplayerSrc:
       "https://scripts.converteai.net/lib/js/smartplayer-wc/v4/smartplayer.js",
     streamSrc:
-      "https://cdn.converteai.net/25b0cdcd-2b93-4910-aa45-91b9a6275957/6a3dc9676e2c9c5a5916f3ba/main.m3u8",
-    ratio: 78.125,
+      "https://cdn.converteai.net/25b0cdcd-2b93-4910-aa45-91b9a6275957/6a6377a592c3629c8fbb3a85/main.m3u8",
+    ratio: 78.14761215629522,
     poster: "/caio/vsl-poster.webp",
   },
   newPlayer: {
     token: "6bNYgehtCJyoAhjtn8bR7qmmFz7iWizx",
   },
   /**
-   * Formato do player, em `largura / altura`. 78,125% de padding é
-   * `1 / 0.78125` - um formato levemente deitado, que é o do vídeo da campanha.
+   * Formato do player, em `largura / altura`. 78,1476% de padding é
+   * `1 / 0.7814761215629522` - um formato levemente deitado, que é o do vídeo
+   * da campanha.
    */
-  aspect: "1 / 0.78125",
+  aspect: "1 / 0.7814761215629522",
 };
 
 /* ─────────────────────────────────────────────────────────── ícones ──── */
@@ -282,7 +283,7 @@ const IconShield = (p: IconProps) => (
  * `next.config.ts`), o `next/image` passa o `src` adiante sem tocar nele. É
  * comportamento documentado: o prefixo de `basePath` só acontece na URL do
  * otimizador (`/_next/image?url=…`), e sem otimizador não há essa URL para
- * prefixar. Sem este envelope, publicado em `doe.caioprotetor.org/v2`, toda
+ * prefixar. Sem este envelope, publicado em `donate.kylerescuer.org/v2`, toda
  * imagem apontaria para a raiz do domínio - que é outro site (WordPress) - e
  * simplesmente não carregaria.
  *
@@ -924,7 +925,7 @@ type Photo = {
    *
    * ── Por que por foto, e não por quadro ────────────────────────────────
    * O `object-cover` recorta pelo centro geométrico, que não tem relação
-   * nenhuma com onde as pessoas estão na imagem. Numa foto o Caio aparece
+   * nenhuma com onde as pessoas estão na imagem. Numa foto o Kyle aparece
    * agachado com o rosto a 20% do topo; na seguinte, de pé, a 45%. Um
    * enquadramento só para as duas erra em uma delas - e o erro é sempre o
    * mesmo: testa cortada.
@@ -979,7 +980,7 @@ function PhotoSlideshow({
   photos: Photo[];
   /** `sizes` do `next/image` - o mesmo para todas, o quadro é um só. */
   sizes: string;
-  /** De quem são as fotos, para os rótulos das setas: "Abrigo Salve Cão". */
+  /** De quem são as fotos, para os rótulos das setas: "Save Dog Shelter". */
   label: string;
   /** Setas e pontinhos clicáveis. Sem isso, os pontinhos são só enfeite. */
   controls?: boolean;
@@ -1205,7 +1206,7 @@ function PhotoSlideshow({
           <button
             type="button"
             onClick={() => ir(i - 1)}
-            aria-label={`${label}: foto anterior`}
+            aria-label={`${label}: previous photo`}
             className={`absolute left-2 top-1/2 -translate-y-1/2 ${seta}`}
           >
             <IconArrowLeft size={17} />
@@ -1214,7 +1215,7 @@ function PhotoSlideshow({
           <button
             type="button"
             onClick={() => ir(i + 1)}
-            aria-label={`${label}: próxima foto`}
+            aria-label={`${label}: next photo`}
             className={`absolute right-2 top-1/2 -translate-y-1/2 ${seta}`}
           >
             <IconArrowRight size={17} />
@@ -1238,7 +1239,7 @@ function PhotoSlideshow({
                 key={foto.src}
                 type="button"
                 onClick={() => ir(indice)}
-                aria-label={`${label}: foto ${indice + 1} de ${photos.length}`}
+                aria-label={`${label}: photo ${indice + 1} of ${photos.length}`}
                 aria-current={indice === i}
                 /* O alvo do toque tem 24px de altura; o que se vê é o pontinho
                    de 6px no meio dele. */
@@ -1288,15 +1289,15 @@ function CampaignProgress({ className = "" }: { className?: string }) {
     <div className={`flex w-full flex-col gap-1.5 ${className}`}>
       <div className="flex items-baseline justify-between gap-3">
         <span className="text-[clamp(1.1506rem,1.023rem+0.7161vw,1.5345rem)] font-extrabold leading-none text-ink-900 tabular-nums">
-          {state ? formatBRL(state.raised * 100) : "—"}
+          {state ? formatUSD(state.raised * 100) : "—"}
         </span>
         <span className="text-[clamp(0.8954rem,0.8184rem+0.3069vw,1.023rem)] font-extrabold leading-none text-ink-600 tabular-nums">
-          {state ? formatBRL(state.goal * 100) : "—"}
+          {state ? formatUSD(state.goal * 100) : "—"}
         </span>
       </div>
       <div className="flex items-baseline justify-between gap-3 text-fs12 font-semibold text-ink-600">
-        <span>Arrecadados</span>
-        <span>Meta</span>
+        <span>Raised</span>
+        <span>Goal</span>
       </div>
 
       <div
@@ -1304,7 +1305,7 @@ function CampaignProgress({ className = "" }: { className?: string }) {
         aria-valuenow={percent}
         aria-valuemin={0}
         aria-valuemax={100}
-        aria-label="Progresso da meta da campanha"
+        aria-label="Campaign goal progress"
         className="h-[10px] w-full overflow-hidden rounded-full bg-ink-900/10"
       >
         <div
@@ -1315,11 +1316,11 @@ function CampaignProgress({ className = "" }: { className?: string }) {
 
       <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-fs12 font-semibold">
         <span className="text-donate-text">
-          {state ? `${state.percent}% da meta atingida` : " "}
+          {state ? `${state.percent}% of goal reached` : " "}
         </span>
         <span className="inline-flex items-center gap-1.5 text-ink-600">
           <span aria-hidden="true" className="h-[6px] w-[6px] shrink-0 rounded-full bg-donate" />
-          {state ? `${state.supporters} apoiadores` : " "}
+          {state ? `${state.supporters} supporters` : " "}
         </span>
       </div>
     </div>
@@ -1366,7 +1367,7 @@ function DonateMenuButton({
  * ── O VSL voltou para o miolo da dobra ────────────────────────────────────
  * No site institucional este espaço era um slide de fotos: um vídeo de vendas
  * é o argumento de uma *campanha*, e ali a página existia para apresentar a
- * organização. Aqui é campanha de novo, e o vídeo é o argumento - é o Caio
+ * organização. Aqui é campanha de novo, e o vídeo é o argumento - é o Kyle
  * contando a própria história, que é o que faz alguém doar. O slide continua
  * como plano B: com `heroVideo.vturb: null` a dobra cai para as fotos sozinha,
  * sem ninguém mexer neste arquivo.
@@ -1391,7 +1392,7 @@ export default function Hero({
    * O "Quero ajudar agora" some porque nesta página ele seria a oferta que a
    * página não faz - e porque dois botões com o mesmo pedido, um do lado do
    * outro, transformam a decisão que a dobra pede numa escolha entre iguais.
-   * A manchete, o vídeo e a barra de meta são os mesmos: a história do Caio
+   * A manchete, o vídeo e a barra de meta são os mesmos: a história do Kyle
    * não muda com a frequência da doação.
    */
   mensal = false,
@@ -1506,7 +1507,7 @@ export default function Hero({
               barra e dos botões) + `aspect-ratio`: a altura sai sozinha da
               proporção do vídeo, sem depender da altura de nada acima. O
               player do VTurb segura a própria altura com `padding-top` de
-              78,125% da largura, que é a mesma proporção daqui, então ele
+              78,1476% da largura, que é a mesma proporção daqui, então ele
               preenche o quadro exatamente.
             */
             <div

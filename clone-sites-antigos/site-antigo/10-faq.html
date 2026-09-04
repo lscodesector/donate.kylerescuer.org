@@ -1,0 +1,257 @@
+<!-- KYLE RESCUER US | 10 - FAQ -->
+<style>
+  .cp-faq-section {
+    background: #f4f4f4;
+  }
+
+  .ln-faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .ln-faq-item {
+    border: 1px solid rgba(229, 229, 229, 0.92);
+    border-radius: 5px;
+    background: #ffffff;
+    overflow: hidden;
+  }
+
+  .ln-faq-item summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 18px;
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: #9b1b2d;
+    font-family: "Nunito", sans-serif;
+    transition: color 0.2s;
+  }
+  .ln-faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+  .ln-faq-item summary::after {
+    content: "+";
+    flex: 0 0 auto;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background: rgba(191, 5, 33, 0.08);
+    border: 1px solid rgba(191, 5, 33, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    line-height: 1;
+    color: #d94050;
+    font-weight: 700;
+    transition: transform 0.25s;
+    display: inline-flex;
+  }
+  .ln-faq-item[open] summary::after {
+    content: "\2212";
+    transform: rotate(0deg);
+  }
+  .ln-faq-item[open] summary {
+    color: #bf0521;
+  }
+  .ln-faq-item[open] {
+    border-color: rgba(191, 5, 33, 0.22);
+  }
+
+  .ln-faq-answer {
+    padding: 0 18px 16px;
+    padding-top: 0;
+    margin-top: -4px;
+    font-size: 0.88rem;
+    color: #6b6b6b;
+    line-height: 1.75;
+    font-family: "Nunito", sans-serif;
+  }
+  .ln-faq-answer a {
+    color: #bf0521;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .ln-faq-answer a:hover {
+    color: #9b1b2d;
+  }
+  .ln-faq-answer strong {
+    color: #1a1a2e;
+  }
+
+  .cp-faq-section .ln-section-title span {
+    color: #2a2a2a !important;
+    padding-bottom: 3px;
+  }
+</style>
+
+<section class="ln-section cp-faq-section ln-section-anchor" id="faq">
+  <div class="ln-card">
+    <div class="ln-card-inner">
+      <div class="ln-section-title">
+        <div class="ln-section-icon" style="background: rgba(191, 5, 33, 0.08)">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#BF0521"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9.09 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3" />
+            <path d="M12 17h.01" stroke-linecap="round" />
+          </svg>
+        </div>
+        <span>Frequently asked questions</span>
+      </div>
+
+      <div class="ln-faq-list">
+        <details class="ln-faq-item">
+          <summary>Is my donation secure?</summary>
+          <div class="ln-faq-answer">
+            Yes. Payments are processed securely through
+            <strong>PayPal</strong>, one of the most trusted payment platforms
+            in the world, with bank-level encryption. No card or banking data is
+            ever stored on our site.
+          </div>
+        </details>
+
+        <details class="ln-faq-item">
+          <summary>Is there a minimum amount?</summary>
+          <div class="ln-faq-answer">
+            <strong>Any amount is welcome.</strong> Every bit of help keeps the
+            more than 400 lives that depend on Kyle going.
+          </div>
+        </details>
+
+        <details class="ln-faq-item">
+          <summary>Where exactly does the money go?</summary>
+          <div class="ln-faq-answer">
+            Donations are directed toward direct animal care, things like
+            <strong>food, rescues</strong>, veterinary treatment, medication,
+            and shelter support. Kyle posts regular updates on Instagram.
+          </div>
+        </details>
+
+        <details class="ln-faq-item">
+          <summary>Who is SOS Animal Help?</summary>
+          <div class="ln-faq-answer">
+            An animal protection organization that supports independent rescuers
+            like Kyle. It receives the donations and distributes them with full
+            traceability.
+          </div>
+        </details>
+
+        <details class="ln-faq-item">
+          <summary>Will I get a receipt for my donation?</summary>
+          <div class="ln-faq-answer">
+            Yes. PayPal automatically emails you a receipt as soon as your
+            donation is processed.
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var items = Array.from(document.querySelectorAll("#faq .ln-faq-item"));
+    var DURATION = 300;
+
+    function Accordion(el) {
+      this.el = el;
+      this.summary = el.querySelector("summary");
+      this.content = el.querySelector(".ln-faq-answer");
+      this.animation = null;
+      this.isClosing = false;
+      this.isExpanding = false;
+      this.summary.addEventListener("click", this.onClick.bind(this));
+    }
+
+    Accordion.prototype.onClick = function (e) {
+      e.preventDefault();
+      this.el.style.overflow = "hidden";
+      if (this.isClosing || !this.el.open) {
+        this.open();
+      } else if (this.isExpanding || this.el.open) {
+        this.shrink();
+      }
+    };
+
+    Accordion.prototype.open = function () {
+      this.el.style.height = this.el.offsetHeight + "px";
+      this.el.open = true;
+      var self = this;
+      window.requestAnimationFrame(function () {
+        self.expand();
+      });
+
+      // Open this one first; after 100ms, close (with animation) whichever was open.
+      setTimeout(function () {
+        items.forEach(function (other) {
+          if (other !== self.el && other.open && other.__accordion) {
+            other.__accordion.shrink();
+          }
+        });
+      }, 0);
+    };
+
+    Accordion.prototype.expand = function () {
+      this.isExpanding = true;
+      var startHeight = this.el.offsetHeight + "px";
+      var endHeight =
+        this.summary.offsetHeight + this.content.offsetHeight + "px";
+      if (this.animation) this.animation.cancel();
+      this.animation = this.el.animate(
+        { height: [startHeight, endHeight] },
+        { duration: DURATION, easing: "ease-out" },
+      );
+      var self = this;
+      this.animation.onfinish = function () {
+        self.onAnimationFinish(true);
+      };
+      this.animation.oncancel = function () {
+        self.isExpanding = false;
+      };
+    };
+
+    Accordion.prototype.shrink = function () {
+      this.el.style.overflow = "hidden";
+      this.isClosing = true;
+      var startHeight = this.el.offsetHeight + "px";
+      var endHeight = this.summary.offsetHeight + "px";
+      if (this.animation) this.animation.cancel();
+      this.animation = this.el.animate(
+        { height: [startHeight, endHeight] },
+        { duration: DURATION, easing: "ease-out" },
+      );
+      var self = this;
+      this.animation.onfinish = function () {
+        self.onAnimationFinish(false);
+      };
+      this.animation.oncancel = function () {
+        self.isClosing = false;
+      };
+    };
+
+    Accordion.prototype.onAnimationFinish = function (open) {
+      this.el.open = open;
+      this.animation = null;
+      this.isClosing = false;
+      this.isExpanding = false;
+      this.el.style.height = "";
+      this.el.style.overflow = "";
+    };
+
+    items.forEach(function (item) {
+      item.__accordion = new Accordion(item);
+    });
+  })();
+</script>

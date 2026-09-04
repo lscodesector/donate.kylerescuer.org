@@ -27,24 +27,24 @@ import { withBasePath } from "@/lib/base-path";
 /* ─────────────────────────────────────────────────── conteúdo do bloco ──── */
 
 /**
- * "Quem é o Caio" - a história, que é o miolo desta campanha.
+ * "Quem é o Kyle" - a história, que é o miolo desta campanha.
  *
  * O texto é o da página original, palavra por palavra, incluindo a citação em
  * destaque. `quote` é `<blockquote>` na tela: é o dado mais duro da página
  * (22 vidas perdidas) e ele não pode ser lido como mais um parágrafo.
  */
 const missao = {
-  eyebrow: "Quem é o Caio",
-  statement: "Um protetor. Uma missão. 400 vidas que dependem da sua ajuda.",
+  eyebrow: "Who is Kyle?",
+  statement: "One rescuer. One mission. 400 lives that depend on your help.",
   paragraphs: [
-    "Meu nome é Caio, sou protetor e faço a ajuda chegar até abrigos que cuidam de animais em estado crítico.",
-    "Através da SOS Animal Help, eu visito projetos que estão no limite, conheço de perto a realidade dos protetores e levo apoio financeiro para ração, remédios, veterinário e cuidados urgentes, para que esses animais tenham a chance de continuar vivos.",
+    "My name is Kyle, I'm an animal rescuer, and I make sure help reaches shelters caring for animals in critical condition.",
+    "Through SOS Animal Help, I visit shelters that are at their breaking point, see firsthand what rescuers are up against, and bring financial support for food, medicine, vet care and urgent needs, so these animals get the chance to keep living.",
   ],
   quote:
-    "Fome e dívidas: nos últimos meses, as doações diminuíram muito e a situação piorou. Já foram 22 vidas perdidas, e outros animais ainda estão doentes, esperando por cuidado urgente.",
+    "Hunger and debt: in recent months, donations have dropped sharply and the situation has gotten worse. 22 lives have already been lost, and other animals are still sick, waiting for urgent care.",
   paragraphsAfter: [
-    "Mesmo diante de tanta dificuldade, eu não consigo virar as costas. Se a gente não ajudar agora, muitos desses animais continuarão sofrendo sem socorro, sem alimento e sem ninguém por eles.",
-    "Abandonar esses animais não é uma opção...",
+    "Even facing so much hardship, I can't turn my back. If we don't help now, many of these animals will keep suffering with no help, no food and no one to look out for them.",
+    "Abandoning these animals is not an option...",
   ],
   /**
    * Os trechos que saem em **vermelho** no meio dos parágrafos - o vermelho
@@ -61,17 +61,17 @@ const missao = {
    * a destaca é a moldura vermelha do `<blockquote>` em `Missao`.
    */
   realces: [
-    "faço a ajuda chegar até abrigos que cuidam de animais em estado crítico.",
+    "I make sure help reaches shelters caring for animals in critical condition.",
     "SOS Animal Help",
-    "projetos que estão no limite",
-    "para que esses animais tenham a chance de continuar vivos",
-    "continuarão sofrendo sem socorro, sem alimento e sem ninguém por eles",
-    "Abandonar esses animais não é uma opção...",
+    "shelters that are at their breaking point",
+    "so these animals get the chance to keep living",
+    "will keep suffering with no help, no food and no one to look out for them",
+    "Abandoning these animals is not an option...",
   ],
 };
 
 /**
- * As fotos da história do Caio - o carrossel da seção "Quem é o Caio".
+ * As fotos da história do Kyle - o carrossel da seção "Quem é o Kyle".
  *
  * São as seis fotos da campanha original, na mesma ordem, com as legendas que
  * elas tinham lá. Baixadas para `/public/caio/historia/`: o site é exportado
@@ -92,15 +92,15 @@ const missao = {
 const historiaPhotos = [
   {
     src: "/caio/historia/caio-1.webp",
-    alt: "Caio Protetor com um cão resgatado no colo",
-    caption: "Um protetor. Uma missão. 400 vidas que dependem da sua ajuda.",
+    alt: "Kyle Rescuer holding a rescued dog",
+    caption: "One rescuer. One mission. 400 lives that depend on your help.",
     /* Agachado, de frente: cabeça 9%, queixo 31%. */
     focusY: 20,
   },
   {
     src: "/caio/historia/caio-2.webp",
-    alt: "Caio entre os animais de que cuida todos os dias",
-    caption: "Caio com os animais que cuida todo dia · ração, remédios e amor",
+    alt: "Kyle among the animals he cares for every day",
+    caption: "Kyle with the animals he cares for daily · food, medicine and love",
     /* O cabelo começa a 3% da borda de cima: qualquer corte no topo
        decapita. Daí o número mais baixo das seis - num 4:3 ele deixa a
        faixa visível começar em 2,8%, com folga de sobra para a cabeça. O
@@ -109,32 +109,32 @@ const historiaPhotos = [
   },
   {
     src: "/caio/historia/caio-3.webp",
-    alt: "Cão resgatado recebendo cuidado depois do resgate",
-    caption: "Cada resgate é uma segunda chance de vida",
+    alt: "Rescued dog receiving care after the rescue",
+    caption: "Every rescue is a second chance at life",
     /* A única em que o rosto está na metade de baixo (55% a 80%), com o cão
        no ombro logo acima - o par ocupa de 20% a 80%. */
     focusY: 55,
   },
   {
     src: "/caio/historia/caio-4.webp",
-    alt: "Abrigo lotado, com animais aguardando atendimento",
-    caption: "Abrigos no limite · animais esperando por cuidado urgente",
+    alt: "Overcrowded shelter, with animals waiting for care",
+    caption: "Shelters at their limit · animals waiting for urgent care",
     /* Rosto grande e centralizado na largura: cabelo 6,6%, queixo 48%. O 22
        (e não 27) é o que mantém o topo do cabelo dentro num quadro 4:3. */
     focusY: 22,
   },
   {
     src: "/caio/historia/caio-5.webp",
-    alt: "Sacos de ração e medicamentos entregues no abrigo",
+    alt: "Bags of food and medicine delivered to the shelter",
     caption:
-      "Ração, remédios e veterinário · cada doação chega direta aos animais",
+      "Food, medicine and vet care · every donation reaches the animals directly",
     /* Sentado no chão, rosto pequeno e alto no quadro: 12% a 27%. */
     focusY: 20,
   },
   {
     src: "/caio/historia/caio-6.webp",
-    alt: "Cães resgatados no pátio de um dos abrigos apoiados",
-    caption: "400+ animais que não teriam outra chance sem o seu apoio",
+    alt: "Rescued dogs in the yard of one of the supported shelters",
+    caption: "400+ animals that would have no other chance without your support",
     /* De lado, beijando o cão preto: cabeça 19%, queixo 33%. */
     focusY: 26,
   },
@@ -183,7 +183,7 @@ const IconArrowRight = (p: IconProps) => (
  * `next.config.ts`), o `next/image` passa o `src` adiante sem tocar nele. É
  * comportamento documentado: o prefixo de `basePath` só acontece na URL do
  * otimizador (`/_next/image?url=…`), e sem otimizador não há essa URL para
- * prefixar. Sem este envelope, publicado em `doe.caioprotetor.org/v2`, toda
+ * prefixar. Sem este envelope, publicado em `donate.kylerescuer.org/v2`, toda
  * imagem apontaria para a raiz do domínio - que é outro site (WordPress) - e
  * simplesmente não carregaria.
  *
@@ -298,7 +298,7 @@ type Photo = {
    *
    * ── Por que por foto, e não por quadro ────────────────────────────────
    * O `object-cover` recorta pelo centro geométrico, que não tem relação
-   * nenhuma com onde as pessoas estão na imagem. Numa foto o Caio aparece
+   * nenhuma com onde as pessoas estão na imagem. Numa foto o Kyle aparece
    * agachado com o rosto a 20% do topo; na seguinte, de pé, a 45%. Um
    * enquadramento só para as duas erra em uma delas - e o erro é sempre o
    * mesmo: testa cortada.
@@ -353,7 +353,7 @@ function PhotoSlideshow({
   photos: Photo[];
   /** `sizes` do `next/image` - o mesmo para todas, o quadro é um só. */
   sizes: string;
-  /** De quem são as fotos, para os rótulos das setas: "Abrigo Salve Cão". */
+  /** De quem são as fotos, para os rótulos das setas: "Save Dog Shelter". */
   label: string;
   /** Setas e pontinhos clicáveis. Sem isso, os pontinhos são só enfeite. */
   controls?: boolean;
@@ -579,7 +579,7 @@ function PhotoSlideshow({
           <button
             type="button"
             onClick={() => ir(i - 1)}
-            aria-label={`${label}: foto anterior`}
+            aria-label={`${label}: previous photo`}
             className={`absolute left-2 top-1/2 -translate-y-1/2 ${seta}`}
           >
             <IconArrowLeft size={17} />
@@ -588,7 +588,7 @@ function PhotoSlideshow({
           <button
             type="button"
             onClick={() => ir(i + 1)}
-            aria-label={`${label}: próxima foto`}
+            aria-label={`${label}: next photo`}
             className={`absolute right-2 top-1/2 -translate-y-1/2 ${seta}`}
           >
             <IconArrowRight size={17} />
@@ -612,7 +612,7 @@ function PhotoSlideshow({
                 key={foto.src}
                 type="button"
                 onClick={() => ir(indice)}
-                aria-label={`${label}: foto ${indice + 1} de ${photos.length}`}
+                aria-label={`${label}: photo ${indice + 1} of ${photos.length}`}
                 aria-current={indice === i}
                 /* O alvo do toque tem 24px de altura; o que se vê é o pontinho
                    de 6px no meio dele. */
@@ -633,7 +633,7 @@ function PhotoSlideshow({
 /* ──────────────────────────────────────────────────────────── o bloco ──── */
 
 /**
- * "Quem é o Caio" - a história, logo depois da dobra.
+ * "Quem é o Kyle" - a história, logo depois da dobra.
  *
  * É a pergunta que uma campanha pessoal responde antes de qualquer pedido:
  * quem está pedindo, e por quê. A ordem é rótulo → frase → fotos → história →
@@ -644,7 +644,7 @@ function PhotoSlideshow({
  * ── Não é um cartão ───────────────────────────────────────────────────────
  * Já foi: bloco creme (`bg-surface-alt`) com cantos arredondados e preenchimento
  * generoso, desenhado como um cartão sobre o branco da página. O fundo saiu -
- * a história do Caio é o corpo da página, não um aparte dentro dela, e a moldura
+ * a história do Kyle é o corpo da página, não um aparte dentro dela, e a moldura
  * a empurrava para longe do texto que vem antes e depois. O único bloco com
  * moldura própria aqui passa a ser a citação, e é isso que a destaca.
  *
@@ -660,7 +660,7 @@ function PhotoSlideshow({
  *
  * ── Os realces em vermelho ────────────────────────────────────────────────
  * Seis trechos saem no vermelho da marca, no meio do parágrafo cinza: o que o
- * Caio faz, quem é a organização, e as frases que dizem o tamanho da urgência.
+ * Kyle faz, quem é a organização, e as frases que dizem o tamanho da urgência.
  * Quais são eles é decisão de conteúdo e está em `copy.missao.realces` - aqui
  * só mora a mecânica de pintá-los (`comRealces`, no fim do arquivo).
  *
@@ -691,7 +691,7 @@ export default function QuemE() {
               enquadradas, então nenhuma perde rosto no `object-cover`. */}
           <PhotoSlideshow
             photos={historiaPhotos}
-            label="Caio Protetor"
+            label="Kyle Rescuer"
             controls
             interval={4200}
             sizes="(min-width: 760px) 640px, 100vw"

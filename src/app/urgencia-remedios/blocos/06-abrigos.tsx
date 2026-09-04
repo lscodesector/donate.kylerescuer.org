@@ -12,8 +12,8 @@ import {
   type SVGProps,
 } from "react";
 import { withBasePath } from "@/lib/base-path";
-import { whatsappWith, type Documento } from "@/lib/config";
-import { useShelterPhone } from "@/lib/hooks/use-shelter-phone";
+import { type Documento } from "@/lib/config";
+import { useShelterEmail } from "@/lib/hooks/use-shelter-phone";
 import { openDocumentoModal, openDonationModal } from "@/lib/modais";
 import { useScrollLock } from "@/lib/scroll-lock";
 
@@ -30,19 +30,19 @@ import { useScrollLock } from "@/lib/scroll-lock";
 /* ─────────────────────────────────────────────────── conteúdo do bloco ──── */
 
 const copyAbrigos = {
-  eyebrow: "Quem recebe",
-  title: "Abrigos que o Caio ajuda",
+  eyebrow: "Who receives it",
+  title: "Shelters Kyle helps",
   /* Sem `lead`: a linha de apoio que ficava aqui ("A ajuda não fica com a
      gente...") prometia por escrito exatamente o que a lista logo abaixo
      mostra - nome, cidade e ficha aberta em cada card. Ler a promessa antes
      de ver a prova só adiava a prova. */
-  ctaProfile: "Saiba mais",
-  ctaCnpj: "Ver o cartão CNPJ do abrigo",
-  ctaShelter: "Doar agora",
-  ctaInstagram: "Ver o dia a dia no Instagram",
-  ctaWhatsapp: "Pedir os dados no WhatsApp",
+  ctaProfile: "Learn more",
+  ctaCnpj: "See the shelter CNPJ certificate",
+  ctaShelter: "Donate now",
+  ctaInstagram: "See their day-to-day on Instagram",
+  ctaEmail: "Ask for their details by email",
   profileEmpty:
-    "Os dados cadastrais completos deste abrigo ainda não estão publicados aqui. Se quiser conferir antes de doar, é só pedir para a equipe.",
+    "The full registration details of this shelter are not published here yet. If you want to check them before donating, just ask the team.",
 };
 
 /**
@@ -103,43 +103,43 @@ type Shelter = {
   /**
    * O cartão CNPJ **do abrigo**, quando ele já tem um emitido e o arquivo está
    * em `public/documentos/`. Sem esta linha, a ficha não mostra o botão "ver o
-   * cartão CNPJ" - é o caso do Abrigo Dona Rose, que está em processo de
+   * cartão CNPJ" - é o caso do Rose's Shelter, que está em processo de
    * legalização. Botão que abre um quadro vazio é pior do que botão ausente.
    */
   cnpjDoc?: Documento;
 };
 
 /**
- * Os cinco abrigos que o Caio acompanha.
+ * Os cinco abrigos que o Kyle acompanha.
  *
  * Nome, cidade, endereço e contagem de animais vêm da campanha original, campo
  * a campo. Os endereços são publicados **com número** de propósito: é o que
  * separa "um abrigo em Tatuí" de um lugar que a pessoa pode conferir.
  *
- * ⚠️ O Instagram só está preenchido onde ele foi confirmado. O Abrigo Dona Rose
+ * ⚠️ O Instagram só está preenchido onde ele foi confirmado. O Rose's Shelter
  * está sem perfil e sem site aqui porque a campanha não publica nenhum dos dois
  * - link inventado numa página que pede doação é pior do que link ausente.
  *
  * ── Os cartões CNPJ dos abrigos ───────────────────────────────────────────
  * Quatro dos cinco têm `cnpjDoc`, e o arquivo de cada um mora em
- * `public/documentos/cnpj-<id do abrigo>.webp`. O Abrigo Dona Rose não tem:
+ * `public/documentos/cnpj-<id do abrigo>.webp`. O Rose's Shelter não tem:
  * ele está sendo legalizado e o cartão ainda não foi emitido, então a ficha
  * dele abre sem o botão - ver `Shelter.cnpjDoc`.
  */
 const shelters: Shelter[] = [
   {
     id: "siulsan-resgate",
-    name: "Siulsan Resgate",
+    name: "Susan Pet Rescue",
     location: "Tatuí, São Paulo",
     description:
-      "53 cães resgatados. Recebe apoio mensal do Caio para medicamentos, vacinas e cirurgias veterinárias.",
+      "53 rescued dogs. Receives monthly support from Kyle for medicine, vaccines and veterinary surgeries.",
     instagram: "@siulsanresgate",
     instagramHref: "https://www.instagram.com/siulsanresgate/",
     siteHref: "https://siulsanresgate.org/",
     photos: [
       {
         src: "/caio/abrigos/siulsan-resgate.webp",
-        alt: "Cães resgatados no abrigo Siulsan Resgate, em Tatuí",
+        alt: "Rescued dogs at Susan Pet Rescue, in Tatuí",
         /* Siulsan e a esposa, os dois com um cão no colo: rostos de 20% a
            40% da altura. Ver `focusY` no tipo `Photo`. */
         focusY: 30,
@@ -148,7 +148,7 @@ const shelters: Shelter[] = [
     profile: {
       responsible: "Siulsan Garcia",
       /* Razão social no cartão: ASSOCIACAO PROTETORA DOS ANIMAIS DE TATUI
-         "PRO-ANIMAL" - o nome de fantasia é que é "Siulsan Resgate". */
+         "PRO-ANIMAL" - o nome de fantasia é que é "Susan Pet Rescue". */
       cnpj: "16.836.217/0001-76",
       address: {
         line1: "Rua Maria Pontes Fernandes, 140",
@@ -158,16 +158,16 @@ const shelters: Shelter[] = [
       },
       mapsHref:
         "https://www.google.com/maps/search/?api=1&query=Rua+Maria+Pontes+Fernandes,+140,+Vale+dos+Lagos,+Tatui+SP",
-      animals: "53 cães resgatados",
+      animals: "53 rescued dogs",
       since: "",
       about:
-        "Recebe apoio mensal do Caio para medicamentos, vacinas e cirurgias veterinárias.",
+        "Receives monthly support from Kyle for medicine, vaccines and veterinary surgeries.",
     },
     cnpjDoc: {
       src: "/documentos/cnpj-siulsan-resgate.webp",
-      alt: "Cartão CNPJ do abrigo Siulsan Resgate emitido pela Receita Federal",
-      title: "Cartão CNPJ · Siulsan Resgate",
-      caption: "CNPJ 16.836.217/0001-76 · situação ativa",
+      alt: "CNPJ certificate of Susan Pet Rescue issued by the Brazilian tax authority",
+      title: "CNPJ certificate · Susan Pet Rescue",
+      caption: "CNPJ 16.836.217/0001-76 · active status",
       aspect: "1354 / 1510",
     },
   },
@@ -176,14 +176,14 @@ const shelters: Shelter[] = [
     name: "SOS Joana Darc",
     location: "Santa Luzia, Minas Gerais",
     description:
-      "200 animais. Foco em cães e gatos vítimas de maus-tratos. Depende inteiramente de doações.",
+      "200 animals. Focused on dogs and cats that survived abuse. Depends entirely on donations.",
     instagram: "@sosjoanadarc",
     instagramHref: "https://www.instagram.com/sosjoanadarc/",
     siteHref: "https://sosjoanadarc.org/",
     photos: [
       {
         src: "/caio/abrigos/sos-joana-darc.webp",
-        alt: "Gatos e cães resgatados no abrigo SOS Joana Darc, em Santa Luzia",
+        alt: "Rescued cats and dogs at SOS Joana Darc, in Santa Luzia",
         /* Selfie da Joana com a filha: a filha ocupa 20% a 38%, a Joana 28%
            a 48%. O foco no meio das duas segura os dois rostos. */
         focusY: 34,
@@ -200,32 +200,32 @@ const shelters: Shelter[] = [
       },
       mapsHref:
         "https://www.google.com/maps/search/?api=1&query=Rua+Alto+do+Tanque,+1925,+Vila+Iris,+Santa+Luzia+MG",
-      animals: "200 animais",
+      animals: "200 animals",
       since: "",
       about:
-        "Foco em cães e gatos vítimas de maus-tratos. Depende inteiramente de doações para continuar funcionando.",
+        "Focused on dogs and cats that survived abuse. Depends entirely on donations to keep running.",
     },
     cnpjDoc: {
       src: "/documentos/cnpj-sos-joana-darc.webp",
-      alt: "Cartão CNPJ do abrigo SOS Joana Darc emitido pela Receita Federal",
-      title: "Cartão CNPJ · SOS Joana Darc",
-      caption: "CNPJ 65.975.512/0001-19 · situação ativa",
+      alt: "CNPJ certificate of SOS Joana Darc issued by the Brazilian tax authority",
+      title: "CNPJ certificate · SOS Joana Darc",
+      caption: "CNPJ 65.975.512/0001-19 · active status",
       aspect: "1494 / 1608",
     },
   },
   {
     id: "abrigo-salve-cao",
-    name: "Abrigo Salve Cão",
+    name: "Save Dog Shelter",
     location: "Floresta Azul, Bahia",
     description:
-      "92 animais. Em maio quase fechou por surto de cinomose. Segue aberto graças às doações mensais.",
+      "92 animals. In May it almost closed after a distemper outbreak. It is still open thanks to monthly donations.",
     instagram: "@abrigosalvecao",
     instagramHref: "https://www.instagram.com/abrigosalvecao/",
     siteHref: "https://salvecaoabrigo.org/",
     photos: [
       {
         src: "/caio/abrigos/abrigo-salve-cao.webp",
-        alt: "Cães resgatados no Abrigo Salve Cão, em Floresta Azul",
+        alt: "Rescued dogs at Save Dog Shelter, in Floresta Azul",
         /* Andrezza de pé com o cão no colo, rosto colado no dele: 10% a 30%. */
         focusY: 20,
       },
@@ -241,31 +241,31 @@ const shelters: Shelter[] = [
       },
       mapsHref:
         "https://www.google.com/maps/search/?api=1&query=Almadina,+3,+Zona+Rural,+Floresta+Azul+BA",
-      animals: "92 animais",
+      animals: "92 animals",
       since: "",
       about:
-        "Em maio de 2026 quase fechou por um surto de cinomose. Segue aberto graças às doações mensais.",
+        "In May 2026 it almost closed after a distemper outbreak. It is still open thanks to monthly donations.",
     },
     cnpjDoc: {
       src: "/documentos/cnpj-abrigo-salve-cao.webp",
-      alt: "Cartão CNPJ do Abrigo Salve Cão emitido pela Receita Federal",
-      title: "Cartão CNPJ · Abrigo Salve Cão",
-      caption: "CNPJ 65.940.924/0001-13 · situação ativa",
+      alt: "CNPJ certificate of Save Dog Shelter issued by the Brazilian tax authority",
+      title: "CNPJ certificate · Save Dog Shelter",
+      caption: "CNPJ 65.940.924/0001-13 · active status",
       aspect: "1354 / 1510",
     },
   },
   {
     id: "casa-da-mili",
-    name: "Casa da Mili",
+    name: "Millie Home",
     location: "Tambaú, São Paulo",
     description:
-      "74 animais. Está em situação crítica de estrutura, mantido com apoio de doações voluntárias.",
+      "74 animals. Its facilities are in critical shape, kept going by voluntary donations.",
     instagram: "@milenaefernanda.ong",
     instagramHref: "https://www.instagram.com/milenaefernanda.ong/",
     photos: [
       {
         src: "/caio/abrigos/casa-da-mili.webp",
-        alt: "Cães e gatos resgatados na Casa da Mili, em Tambaú",
+        alt: "Rescued dogs and cats at Millie Home, in Tambaú",
         /* Milena e Fernanda lado a lado, cada uma com um cão: os dois rostos
            entre 10% e 30%. */
         focusY: 20,
@@ -284,32 +284,32 @@ const shelters: Shelter[] = [
       },
       mapsHref:
         "https://www.google.com/maps/search/?api=1&query=Av.+Sebastiao+Jose+Bething,+672,+Jardim+Nova+Cidade,+Tambau+SP",
-      animals: "74 cães e gatos",
+      animals: "74 dogs and cats",
       since: "",
       about:
-        "Está em situação crítica de estrutura, mantido com apoio de doações voluntárias para remédio e veterinário.",
+        "Its facilities are in critical shape, kept going by voluntary donations for medicine and vet care.",
     },
     cnpjDoc: {
       src: "/documentos/cnpj-casa-da-mili.webp",
-      alt: "Cartão CNPJ da Casa da Mili emitido pela Receita Federal",
-      title: "Cartão CNPJ · Casa da Mili",
-      caption: "CNPJ 65.538.453/0001-11 · situação ativa",
+      alt: "CNPJ certificate of Millie Home issued by the Brazilian tax authority",
+      title: "CNPJ certificate · Millie Home",
+      caption: "CNPJ 65.538.453/0001-11 · active status",
       aspect: "1494 / 1608",
     },
   },
   {
     id: "abrigo-dona-rose",
-    name: "Abrigo Dona Rose",
+    name: "Rose's Shelter",
     location: "Serra, Espírito Santo",
     description:
-      "95 animais em Jacaraípe. Sem apoio público, depende inteiramente de doações.",
+      "95 animals in Jacaraípe. With no public funding, it depends entirely on donations.",
     /* Sem perfil publicado na campanha - ver o aviso acima. */
     instagram: "",
     instagramHref: "",
     photos: [
       {
         src: "/caio/abrigos/abrigo-dona-rose.webp",
-        alt: "Cães resgatados no Abrigo Dona Rose, em Jacaraípe",
+        alt: "Rescued dogs at Rose's Shelter, in Jacaraípe",
         /* A mais alta das cinco (0,80) e a de rosto mais alto: a Dona Rose
            está de pé, cercada de cães, com o rosto entre 6% e 15%. Recorte
            central aqui mostrava só os cães e o chão. */
@@ -327,10 +327,10 @@ const shelters: Shelter[] = [
       },
       mapsHref:
         "https://www.google.com/maps/search/?api=1&query=Rua+Jacob+Dala,+37,+Enseada+de+Jacaraipe,+Serra+ES",
-      animals: "95 animais",
+      animals: "95 animals",
       since: "",
       about:
-        "A Rose cuida de 95 animais em Jacaraípe. Sem apoio público, depende inteiramente de doações para manter o abrigo de pé.",
+        "Rose cares for 95 animals in Jacaraípe. With no public funding, she depends entirely on donations to keep the shelter standing.",
     },
   },
 ];
@@ -417,13 +417,6 @@ const IconPaw = ({ size = 20, ...rest }: IconProps) => (
   </svg>
 );
 
-const IconPin = (p: IconProps) => (
-  <svg {...base(p)}>
-    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-    <circle cx="12" cy="10" r="3" />
-  </svg>
-);
-
 const IconUsers = (p: IconProps) => (
   <svg {...base(p)}>
     <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
@@ -433,17 +426,10 @@ const IconUsers = (p: IconProps) => (
   </svg>
 );
 
-const IconWhatsApp = ({ size = 28, ...rest }: IconProps) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    aria-hidden="true"
-    focusable={false}
-    {...rest}
-  >
-    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.65-1.24-1.46-1.38-1.71-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.13-.14.17-.24.25-.41.09-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.23.24-.86.84-.86 2.05s.88 2.38 1 2.54c.13.17 1.74 2.66 4.21 3.73.59.25 1.05.4 1.4.52.59.19 1.13.16 1.55.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29Z" />
+const IconMail = (p: IconProps) => (
+  <svg {...base(p)}>
+    <rect x="2.8" y="5" width="18.4" height="14" rx="2" />
+    <path d="m3.4 6.6 8.6 6 8.6-6" />
   </svg>
 );
 
@@ -456,7 +442,7 @@ const IconWhatsApp = ({ size = 28, ...rest }: IconProps) => (
  * `next.config.ts`), o `next/image` passa o `src` adiante sem tocar nele. É
  * comportamento documentado: o prefixo de `basePath` só acontece na URL do
  * otimizador (`/_next/image?url=…`), e sem otimizador não há essa URL para
- * prefixar. Sem este envelope, publicado em `doe.caioprotetor.org/v2`, toda
+ * prefixar. Sem este envelope, publicado em `donate.kylerescuer.org/v2`, toda
  * imagem apontaria para a raiz do domínio - que é outro site (WordPress) - e
  * simplesmente não carregaria.
  *
@@ -644,7 +630,7 @@ type Photo = {
    *
    * ── Por que por foto, e não por quadro ────────────────────────────────
    * O `object-cover` recorta pelo centro geométrico, que não tem relação
-   * nenhuma com onde as pessoas estão na imagem. Numa foto o Caio aparece
+   * nenhuma com onde as pessoas estão na imagem. Numa foto o Kyle aparece
    * agachado com o rosto a 20% do topo; na seguinte, de pé, a 45%. Um
    * enquadramento só para as duas erra em uma delas - e o erro é sempre o
    * mesmo: testa cortada.
@@ -699,7 +685,7 @@ function PhotoSlideshow({
   photos: Photo[];
   /** `sizes` do `next/image` - o mesmo para todas, o quadro é um só. */
   sizes: string;
-  /** De quem são as fotos, para os rótulos das setas: "Abrigo Salve Cão". */
+  /** De quem são as fotos, para os rótulos das setas: "Save Dog Shelter". */
   label: string;
   /** Setas e pontinhos clicáveis. Sem isso, os pontinhos são só enfeite. */
   controls?: boolean;
@@ -925,7 +911,7 @@ function PhotoSlideshow({
           <button
             type="button"
             onClick={() => ir(i - 1)}
-            aria-label={`${label}: foto anterior`}
+            aria-label={`${label}: previous photo`}
             className={`absolute left-2 top-1/2 -translate-y-1/2 ${seta}`}
           >
             <IconArrowLeft size={17} />
@@ -934,7 +920,7 @@ function PhotoSlideshow({
           <button
             type="button"
             onClick={() => ir(i + 1)}
-            aria-label={`${label}: próxima foto`}
+            aria-label={`${label}: next photo`}
             className={`absolute right-2 top-1/2 -translate-y-1/2 ${seta}`}
           >
             <IconArrowRight size={17} />
@@ -958,7 +944,7 @@ function PhotoSlideshow({
                 key={foto.src}
                 type="button"
                 onClick={() => ir(indice)}
-                aria-label={`${label}: foto ${indice + 1} de ${photos.length}`}
+                aria-label={`${label}: photo ${indice + 1} of ${photos.length}`}
                 aria-current={indice === i}
                 /* O alvo do toque tem 24px de altura; o que se vê é o pontinho
                    de 6px no meio dele. */
@@ -1096,10 +1082,11 @@ function AbrigosLista({
                   {shelter.name}
                 </h3>
 
-                <p className="flex items-center justify-center gap-1.5 text-fs13 font-semibold text-accent sm:justify-start">
-                  <IconPin size={14} className="shrink-0" />
-                  {shelter.location}
-                </p>
+                {/* A linha de localizacao saiu do card (pedido de 04/09/2026):
+                    a campanha deixou de publicar onde cada abrigo fica. O bloco
+                    "Address" da ficha saiu pelo mesmo motivo - `Shelter.location`
+                    e `Shelter.address` continuam nos dados, sem tela que os
+                    mostre, para nao perder a informacao de quem recebe. */}
 
                 <p className="text-fs14 leading-[1.5] text-ink-600">
                   {shelter.description}
@@ -1170,7 +1157,7 @@ function FichaAbrigo({
   onClose: () => void;
 }) {
   const fecharRef = useRef<HTMLButtonElement>(null);
-  const phone = useShelterPhone();
+  const email = useShelterEmail();
 
   /* A mesma trava do checkout e do popup de documento, e não mais um
      `overflow: hidden` local: ela conta quantos modais estão abertos, o que
@@ -1203,10 +1190,10 @@ function FichaAbrigo({
   ].filter(Boolean) as string[];
 
   const dados = [
-    { icon: IconUsers, label: "Responsável", value: profile.responsible },
+    { icon: IconUsers, label: "Person in charge", value: profile.responsible },
     { icon: IconFile, label: "CNPJ", value: profile.cnpj },
-    { icon: IconPaw, label: "Animais acolhidos", value: profile.animals },
-    { icon: IconClock, label: "Atuando desde", value: profile.since },
+    { icon: IconPaw, label: "Animals sheltered", value: profile.animals },
+    { icon: IconClock, label: "Active since", value: profile.since },
     /*
      * O @ do perfil é dado da ficha, e não mais um pedaço do botão.
      *
@@ -1232,7 +1219,7 @@ function FichaAbrigo({
    * decidiu: agora a tela de valores abre no lugar da ficha, e dali o caminho
    * segue direto para o Pix.
    *
-   * Sem `causeId`: a doação entra na campanha e o Caio direciona a ajuda, que é
+   * Sem `causeId`: a doação entra na campanha e o Kyle direciona a ajuda, que é
    * o que a própria linha embaixo do botão diz. Marcar uma frente aqui seria
    * prometer que o dinheiro vai para este abrigo.
    */
@@ -1301,14 +1288,14 @@ function FichaAbrigo({
             className="absolute left-3 top-3 z-30 flex h-[40px] items-center gap-1.5 rounded-full bg-surface/90 px-3.5 text-fs14 font-extrabold text-ink-900 shadow backdrop-blur transition-colors hover:bg-surface"
           >
             <IconArrowLeft size={18} />
-            Voltar
+            Back
           </button>
 
           <button
             ref={fecharRef}
             type="button"
             onClick={onClose}
-            aria-label="Fechar"
+            aria-label="Close"
             className="absolute right-3 top-3 z-30 flex h-[40px] w-[40px] items-center justify-center rounded-full bg-surface/90 text-ink-900 shadow backdrop-blur transition-colors hover:bg-surface"
           >
             <IconClose size={20} />
@@ -1348,42 +1335,11 @@ function FichaAbrigo({
               </div>
             ))}
 
-            {/* O endereço é a última linha e tem tratamento próprio: são várias
-                linhas (rua com número, complemento, cidade e CEP) e pode levar
-                o link do mapa junto. */}
-            <div className="flex items-start gap-3 p-3.5">
-              <IconPin size={17} className="mt-0.5 shrink-0 text-accent" />
-              <div className="flex min-w-0 flex-col">
-                <dt className="text-fs12 font-extrabold uppercase tracking-[0.06em] text-ink-600">
-                  Endereço
-                </dt>
-                <dd className="break-words text-fs14 leading-[1.45] text-ink-900">
-                  {endereco.length ? (
-                    <address className="not-italic">
-                      {endereco.map((linha) => (
-                        <span key={linha} className="block">
-                          {linha}
-                        </span>
-                      ))}
-                    </address>
-                  ) : (
-                    shelter.location
-                  )}
-
-                  {profile.mapsHref && (
-                    <a
-                      href={profile.mapsHref}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-1 flex items-center gap-1 text-fs13 font-extrabold text-action transition-colors hover:text-accent"
-                    >
-                      Ver no mapa
-                      <IconArrowRight size={14} className="shrink-0" />
-                    </a>
-                  )}
-                </dd>
-              </div>
-            </div>
+            {/* O bloco "Address" saiu daqui (pedido de 04/09/2026), junto com a
+                linha de localizacao do card: a campanha deixou de publicar onde
+                cada abrigo fica. `Shelter.address`, `Shelter.location` e
+                `mapsHref` continuam nos dados - sem tela que os mostre - para
+                nao perder a informacao de quem recebe a doacao. */}
           </dl>
 
           {semCadastro && (
@@ -1396,7 +1352,7 @@ function FichaAbrigo({
             {/* O cartão CNPJ **do abrigo**, quando ele já tem um emitido: abre
                 no mesmo popup do documento da SOS Animal Help, por cima desta
                 ficha. Some inteiro no abrigo que ainda está sendo legalizado
-                (Abrigo Dona Rose) - ver `Shelter.cnpjDoc`.
+                (Rose's Shelter) - ver `Shelter.cnpjDoc`.
 
                 O `cnpjDoc` desestruturado lá em cima, e não `shelter.cnpjDoc`
                 aqui: sendo uma `const`, o TypeScript mantém a garantia de que
@@ -1414,7 +1370,7 @@ function FichaAbrigo({
             )}
 
             {/* Some inteiro quando o abrigo não tem perfil publicado - é o caso
-                do Abrigo Dona Rose. Um botão de Instagram com `href=""`
+                do Rose's Shelter. Um botão de Instagram com `href=""`
                 recarrega a própria página, que é pior do que não ter botão. */}
             {shelter.instagramHref && (
               <a
@@ -1430,19 +1386,16 @@ function FichaAbrigo({
               </a>
             )}
 
-            {/* A mensagem já vai com o nome do abrigo: do outro lado, a equipe
+            {/* O assunto já vai com o nome do abrigo: do outro lado, a equipe
                 sabe de qual deles a pessoa está falando sem ter que perguntar. */}
             <a
-              href={whatsappWith(
-                `Olá! Queria saber mais sobre o abrigo ${shelter.name}, que aparece na campanha do Caio Protetor.`,
-                phone,
-              )}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={`mailto:${email}?subject=${encodeURIComponent(
+                `About the ${shelter.name} shelter`,
+              )}`}
               className="inline-flex min-h-[48px] items-center justify-center gap-2 whitespace-nowrap rounded-md border border-donate/30 px-4 text-fs14 font-extrabold text-donate-text transition-colors hover:bg-donate/[.06]"
             >
-              <IconWhatsApp size={17} className="shrink-0" />
-              {copyAbrigos.ctaWhatsapp}
+              <IconMail size={17} className="shrink-0" />
+              {copyAbrigos.ctaEmail}
             </a>
 
             <button
@@ -1458,8 +1411,8 @@ function FichaAbrigo({
                 aqui, onde a pessoa acabou de se afeiçoar a um nome, evita a
                 promessa que a página não cumpre. */}
             <p className="text-center text-fs12 leading-[1.5] text-ink-600">
-              A doação entra na campanha e o Caio direciona a ajuda conforme a
-              necessidade de cada abrigo no mês.
+              Your donation goes into the campaign and Kyle directs the help
+              according to what each shelter needs that month.
             </p>
           </div>
         </div>

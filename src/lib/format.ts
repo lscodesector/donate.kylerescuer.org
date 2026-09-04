@@ -59,15 +59,20 @@ export function isValidPhoneBR(input: string): boolean {
 
 /**
  * ╔══════════════════════════════════════════════════════════════════════╗
- * ║  Valor em reais - o campo "o que o seu coração mandar"                ║
+ * ║  Valor em dólar - o campo "o que o seu coração mandar"                ║
  * ╚══════════════════════════════════════════════════════════════════════╝
  *
  * O campo aceitava só dígitos e multiplicava por 100: quem quisesse doar
- * R$ 12,50 não tinha como, e quem fosse testar a recorrência com centavos
- * também não. Com a máscara, o campo lê "1.234,56" e devolve centavos.
+ * $12.50 não tinha como, e quem fosse testar a recorrência com centavos
+ * também não. Com a máscara, o campo lê "1,234.56" e devolve centavos.
  *
- * Milhares agrupados enquanto se digita; a vírgula é a única pontuação que
- * sobrevive à limpeza, porque é ela que separa os centavos.
+ * ⚠️ **A pontuação é a americana, e não a brasileira**: a vírgula agrupa os
+ * milhares e o ponto separa os centavos. A campanha cobra em dólar (ver
+ * `lib/payments/paypal.ts`), e um campo que lê "1.234,56" ao lado de um total
+ * que imprime "$1,234.56" é um campo que cobra outra coisa do que mostra.
+ *
+ * Milhares agrupados enquanto se digita; o ponto é a única pontuação que
+ * sobrevive à limpeza, porque é ele que separa os centavos.
  */
 function agruparMilhares(digitos: string) {
   const partes: string[] = [];
@@ -77,27 +82,27 @@ function agruparMilhares(digitos: string) {
     resto = resto.slice(0, -3);
   }
   if (resto.length) partes.unshift(resto);
-  return partes.join(".");
+  return partes.join(",");
 }
 
-/** Máscara progressiva: `1234,5` → `1.234,5`. */
-export function maskBRL(input: string): string {
-  const limpo = input.trim().replace(/[^\d,]/g, "");
+/** Máscara progressiva: `1234.5` → `1,234.5`. */
+export function maskUSD(input: string): string {
+  const limpo = input.trim().replace(/[^\d.]/g, "");
   if (!limpo) return "";
 
-  if (limpo.includes(",")) {
-    const [inteiroCru, decimalCru = ""] = limpo.split(",");
+  if (limpo.includes(".")) {
+    const [inteiroCru, decimalCru = ""] = limpo.split(".");
     const inteiro = inteiroCru.replace(/\D/g, "") || "0";
     const decimal = decimalCru.replace(/\D/g, "").slice(0, 2);
-    return agruparMilhares(inteiro) + (decimal ? `,${decimal}` : ",");
+    return agruparMilhares(inteiro) + (decimal ? `.${decimal}` : ".");
   }
   return agruparMilhares(limpo.replace(/\D/g, "") || "0");
 }
 
-/** `1.234,56` → `123456` (centavos). Campo vazio vale zero. */
-export function centsFromBRL(input: string): number {
+/** `1,234.56` → `123456` (centavos). Campo vazio vale zero. */
+export function centsFromUSD(input: string): number {
   if (!input) return 0;
-  const normalizado = input.replace(/\./g, "").replace(",", ".");
+  const normalizado = input.replace(/,/g, "");
   const centavos = Math.round(parseFloat(normalizado || "0") * 100);
   return Number.isNaN(centavos) ? 0 : centavos;
 }
@@ -156,43 +161,44 @@ export function isValidCpf(input: string): boolean {
   return true;
 }
 
-export function formatBRL(cents: number) {
-  return (cents / 100).toLocaleString("pt-BR", {
+export function formatUSD(cents: number) {
+  return (cents / 100).toLocaleString("en-US", {
     style: "currency",
-    currency: "BRL",
+    currency: "USD",
   });
 }
 
 /**
- * O mesmo valor, **sem os centavos quando eles são zero**: `R$ 30`, e não
- * `R$ 30,00`.
+ * O mesmo valor, **sem os centavos quando eles são zero**: `$30`, e não
+ * `$30.00`.
  *
  * É a forma das telas de escolha e de conferência de valor. Numa grade de nove
- * degraus, nove vírgulas seguidas de dois zeros são só ruído entre a pessoa e o
+ * degraus, nove pontos seguidos de dois zeros são só ruído entre a pessoa e o
  * número que ela está lendo - e o número é a única coisa que importa ali.
  *
- * Centavo que existe continua aparecendo (`R$ 4,99`, `R$ 34,99`): esconder
- * centavo real seria mentir sobre quanto vai sair da conta de quem doa.
+ * Centavo que existe continua aparecendo (`$4.99`, `$34.99`): esconder centavo
+ * real seria mentir sobre quanto vai sair da conta de quem doa.
  */
-export function formatBRLCurto(cents: number) {
-  return (cents / 100).toLocaleString("pt-BR", {
+export function formatUSDCurto(cents: number) {
+  return (cents / 100).toLocaleString("en-US", {
     style: "currency",
-    currency: "BRL",
+    currency: "USD",
     minimumFractionDigits: cents % 100 === 0 ? 0 : 2,
   });
 }
 
 /**
- * O mesmo valor, **sempre sem centavos** - `R$ 12.845`, nunca `R$ 12.845,02`.
+ * O mesmo valor, **sempre sem centavos** - `$12,845`, nunca `$12,845.02`.
  *
- * É a barra de meta (hero e a fixa embaixo da tela): arrecadado e meta são
- * números calculados, não uma conta de doação específica, e o centavo ali
- * não diz nada - só ocupa espaço numa faixa que já é curta.
+ * ⚠️ Não é a forma da barra de meta. Lá o arrecadado sai **com** centavos
+ * (`$10,879.14 of $50,000.00`), que é como a campanha em produção o publica -
+ * ver `CampaignProgress` e a barra flutuante. Esta sobra para onde o valor é
+ * ilustrativo e o centavo só ocuparia espaço.
  */
-export function formatBRLInteiro(reais: number) {
-  return Math.round(reais).toLocaleString("pt-BR", {
+export function formatUSDInteiro(dolares: number) {
+  return Math.round(dolares).toLocaleString("en-US", {
     style: "currency",
-    currency: "BRL",
+    currency: "USD",
     maximumFractionDigits: 0,
   });
 }

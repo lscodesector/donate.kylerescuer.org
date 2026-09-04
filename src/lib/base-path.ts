@@ -11,7 +11,7 @@
  *
  * ── Por que isto é uma variável de build, e não uma flag no repositório ───
  * A mesma página pode ser publicada em endereços diferentes: hoje ela é
- * `doe.caioprotetor.org/v2` porque o domínio já serve um WordPress na raiz;
+ * `donate.kylerescuer.org/v2` porque o domínio já serve um WordPress na raiz;
  * amanhã pode ganhar domínio próprio, e aí o `basePath` é vazio. Trocar o
  * endereço é trocar `NEXT_PUBLIC_BASE_PATH` no comando de build - nenhum
  * arquivo muda.

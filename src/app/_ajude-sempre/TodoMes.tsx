@@ -11,7 +11,7 @@ import {
 import { campaign } from "@/lib/campaign";
 import { checkoutItemFor, openCheckout } from "@/lib/checkout-bus";
 import { donationAmountsMensal } from "@/lib/config";
-import { formatBRLCurto, formatBRLInteiro } from "@/lib/format";
+import { formatUSDCurto, formatUSDInteiro } from "@/lib/format";
 import { openDonationModal } from "@/lib/modais";
 
 /**
@@ -20,8 +20,8 @@ import { openDonationModal } from "@/lib/modais";
  * ╚══════════════════════════════════════════════════════════════════════╝
  *
  * O bloco que só existe em `/ajude-sempre`. Ele ocupa, na ordem da página, o
- * lugar em que a raiz põe o "Pix direto" (bloco 05) - e é a troca que define
- * a página: chave Pix solta é pagamento de uma vez, e numa página que pede
+ * lugar em que a raiz punha o "Pix direto" (bloco 05) - e é a troca que
+ * definiu a página: chave solta é pagamento de uma vez, e numa página que pede
  * recorrência ela seria o atalho para a pessoa fazer justamente a outra coisa.
  *
  * Bloco isolado, como todos: o texto, a escada, os ícones e a revelação ao
@@ -40,16 +40,16 @@ import { openDonationModal } from "@/lib/modais";
 /* ─────────────────────────────────────────────────── conteúdo do bloco ──── */
 
 const copyTodoMes = {
-  eyebrow: "Por que todo mês",
-  title: "A fome não acontece uma vez. A conta do abrigo também não.",
-  lead: "Uma doação única salva um mês. A doação que se repete é o que deixa o Caio combinar a ração de novembro em outubro, marcar a cirurgia para a semana que vem e olhar o aluguel sem medo.",
-  escadaTitle: "Escolha quanto você consegue por mês",
+  eyebrow: "Why every month",
+  title: "Hunger does not happen once. Neither does a shelter bill.",
+  lead: "A one-time donation saves one month. The donation that repeats is what lets Kyle arrange November food in October, book surgery for next week and look at the rent without fear.",
+  escadaTitle: "Choose how much you can do per month",
   /* O botão que **não** pula a tela de valores: os três degraus acima vão
      direto para o checkout, e este é o caminho de quem não se viu em nenhum
      deles. O rótulo diz isso - "com outros valores" é a única coisa que
      separa este clique dos três de cima, e sem essa metade ele leria como um
      quarto degrau sem preço. */
-  cta: "Faça a diferença com outros valores",
+  cta: "Make a difference with a different amount",
 };
 
 /**
@@ -68,12 +68,12 @@ const copyTodoMes = {
  * não.
  */
 const copyPorDia = {
-  eyebrow: "Uma doação de",
+  eyebrow: "A donation of",
   /** Sufixo do número grande. O número em si vem da escada, não daqui. */
-  unidade: "por dia",
+  unidade: "per day",
   /** `{valor}` é trocado na renderização - o número sai da escada. */
-  mes: "{valor} por mês",
-  cta: "Quero doar {porDia} por dia",
+  mes: "{valor} per month",
+  cta: "I want to give {porDia} a day",
 };
 
 /**
@@ -125,22 +125,22 @@ function porDia(cents: number) {
 const degraus = [
   {
     cents: donationAmountsMensal[0]!.cents,
-    label: "Entra na ração do mês",
-    text: "O primeiro dos cinco itens da conta, e o que acaba antes do fim do mês quando falta.",
+    label: "Goes into this month food",
+    text: "The first of the five items on the bill, and the one that runs out before the month ends.",
   },
   {
     /* O degrau do meio é o marcado como `popular` na escada da campanha - o
        mesmo selo que o modal desenha, e o mesmo valor que a faixa vermelha
        lê por dia. Ver `degrauPopular`. */
     cents: degrauPopular.cents,
-    label: "Ajuda a manter o tratamento",
-    text: "Consultas, remédios e cirurgia são a maior linha da conta dos abrigos - e a que não espera.",
+    label: "Helps keep treatment going",
+    text: "Vet visits, medicine and surgery are the biggest line on the shelter bill - and the one that cannot wait.",
     destaque: true,
   },
   {
     cents: donationAmountsMensal[3]!.cents,
-    label: "Segura o aluguel do abrigo",
-    text: "Foi a conta que quase fechou o Salve Cão. Porta aberta é o que todo o resto depende.",
+    label: "Holds the shelter rent",
+    text: "It is the bill that almost closed Save Dog Shelter. Everything else depends on the door staying open.",
   },
 ];
 
@@ -148,7 +148,7 @@ const degraus = [
  * As três objeções da recorrência, respondidas onde elas aparecem.
  *
  * ⚠️ Cada resposta precisa continuar verdadeira no checkout. "Cancele quando
- * quiser" é o Pix Automático do Banco Central: o mandato é cancelado pelo app
+ * quiser" é a assinatura do PayPal: ela é cancelada pela conta do PayPal
  * do próprio banco, sem depender de alguém desta campanha responder. Se um dia
  * a recorrência mudar de meio de pagamento, é esta lista que se revisa antes de
  * qualquer outra coisa - promessa de cancelamento é a que vira reclamação.
@@ -156,18 +156,18 @@ const degraus = [
 const objecoes = [
   {
     icon: "shield" as const,
-    title: "Você cancela quando quiser",
-    text: "A autorização fica no app do seu banco, junto com as outras. Cancelar é lá, em dois toques, sem pedir para ninguém.",
+    title: "You cancel whenever you want",
+    text: "The authorization lives in your banking app, next to the others. You cancel it right there, in two taps, without asking anyone.",
   },
   {
     icon: "calendar" as const,
-    title: "É o mesmo dia, todo mês",
-    text: "O valor que você escolheu, na data em que a primeira doação foi feita. Nada muda sozinho.",
+    title: "Same day, every month",
+    text: "The amount you chose, on the date the first donation was made. Nothing changes on its own.",
   },
   {
     icon: "receipt" as const,
-    title: "Quem recebe tem CNPJ",
-    text: "A SOS Animal Help, com o cartão da Receita publicado nesta mesma página, logo abaixo.",
+    title: "The recipient has a registered nonprofit ID",
+    text: "SOS Animal Help, with the official tax certificate published on this very page, just below.",
   },
 ];
 
@@ -380,16 +380,16 @@ function ContaDaMeta() {
       className="flex flex-col gap-2 rounded-md border border-donate/25 bg-donate/[.07] p-4 text-center sm:p-5"
     >
       <p className="text-fs15 leading-[1.6] text-ink-900">
-        Os cinco abrigos custam{" "}
+        The five shelters cost{" "}
         <strong className="font-extrabold">
-          {formatBRLInteiro(campaign.goal)} por mês
+          {formatUSDInteiro(campaign.goal)} per month
         </strong>
-        . Nessa conta,{" "}
+        . On that bill,{" "}
         <strong className="font-extrabold text-donate-text tabular-nums">
-          {apoiadores.toLocaleString("pt-BR")} pessoas
+          {apoiadores.toLocaleString("en-US")} people
         </strong>{" "}
-        doando {formatBRLCurto(campaign.avgTicket * 100)} todo mês fecham a conta
-        inteira - e ela para de ser refeita do zero em cada trinta dias.
+        giving {formatUSDCurto(campaign.avgTicket * 100)} every month cover the whole
+        thing - and it stops being rebuilt from zero every thirty days.
       </p>
     </Reveal>
   );
@@ -419,7 +419,7 @@ function ContaDaMeta() {
 function FaixaPorDia() {
   const centsMes = degrauPopular.cents;
   const centsDia = porDia(centsMes);
-  const valorDia = formatBRLCurto(centsDia);
+  const valorDia = formatUSDCurto(centsDia);
 
   return (
     <Reveal delay={1} className="overflow-hidden rounded-md bg-action text-action-ink">
@@ -443,7 +443,7 @@ function FaixaPorDia() {
         {/* ⚠️ A cifra mensal, sem a qual a faixa vira um preço por dia para
             uma cobrança que não é diária. Ver `copyPorDia`. */}
         <p className="text-fs13 font-semibold text-action-ink/85">
-          {copyPorDia.mes.replace("{valor}", formatBRLCurto(centsMes))}
+          {copyPorDia.mes.replace("{valor}", formatUSDCurto(centsMes))}
         </p>
 
         {/* Invertido: branco com texto vermelho. É o mesmo destino do degrau
@@ -547,7 +547,7 @@ export default function TodoMes() {
                   }`}
                 >
                   <span className="text-[clamp(1.279rem,1.116rem+0.651vw,1.628rem)] font-extrabold leading-none text-ink-900 tabular-nums">
-                    {formatBRLCurto(degrau.cents)}
+                    {formatUSDCurto(degrau.cents)}
                   </span>
                   <span className="text-fs12 font-semibold uppercase tracking-[0.06em] text-ink-600">
                     por mês

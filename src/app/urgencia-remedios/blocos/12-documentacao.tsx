@@ -11,9 +11,8 @@ import {
   type SVGProps,
 } from "react";
 import { withBasePath } from "@/lib/base-path";
-import { cnpjDocument, org, whatsappWith } from "@/lib/config";
-import { formatPhoneDisplayBR } from "@/lib/format";
-import { useShelterEmail, useShelterPhone } from "@/lib/hooks/use-shelter-phone";
+import { cnpjDocument, org } from "@/lib/config";
+import { useShelterEmail } from "@/lib/hooks/use-shelter-phone";
 import { openDocumentoModal } from "@/lib/modais";
 
 /**
@@ -31,9 +30,9 @@ import { openDocumentoModal } from "@/lib/modais";
 /* ─────────────────────────────────────────────────── conteúdo do bloco ──── */
 
 const copyDocumentacao = {
-  eyebrow: "Documentação",
-  title: "Antes de doar, confira quem está por trás da campanha",
-  lead: "Transparência também significa facilitar o acesso às informações da organização que recebe as doações.",
+  eyebrow: "Paperwork",
+  title: "Before you give, check who is behind this campaign",
+  lead: "Transparency also means making it easy to reach the records of the organization that receives the donations.",
 };
 
 /**
@@ -104,20 +103,6 @@ const IconStar = ({ size = 20, ...rest }: IconProps) => (
   </svg>
 );
 
-const IconWhatsApp = ({ size = 28, ...rest }: IconProps) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    aria-hidden="true"
-    focusable={false}
-    {...rest}
-  >
-    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.65-1.24-1.46-1.38-1.71-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.13-.14.17-.24.25-.41.09-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.23.24-.86.84-.86 2.05s.88 2.38 1 2.54c.13.17 1.74 2.66 4.21 3.73.59.25 1.05.4 1.4.52.59.19 1.13.16 1.55.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29Z" />
-  </svg>
-);
-
 /* ────────────────────────────────────────────── utilitários do bloco ──── */
 
 /**
@@ -127,7 +112,7 @@ const IconWhatsApp = ({ size = 28, ...rest }: IconProps) => (
  * `next.config.ts`), o `next/image` passa o `src` adiante sem tocar nele. É
  * comportamento documentado: o prefixo de `basePath` só acontece na URL do
  * otimizador (`/_next/image?url=…`), e sem otimizador não há essa URL para
- * prefixar. Sem este envelope, publicado em `doe.caioprotetor.org/v2`, toda
+ * prefixar. Sem este envelope, publicado em `donate.kylerescuer.org/v2`, toda
  * imagem apontaria para a raiz do domínio - que é outro site (WordPress) - e
  * simplesmente não carregaria.
  *
@@ -322,7 +307,7 @@ function DocumentoCard() {
           <span className="text-fs14 font-extrabold text-ink-900">{cnpjDocument.title}</span>
           <span className="text-fs12 text-ink-600">{cnpjDocument.subtitle}</span>
           <span className="mt-1 text-fs13 font-semibold tabular-nums text-ink-900">
-            CNPJ {org.cnpj}
+            EIN {org.cnpj}
           </span>
         </div>
       </div>
@@ -330,7 +315,7 @@ function DocumentoCard() {
       <button
         type="button"
         onClick={() => openDocumentoModal()}
-        aria-label="Ver documento do cartão CNPJ"
+        aria-label="View the EIN document"
         className="relative block aspect-[16/11] w-full overflow-hidden bg-surface"
       >
         <Image
@@ -354,7 +339,7 @@ function DocumentoCard() {
         className="flex min-h-[48px] items-center justify-center gap-2 border-t border-ink-900/10 px-4 text-fs13 font-extrabold text-accent transition-colors hover:bg-surface-alt sm:justify-start"
       >
         <IconFile size={15} />
-        Ver documento
+        View document
       </a>
 
       <a
@@ -366,7 +351,7 @@ function DocumentoCard() {
           e.preventDefault();
           openDocumentoModal();
         }}
-        aria-label="Ver documento do cartão CNPJ"
+        aria-label="View the EIN document"
         className="absolute inset-0 z-10 cursor-pointer focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent"
       />
     </div>
@@ -384,9 +369,7 @@ function DocumentoCard() {
  * doa, e não é algo que se conserta depois.
  */
 export default function Documentacao() {
-  const phone = useShelterPhone();
   const email = useShelterEmail();
-  const whatsappHref = whatsappWith(org.whatsappMessage, phone);
 
   return (
     <section id="documentacao" className="surface-alt py-[clamp(2.5rem,6vh,4.5rem)]">
@@ -408,33 +391,17 @@ export default function Documentacao() {
           <DocumentoCard />
         </Reveal>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex h-full flex-col items-center gap-1 rounded-md border border-ink-900/10 bg-surface p-4 text-center shadow transition-colors hover:border-donate/50 sm:items-start sm:text-left"
-          >
-            <span className="flex items-center gap-2 text-fs12 font-extrabold uppercase tracking-[0.06em] text-accent">
-              <IconWhatsApp size={16} />
-              WhatsApp
-            </span>
-            <span className="text-fs14 font-semibold text-ink-900">{formatPhoneDisplayBR(phone)}</span>
-            <span className="text-fs12 leading-[1.4] text-ink-600">
-              Fale diretamente com nossa equipe.
-            </span>
-            <span className="mt-auto pt-2 text-fs13 font-extrabold text-donate-text">
-              Falar no WhatsApp
-            </span>
-          </a>
-
+        {/* Um card so desde 04/09/2026: o do WhatsApp saiu e o contato da
+            campanha passou a ser o e-mail. Sem `sm:grid-cols-2`, senao ele
+            ficaria ocupando metade da largura com um vazio ao lado. */}
+        <div className="grid gap-3">
           <a
             href={`mailto:${email}`}
             className="flex h-full flex-col items-center gap-1 rounded-md border border-ink-900/10 bg-surface p-4 text-center shadow transition-colors hover:border-donate/50 sm:items-start sm:text-left"
           >
             <span className="flex items-center gap-2 text-fs12 font-extrabold uppercase tracking-[0.06em] text-accent">
               <IconMail size={16} />
-              E-mail
+              Email
             </span>
             {/* `break-words` e não `break-all`: só quebra quando não cabe, e no
                 lugar certo. */}
@@ -442,7 +409,7 @@ export default function Documentacao() {
               {email}
             </span>
             <span className="text-fs12 leading-[1.4] text-ink-600">
-              Dúvidas, informações e prestação de contas.
+              Questions, information and accountability.
             </span>
             {/* O card inteiro já é o `mailto:`, mas sem esta linha ele era o
                 único dos três sem chamada visível - só o endereço escrito,
@@ -451,7 +418,7 @@ export default function Documentacao() {
                 interativo dentro de interativo. */}
             <span className="mt-auto flex items-center gap-1.5 pt-2 text-fs13 font-extrabold text-donate-text">
               <IconMail size={15} className="shrink-0" />
-              Enviar e-mail
+              Send an email
             </span>
           </a>
 
@@ -463,7 +430,7 @@ export default function Documentacao() {
           >
             <span className="flex items-center gap-2 text-fs12 font-extrabold uppercase tracking-[0.06em] text-accent">
               <IconPin size={16} />
-              Endereço
+              Address
             </span>
             <address className="text-fs14 not-italic leading-[1.5] text-ink-900">
               {org.address.line1}
@@ -471,7 +438,7 @@ export default function Documentacao() {
               {org.address.line2}, {org.address.city} · {org.address.zip}
             </address>
             <span className="mt-auto pt-2 text-fs13 font-extrabold text-donate-text">
-              Ver localização
+              See the location
             </span>
           </a>
 
@@ -485,10 +452,10 @@ export default function Documentacao() {
             >
               <span className="flex items-center gap-2 text-fs12 font-extrabold uppercase tracking-[0.06em] text-accent">
                 <IconStar size={16} />
-                Avaliação no Google
+                Google rating
               </span>
               <span className="text-fs14 font-semibold text-ink-900">
-                {googleReviews.rating.toFixed(1)} · {googleReviews.reviewCount} avaliações
+                {googleReviews.rating.toFixed(1)} · {googleReviews.reviewCount} reviews
               </span>
             </a>
           )}

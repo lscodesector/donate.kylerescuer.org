@@ -1,0 +1,179 @@
+<!-- KYLE RESCUER US | 8 - TIMELINE -->
+<style>
+  .cp-tl-section {
+    background: #f4f4f4;
+  }
+
+  .ln-timeline {
+    position: relative;
+    padding-left: 26px;
+  }
+  .ln-timeline::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 4px;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0));
+    border-radius: 999px;
+  }
+
+  .ln-tl-item {
+    position: relative;
+    margin-bottom: 28px;
+  }
+  .ln-tl-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .ln-tl-dot {
+    position: absolute;
+    left: -26px;
+    top: 4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 999px;
+    background: #ffffff;
+    border: 2px solid #d0d0d0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ln-tl-dot--filled {
+    background: #bf0521;
+    border-color: #bf0521;
+  }
+  .ln-tl-dot--filled::after {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: #fff;
+  }
+  .ln-tl-dot--gold {
+    background: #f3b639;
+    border-color: #e0a020;
+  }
+  .ln-tl-dot--gold::after {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: #fff;
+  }
+
+  .ln-tl-date {
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #bf0521;
+    margin-bottom: 4px;
+    font-family: "Nunito", sans-serif;
+  }
+  .ln-tl-name {
+    font-family: "Nunito", sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #0d0d0d;
+    margin-bottom: 5px;
+    line-height: 1.2;
+  }
+  .ln-tl-text {
+    font-size: 0.85rem;
+    color: #6b6b6b;
+    line-height: 1.65;
+    font-family: "Nunito", sans-serif;
+  }
+  .ln-tl-text strong {
+    color: #0d0d0d !important;
+  }
+
+  .ln-tl-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-left: 6px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    vertical-align: middle;
+    background: rgba(24, 184, 91, 0.12);
+    color: #16a34a;
+    border: 1px solid rgba(24, 184, 91, 0.2);
+    font-family: "Nunito", sans-serif;
+  }
+</style>
+
+<section class="ln-section cp-tl-section ln-section-anchor" id="atualizacoes">
+  <div class="ln-card">
+    <div class="ln-card-inner">
+      <div class="ln-section-title">
+        <div
+          class="ln-section-icon"
+          style="background: rgba(200, 16, 46, 0.08)"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#BF0521"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+        </div>
+        <span>Updates</span>
+      </div>
+
+      <div class="ln-timeline">
+        <div class="ln-tl-item">
+          <div class="ln-tl-dot ln-tl-dot--gold"></div>
+          <p class="ln-tl-date">Jun 2026 &middot; Campaign launched</p>
+          <p class="ln-tl-name">Kyle's story reached the internet</p>
+          <p class="ln-tl-text">
+            Over 1,000 shares in 24 hours, but still far from what's needed to
+            support the 400+ animals in the shelters.
+            <strong>Your help makes a difference.</strong>
+          </p>
+        </div>
+
+        <div class="ln-tl-item">
+          <div class="ln-tl-dot ln-tl-dot--filled"></div>
+          <p class="ln-tl-date">May 2026 &middot; Crisis in Minas Gerais</p>
+          <p class="ln-tl-name">
+            Save Dog Shelter nearly closed over unpaid rent
+          </p>
+          <p class="ln-tl-text">
+            Kyle negotiated a 30-day extension. 92 animals depended on that
+            decision. With donors' help, the shelter stayed open.
+          </p>
+        </div>
+
+        <div class="ln-tl-item">
+          <div class="ln-tl-dot ln-tl-dot--filled"></div>
+          <p class="ln-tl-date">Mar 2026</p>
+          <p class="ln-tl-name">20 animals didn't make it this year</p>
+          <p class="ln-tl-text">
+            Due to medicine and food not arriving in time. Every life lost is a
+            battle that could have been won with enough resources.
+          </p>
+        </div>
+
+        <div class="ln-tl-item">
+          <div class="ln-tl-dot"></div>
+          <p class="ln-tl-date">Dec 2025</p>
+          <p class="ln-tl-name">
+            Local government denies support for the 3rd time
+          </p>
+          <p class="ln-tl-text">
+            Kyle keeps fighting to secure donations. With no public funding, the
+            campaign is the only alternative.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

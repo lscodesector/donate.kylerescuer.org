@@ -23,9 +23,9 @@ import {
 
 /** "Atualizações" - a linha do tempo da campanha. */
 const copyAtualizacoes = {
-  eyebrow: "Atualizações",
-  title: "O que aconteceu até aqui",
-  lead: "A campanha não começou hoje, e nem tudo nela é boa notícia. Esta é a linha do tempo como ela é.",
+  eyebrow: "Updates",
+  title: "What has happened so far",
+  lead: "This campaign did not start today, and not all of it is good news. This is the timeline exactly as it is.",
 };
 
 /**
@@ -41,27 +41,27 @@ const copyAtualizacoes = {
  */
 const timeline = [
   {
-    date: "Jun 2026 · Campanha lançada",
-    title: "A história do Caio chegou à internet",
-    text: "Mais de 1.000 compartilhamentos em 24 horas, mas ainda muito longe do necessário para pagar o atendimento dos 500+ animais dos abrigos.",
+    date: "Jun 2026 · Campaign launched",
+    title: "Kyle story reached the internet",
+    text: "More than 1,000 shares in 24 hours, but still far from what it takes to pay for the care of the 500+ animals in the shelters.",
     tone: "now" as const,
   },
   {
-    date: "Mai 2026 · Crise na Bahia",
-    title: "Abrigo Salve Cão quase fecha por surto de doença",
-    text: "Fizemos o necessário para salvar mais de 90 vidas, porém 22 morreram no surto de cinomose - uma batalha perdida por falta de vacina antes e de atendimento veterinário durante.",
+    date: "May 2026 · Crisis in Bahia",
+    title: "Save Dog Shelter almost closed after a disease outbreak",
+    text: "We did what it took to save more than 90 lives, but 22 died in the distemper outbreak - a battle lost for lack of vaccination before and veterinary care during.",
     tone: "done" as const,
   },
   {
     date: "Mar 2026",
-    title: "20 animais não resistiram este ano",
-    text: "Por falta de socorro a tempo. Cada vida perdida é uma batalha que poderia ter sido vencida com consulta, exame e medicação na primeira semana.",
+    title: "20 animals did not make it this year",
+    text: "For lack of help in time. Every life lost is a battle that could have been won with a vet visit, tests and medication in the first week.",
     tone: "done" as const,
   },
   {
-    date: "Dez 2025",
-    title: "Prefeitura nega apoio pela 3ª vez",
-    text: "Caio segue lutando para conseguir doações. Sem patrocínio público, a campanha é a única alternativa.",
+    date: "Dec 2025",
+    title: "City hall denied support for the 3rd time",
+    text: "Kyle keeps fighting to bring in donations. With no public funding, this campaign is the only way left.",
     tone: "open" as const,
   },
 ];

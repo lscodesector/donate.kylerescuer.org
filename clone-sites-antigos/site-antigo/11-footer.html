@@ -1,0 +1,484 @@
+<!-- KYLE RESCUER US | 11 - FOOTER -->
+<style>
+  .cp-footer-section {
+    margin-bottom: 0;
+  }
+
+  .cp-footer-wrap {
+    width: 100%;
+    margin: 0;
+    background: #1c1c1c;
+    border-top: 3px solid #bf0521;
+    padding: 3rem 22px 50px;
+    font-family: "Nunito", sans-serif;
+  }
+  .cp-footer-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  /* 4-column grid */
+  .cp-footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    margin-bottom: 1.5rem;
+  }
+  @media (min-width: 600px) {
+    .cp-footer-grid {
+      grid-template-columns: 1.6fr 1fr 1fr;
+      gap: 2rem;
+    }
+  }
+
+  /* Brand column */
+  .cp-footer-brand-name {
+    color: #fff;
+    font-size: 1.15rem;
+    font-weight: 900;
+    margin-bottom: 0.45rem;
+    display: block;
+    letter-spacing: -0.02em;
+  }
+  .cp-footer-brand-name em {
+    font-style: normal;
+    color: inherit;
+  }
+  .cp-footer-brand-desc {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.38);
+    line-height: 1.72;
+    margin-bottom: 1.1rem;
+  }
+  .cp-footer-socials {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+  .cp-footer-social {
+    width: 36px;
+    height: 36px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.07);
+    color: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+  .cp-footer-social:hover {
+    background: #bf0521;
+    color: #fff;
+    border-color: #bf0521;
+  }
+  .cp-footer-social svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  /* Verified badge */
+  .cp-footer-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(24, 184, 91, 0.12);
+    border: 1px solid rgba(24, 184, 91, 0.2);
+    color: #5ed8a0;
+    font-size: 0.76rem;
+    font-weight: 800;
+  }
+  .cp-footer-badge svg {
+    width: 13px;
+    height: 13px;
+    fill: #5ed8a0;
+    flex: 0 0 auto;
+  }
+
+  /* Column headers */
+  .cp-footer-col-title {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.78rem;
+    font-weight: 800;
+    margin-bottom: 0.9rem;
+    letter-spacing: 0.06em;
+    display: block;
+    text-transform: uppercase;
+  }
+  .cp-footer-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .cp-footer-list a {
+    color: rgba(255, 255, 255, 0.38);
+    font-size: 0.82rem;
+    transition: color 0.2s;
+    text-decoration: none;
+  }
+  .cp-footer-list a:hover {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  /* Contact info */
+  .cp-footer-contact {
+    margin-top: 1rem;
+  }
+  .cp-footer-contact-item {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.38);
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 0.3rem;
+  }
+  .cp-footer-contact-item svg {
+    flex-shrink: 0;
+    opacity: 0.45;
+  }
+  .cp-footer-contact-item a {
+    color: rgba(255, 255, 255, 0.38);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .cp-footer-contact-item a:hover {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  /* Bottom strip */
+  .cp-footer-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.25rem 0;
+  }
+  .cp-footer-copy {
+    font-size: 0.74rem;
+    color: rgba(255, 255, 255, 0.2);
+  }
+  .cp-footer-policies {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .cp-footer-policies a {
+    font-size: 0.74rem;
+    color: rgba(255, 255, 255, 0.22);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .cp-footer-policies a:hover {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  @media (max-width: 480px) {
+    .cp-footer-wrap {
+      padding: 2.5rem 16px 50px;
+    }
+    .cp-footer-bottom {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .cp-footer-policies {
+      justify-content: center;
+    }
+  }
+</style>
+
+<footer class="cp-footer-section" id="contact">
+  <div class="cp-footer-wrap">
+    <div class="cp-footer-inner">
+      <div class="cp-footer-grid">
+        <!-- BRAND -->
+        <div>
+          <img
+            src="http://donate.kylerescuer.org/wp-content/uploads/2026/07/Logo-sem-fundo-v2.webp"
+            alt="Kyle Rescuer"
+            style="
+              height: 120px;
+              width: auto;
+              display: block;
+              margin-bottom: 0.6rem;
+            "
+          />
+          <p class="cp-footer-brand-desc">
+            Kyle is a rescuer who supports multiple animal shelters, with the
+            help of
+            <a
+              href="https://kylerescuer.org"
+              target="_blank"
+              rel="noopener"
+              style="color: rgba(255, 255, 255, 0.55); font-weight: 700"
+              >SOS Animal Help</a
+            >
+            and people like you. 400+ animals depend on every donation.
+          </p>
+          <div class="cp-footer-socials">
+            <a
+              href="https://www.instagram.com/kylerescuer"
+              data-cp-contact="instagram"
+              style="display: none"
+              target="_blank"
+              rel="noopener"
+              class="cp-footer-social"
+              aria-label="Instagram"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              >
+                <rect x="2" y="2" width="20" height="20" rx="5" />
+                <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+              </svg>
+            </a>
+            <a
+              href="http://facebook.com/kylerescuer"
+              data-cp-contact="facebook"
+              style="display: none"
+              target="_blank"
+              rel="noopener"
+              class="cp-footer-social"
+              aria-label="Facebook"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              >
+                <path
+                  d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"
+                />
+              </svg>
+            </a>
+            <a
+              href="https://api.whatsapp.com/send/?phone=5585997934599&text=I+have+a+question+about+Kyle+Rescuer"
+              data-cp-contact="whatsapp"
+              target="_blank"
+              rel="noopener"
+              class="cp-footer-social"
+              aria-label="WhatsApp"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+                />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- NAVIGATION -->
+        <div>
+          <span class="cp-footer-col-title">Navigation</span>
+          <ul class="cp-footer-list">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#story">The Story</a></li>
+            <li><a href="#shelters">Shelters</a></li>
+            <li><a href="#transparency">Transparency</a></li>
+            <li><a href="#testimonials">Testimonials</a></li>
+            <li><a href="#faq">FAQ</a></li>
+          </ul>
+        </div>
+
+        <!-- SUPPORT AND CONTACT -->
+        <div>
+          <span class="cp-footer-col-title">Support and Contact</span>
+          <ul class="cp-footer-list">
+            <li data-cp-wrap>
+              <a
+                href="https://api.whatsapp.com/send/?phone=5585997934599&text=I+have+a+question+about+Kyle+Rescuer"
+                data-cp-contact="whatsapp"
+                target="_blank"
+                rel="noopener"
+                >WhatsApp</a
+              >
+            </li>
+            <li data-cp-wrap style="display: none">
+              <a
+                href="https://www.instagram.com/kylerescuer"
+                data-cp-contact="instagram"
+                target="_blank"
+                rel="noopener"
+                >Instagram</a
+              >
+            </li>
+            <li data-cp-wrap style="display: none">
+              <a
+                href="http://facebook.com/kylerescuer"
+                data-cp-contact="facebook"
+                target="_blank"
+                rel="noopener"
+                >Facebook</a
+              >
+            </li>
+          </ul>
+          <div class="cp-footer-contact">
+            <div class="cp-footer-contact-item">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="3" y="11" width="18" height="11" rx="2" />
+                <path d="M7 11V7a5 5 0 0110 0v4" />
+              </svg>
+              <a href="#transparency">EIN: 41-4770760</a>
+            </div>
+            <div class="cp-footer-contact-item" data-cp-wrap>
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+                />
+              </svg>
+              <a
+                href="https://api.whatsapp.com/send/?phone=5585997934599&text=I+have+a+question+about+Kyle+Rescuer"
+                data-cp-contact="whatsapp"
+                target="_blank"
+                rel="noopener"
+                >+55 85 99793-4599</a
+              >
+            </div>
+            <div
+              class="cp-footer-contact-item"
+              data-cp-wrap
+              style="display: none"
+            >
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="3" y="5" width="18" height="14" rx="2" />
+                <path d="M3 7l9 6 9-6" />
+              </svg>
+              <a href="#" data-cp-contact="email" data-cp-fill-text></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM STRIP -->
+      <div class="cp-footer-bottom">
+        <span class="cp-footer-copy"
+          >&copy; 2026 Kyle Rescuer &middot; All rights reserved</span
+        >
+        <div class="cp-footer-policies">
+          <a
+            href="https://kylerescuer.org/privacy-policy"
+            target="_blank"
+            rel="noopener"
+            >Privacy Policy</a
+          >
+          <a
+            href="https://kylerescuer.org/terms-of-use"
+            target="_blank"
+            rel="noopener"
+            >Terms of Use</a
+          >
+          <a
+            href="https://kylerescuer.org/donation-policy"
+            target="_blank"
+            rel="noopener"
+            >Donation Policy</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* Contato dinâmico do abrigo — vem do painel (ic-wh) via GET /api/ic/:slug pela
+   ponte do Laravel (/api/nest-relay). Regra: só aparece o que estiver preenchido
+   no painel; campo vazio => o elemento (ou o [data-cp-wrap] ancestral) some.
+   Se a chamada falhar, cada elemento mantém o href que já está no HTML. */
+  (function () {
+    window.cpContact =
+      window.cpContact ||
+      function () {
+        if (window.__cpContactPromise) return window.__cpContactPromise;
+        var SLUG = window.CP_FUNNEL_SLUG || "caio-protetor-us";
+        var BASE = (
+          window.CP_CONTACT_API || "https://lusapayments.com/api/nest-relay"
+        ).replace(/\/+$/, "");
+        window.__cpContactPromise = fetch(
+          BASE + "/ic/" + encodeURIComponent(SLUG),
+          { headers: { Accept: "application/json" } },
+        )
+          .then(function (r) {
+            return r.ok ? r.json() : null;
+          })
+          .then(function (d) {
+            var f = d && d.funnel ? d.funnel : {};
+            return {
+              whatsapp: String(f.phone || "").replace(/\D/g, "") || null,
+              instagram: f.instagramUrl || null,
+              facebook: f.facebookUrl || null,
+              email: f.email || null,
+            };
+          })
+          .catch(function () {
+            return null;
+          });
+        return window.__cpContactPromise;
+      };
+
+    var WA_TEXT = "I have a question about Kyle Rescuer";
+    function box(a) {
+      return a.closest("[data-cp-wrap]") || a;
+    }
+
+    window.cpContact().then(function (c) {
+      document.querySelectorAll("[data-cp-contact]").forEach(function (a) {
+        if (c === null) return; // fetch falhou: mantém o href do HTML
+        var kind = a.getAttribute("data-cp-contact");
+        var val = c[kind];
+        if (!val) {
+          box(a).style.display = "none";
+          return;
+        }
+        if (kind === "whatsapp")
+          a.href =
+            "https://api.whatsapp.com/send/?phone=" +
+            val +
+            "&text=" +
+            encodeURIComponent(WA_TEXT);
+        else if (kind === "email") {
+          a.href = "mailto:" + val;
+          if (a.hasAttribute("data-cp-fill-text")) a.textContent = val;
+        } else a.href = val;
+        box(a).style.display = "";
+      });
+    });
+  })();
+</script>

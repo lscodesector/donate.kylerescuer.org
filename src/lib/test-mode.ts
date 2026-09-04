@@ -13,7 +13,7 @@
  * bastaria alguém exportar com a variável errada - ou publicar um `next dev`
  * congelado - para o centavo aparecer na grade de quem doa de verdade. Pelo
  * endereço de quem serve a página, isso não é possível: em
- * `doe.caioprotetor.org` a checagem é falsa, ponto.
+ * `donate.kylerescuer.org` a checagem é falsa, ponto.
  *
  * ── Só no cliente ─────────────────────────────────────────────────────────
  * No servidor (e na exportação do HTML) devolve `false`. Quem chama é o modal

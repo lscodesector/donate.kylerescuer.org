@@ -2,7 +2,6 @@ import Menu from "./blocos/01-menu";
 import Hero from "./blocos/02-hero";
 import Prova from "./blocos/03-prova";
 import QuemE from "./blocos/04-quem-e";
-import PixDireto from "./blocos/05-pix-direto";
 import Abrigos from "./blocos/06-abrigos";
 import Doar from "./blocos/07-doar";
 import ComoFunciona from "./blocos/08-como-funciona";
@@ -20,7 +19,6 @@ import Checkout from "@/components/overlays/18-checkout";
 import ModalDocumento from "@/components/overlays/19-modal-documento";
 
 import { withBasePath } from "@/lib/base-path";
-import { showPixSection } from "@/lib/config";
 import type { Metadata } from "next";
 
 /**
@@ -41,7 +39,7 @@ import type { Metadata } from "next";
  * ── Por que os blocos moram em `./blocos/`, e não em `components/sections/` ─
  * Porque a copy é outra em doze dos quinze blocos. `/ajude-sempre` reaproveita
  * os blocos da raiz porque lá só muda a *frequência* do pedido - a história do
- * Caio, os abrigos e a tabela de custos são os mesmos, e duplicá-los criaria
+ * Kyle, os abrigos e a tabela de custos são os mesmos, e duplicá-los criaria
  * duas versões da mesma verdade. Aqui é o contrário: o texto **é** a
  * diferença. Uma prop por parágrafo divergente seria a mesma duplicação, só
  * que espalhada por quinze arquivos compartilhados e paga também pela raiz.
@@ -88,27 +86,27 @@ import type { Metadata } from "next";
  * um sem o outro deixa metade dos lugares mostrando a campanha errada.
  */
 export const metadata: Metadata = {
-  title: "Eles Precisam de Veterinário Agora | Caio Protetor",
+  title: "They Need a Vet Right Now | Kyle Rescuer",
   description:
-    "Mais de 500 animais precisam de consulta, exames e medicação urgente. Ajude o Caio a levá-los ao veterinário antes que seja tarde demais. Doe via Pix, no valor que puder.",
+    "More than 500 animals need vet visits, tests and urgent medication. Help Kyle get them to the vet before it is too late. Give by card or PayPal, whatever you can.",
   /* `withBasePath`, e não o caminho puro - ver o comentário sobre resolução de
      URL relativa em `app/layout.tsx`. A barra final segue o `trailingSlash`
      de `next.config.ts`. */
   alternates: { canonical: withBasePath("/urgencia-remedios/") },
   openGraph: {
     type: "website",
-    locale: "pt_BR",
-    siteName: "Caio Protetor",
+    locale: "en_US",
+    siteName: "Kyle Rescuer",
     /* O endereço canônico da prévia. Sem ele, quem compartilhar a URL com
        `?utm_...` colado faz o Facebook tratar cada variante como página
        diferente, e a contagem de compartilhamentos se divide entre elas. */
     url: withBasePath("/urgencia-remedios/"),
-    title: "Eles Precisam de Veterinário Agora | Caio Protetor",
+    title: "They Need a Vet Right Now | Kyle Rescuer",
     description:
-      "Mais de 500 animais precisam de consulta, exames e medicação urgente. Ajude o Caio a levá-los ao veterinário antes que seja tarde demais.",
+      "More than 500 animals need vet visits, tests and urgent medication. Help Kyle get them to the vet before it is too late.",
     images: [
       {
-        /* Foto diferente da raiz de propósito: `caio-1` (Caio com um cão no
+        /* Foto diferente da raiz de propósito: `caio-1` (Kyle com um cão no
            colo) é a prévia da campanha de manutenção. Esta é a do animal
            **recebendo cuidado**, que é o que esta página pede - e, quando as
            duas campanhas circulam juntas, a imagem é o que separa uma da
@@ -121,15 +119,15 @@ export const metadata: Metadata = {
         url: withBasePath("/caio/historia/caio-3.webp"),
         width: 1034,
         height: 1103,
-        alt: "Cão resgatado recebendo cuidado veterinário depois do resgate",
+        alt: "Rescued dog receiving veterinary care after the rescue",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Eles Precisam de Veterinário Agora | Caio Protetor",
+    title: "They Need a Vet Right Now | Kyle Rescuer",
     description:
-      "Mais de 500 animais precisam de consulta, exames e medicação urgente. Ajude o Caio a levá-los ao veterinário antes que seja tarde demais.",
+      "More than 500 animals need vet visits, tests and urgent medication. Help Kyle get them to the vet before it is too late.",
     images: [withBasePath("/caio/historia/caio-3.webp")],
   },
 };
@@ -142,9 +140,6 @@ export default function UrgenciaRemedios() {
         <Hero />
         <Prova />
         <QuemE />
-        {/* A chave Pix, para quem prefere o app do banco. `showPixSection`
-            manda, como na raiz. */}
-        {showPixSection && <PixDireto />}
         <Abrigos />
         <Doar />
         <ComoFunciona />

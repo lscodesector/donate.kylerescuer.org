@@ -5,7 +5,7 @@
  * ║  20 · PIXEL DA META - o bloco que o export estático não tinha         ║
  * ╚══════════════════════════════════════════════════════════════════════╝
  *
- * A página em WordPress (`doe.caioprotetor.org`) carrega o `fbevents.js` e
+ * A página em WordPress (`donate.kylerescuer.org`) carrega o `fbevents.js` e
  * dispara PageView, ViewContent e InitiateCheckout. Esta página não carregava
  * **nada** - `fbq` não existia aqui -, então o tráfego de anúncio que chega
  * pelo navegador do Instagram e do Facebook não gerava evento nenhum no
@@ -115,6 +115,9 @@ function baseParams() {
   };
 }
 
+/** Os pixels que já receberam `fbq('init')` nesta carga da página. */
+const pixelsIniciados = new Set<string>();
+
 /* #ui:pixel - o bloco não desenha nada (retorna `null`), então a âncora fica
    aqui em cima, e não no JSX. */
 export default function Pixel() {
@@ -139,7 +142,18 @@ export default function Pixel() {
         if (!pixels.length) {
           console.warn("[pixel] nenhum pixel devolvido para o funil");
         }
-        pixels.forEach((id) => window.fbq?.("init", id));
+        pixels.forEach((id) => {
+          /* `fbq('init')` duas vezes com o mesmo id faz a Meta reclamar
+             ("Duplicate Pixel ID") e conta a mesma pessoa duas vezes. O
+             efeito roda duas vezes de propósito no StrictMode do `next dev`,
+             e voltaria a rodar em qualquer remontagem deste bloco.
+
+             A marca é de módulo, e não `useRef`: um ref nasce zerado a cada
+             remontagem, que é exatamente o caso que precisa ser barrado. */
+          if (pixelsIniciados.has(id)) return;
+          pixelsIniciados.add(id);
+          window.fbq?.("init", id);
+        });
         return pixels;
       })
       .catch((err) => {

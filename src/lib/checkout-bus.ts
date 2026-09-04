@@ -25,7 +25,7 @@ export type CheckoutItem = {
    * `lib/payments/lusa.ts`.
    *
    * Havia um terceiro, `racao`, para as faixas de kg - elas saíram junto com a
-   * virada para a campanha do Caio, que pede valor e não saco de ração.
+   * virada para a campanha do Kyle, que pede valor e não saco de ração.
    */
   kind: "causa" | "mensal";
   /** Valor da doação em centavos, **sem** a taxa. */
@@ -104,14 +104,14 @@ export function checkoutItemFor({
         ? `${cause.title} (mensal)`
         : cause.title
       : mensal
-        ? "Doação mensal"
-        : "Doação única",
+        ? "Monthly donation"
+        : "One-time donation",
     /* Curta de propósito: esta linha vive na faixa do item, no topo do
        checkout, e cada linha que ela quebra empurra o formulário para fora da
        tela. O detalhe do débito automático está inteiro na etapa do Pix. */
     impact: mensal
-      ? "Cobrado todo mês. Cancele quando quiser pelo app."
-      : (cause?.text ?? "Sua doação vai direto para os abrigos que apoiamos."),
+      ? "Charged every month. Cancel anytime in your banking app."
+      : (cause?.text ?? "Your donation goes straight to the shelters we support."),
     /* Hoje sempre `null`: a doação é um valor, não um produto. */
     image: null,
     txid: `${cause?.txid ?? "DOACAO"}${mensal ? "MENSAL" : "UNICA"}`,

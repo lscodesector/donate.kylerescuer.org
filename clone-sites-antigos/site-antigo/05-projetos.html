@@ -1,0 +1,244 @@
+<!-- KYLE RESCUER US | 4 - PROJECTS -->
+<style>
+  .cp-proj-section {
+    width: 100%; margin: 0;
+    padding: 40px 0;
+    background: #ffffff;
+    font-family: "Nunito", sans-serif;
+  }
+  .cp-proj__wrap { max-width: 650px; margin: 0 auto; padding: 0 20px; }
+
+  .cp-proj__head {
+    display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; gap: 12px;
+  }
+  .cp-proj__stag {
+    font-size: 0.68rem; font-weight: 800; letter-spacing: 0.1em;
+    text-transform: uppercase; color: #BF0521; display: block; margin-bottom: 4px;
+  }
+  .cp-proj__title {
+    font-size: clamp(1.45rem, 4.5vw, 2rem); font-weight: 900; color: #0D0D0D;
+    line-height: 1.15; letter-spacing: -0.02em; margin: 0;
+  }
+  .cp-proj__title em { font-style: normal; color: #BF0521; }
+
+  /* Slider */
+  .cp-sl-outer { overflow: hidden; border-radius: 6px; width: 100%; position: relative; }
+  .cp-sl-track {
+    display: flex; gap: 0;
+    transition: transform .42s cubic-bezier(.25,.46,.45,.94);
+    cursor: grab; user-select: none; touch-action: pan-y;
+  }
+  .cp-sl-track.is-dragging { cursor: grabbing; transition: none; }
+
+  /* Arrows */
+  .cp-sl-btn {
+    position: absolute; top: 50%; transform: translateY(-50%); z-index: 3;
+    width: 36px; height: 36px; border-radius: 6px; border: 0;
+    background: rgba(0,0,0,0.22); backdrop-filter: blur(6px);
+    color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s; font-size: 1.4rem; line-height: 1;
+  }
+  .cp-sl-btn:hover { background: rgba(0,0,0,0.40); }
+  .cp-sl-btn--prev { left: 10px; }
+  .cp-sl-btn--next { right: 10px; }
+
+  /* Card */
+  .cp-slide {
+    flex: 0 0 100%; min-width: 0; box-sizing: border-box;
+    background: #FAFAFA; border-radius: 6px; overflow: hidden;
+    border: 1px solid #EAEAEA;
+  }
+
+  .cp-slide-img {
+    width: 100%; aspect-ratio: 4/3; object-fit: cover; object-position: top; display: block;
+  }
+
+  .cp-slide__body { padding: 14px 16px 18px; }
+  .cp-slide__name { font-size: 0.95rem; font-weight: 800; margin-bottom: 6px; color: #0D0D0D; }
+  .cp-slide__desc { font-size: 0.82rem; color: #555; line-height: 1.6; }
+  .cp-slide__addr {
+    display: flex; align-items: flex-start; gap: 5px;
+    margin-top: 8px; font-size: 0.73rem; color: #888; line-height: 1.5;
+  }
+  .cp-slide__addr svg { width: 11px; height: 11px; flex: 0 0 auto; margin-top: 2px; }
+
+  @media (max-width: 420px) {
+    .cp-proj__head { flex-wrap: wrap; align-items: flex-start; }
+  }
+
+  /* Dots */
+  .cp-sl-dots { display: flex; justify-content: center; gap: 6px; margin-top: 18px; }
+  .cp-sl-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #CCC; border: none; cursor: pointer;
+    transition: background .25s, width .25s; padding: 0;
+  }
+  .cp-sl-dot.active { background: #BF0521; width: 20px; border-radius: 4px; }
+</style>
+
+<section class="cp-proj-section ln-section-anchor" id="shelters">
+  <div class="cp-proj__wrap">
+    <div class="cp-proj__head">
+      <div>
+        <h2 class="cp-proj__title">Shelters <em>Kyle helps</em></h2>
+      </div>
+    </div>
+
+    <div class="cp-sl-outer">
+      <div class="cp-sl-track" id="cpSlTrack">
+
+        <div class="cp-slide">
+          <img class="cp-slide-img" src="https://donate.kylerescuer.org/wp-content/uploads/2026/06/siulsan-resgate-e1782439947425.webp" alt="Susan Pet Rescue" loading="lazy">
+          <div class="cp-slide__body">
+            <h3 class="cp-slide__name">Susan Pet Rescue</h3>
+            <p class="cp-slide__desc">53 rescued dogs. Receives monthly support for food, medication and veterinary surgeries.</p>
+                      </div>
+        </div>
+
+        <div class="cp-slide">
+          <img class="cp-slide-img" src="https://donate.kylerescuer.org/wp-content/uploads/2026/06/sos-joana-darc-scaled-e1782439875262.webp" alt="SOS Joana Darc" loading="lazy">
+          <div class="cp-slide__body">
+            <h3 class="cp-slide__name">SOS Joana Darc</h3>
+            <p class="cp-slide__desc">200 animals, focused on cats rescued from abuse. Relies entirely on donations to keep running.</p>
+            
+          </div>
+        </div>
+
+        <div class="cp-slide">
+          <img class="cp-slide-img" src="https://donate.kylerescuer.org/wp-content/uploads/2026/06/abrigo-salve-cao.webp" alt="Save Dog Shelter" loading="lazy">
+          <div class="cp-slide__body">
+            <h3 class="cp-slide__name">Save Dog Shelter</h3>
+            <p class="cp-slide__desc">92 animals. Nearly closed in May over unpaid rent. Still open thanks to monthly donations.</p>
+            
+          </div>
+        </div>
+
+        <div class="cp-slide">
+          <img class="cp-slide-img" src="https://donate.kylerescuer.org/wp-content/uploads/2026/06/casa-da-mili-e1782439926652.webp" alt="Millie Home" loading="lazy">
+          <div class="cp-slide__body">
+            <h3 class="cp-slide__name">Millie Home</h3>
+            <p class="cp-slide__desc">74 rescued dogs and cats. Millie keeps the shelter running with volunteers and monthly donations for food and vet care.</p>
+           
+          </div>
+        </div>
+
+        <div class="cp-slide">
+          <img class="cp-slide-img" src="https://donate.kylerescuer.org/wp-content/uploads/2026/06/abrigo-dona-rose.webp" alt="Rose's Shelter" loading="lazy">
+          <div class="cp-slide__body">
+            <h3 class="cp-slide__name">Rose's Shelter</h3>
+            <p class="cp-slide__desc">Rose cares for 95 animals. With no public support, she relies entirely on donations to keep the shelter standing.</p>
+            
+          </div>
+        </div>
+
+      </div>
+      <button class="cp-sl-btn cp-sl-btn--prev" id="cpSlPrev" aria-label="Previous">&#8249;</button>
+      <button class="cp-sl-btn cp-sl-btn--next" id="cpSlNext" aria-label="Next">&#8250;</button>
+    </div>
+
+    <div class="cp-sl-dots" id="cpSlDots"></div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var track = document.getElementById('cpSlTrack');
+  var dotsWrap = document.getElementById('cpSlDots');
+  if (!track) return;
+
+  var slides = Array.from(track.querySelectorAll('.cp-slide'));
+  var total = slides.length;
+  track.appendChild(slides[0].cloneNode(true));
+
+  var cur = 0, jumping = false;
+  var TRANS = 420;
+
+  function setPos(idx, animated) {
+    track.style.transition = animated ? 'transform ' + TRANS + 'ms cubic-bezier(.25,.46,.45,.94)' : 'none';
+    track.style.transform = 'translateX(-' + (idx * 100) + '%)';
+    if (!animated) track.getBoundingClientRect();
+  }
+
+  function updateDots(idx) {
+    dotsWrap.querySelectorAll('.cp-sl-dot').forEach(function(d, i){ d.classList.toggle('active', i === idx); });
+  }
+
+  function buildDots() {
+    dotsWrap.innerHTML = '';
+    for (var i = 0; i < total; i++) {
+      var d = document.createElement('button');
+      d.className = 'cp-sl-dot' + (i === 0 ? ' active' : '');
+      d.setAttribute('aria-label', 'Slide ' + (i + 1));
+      (function(idx){ d.addEventListener('click', function(){ if (!jumping) { cur = idx; setPos(cur, true); updateDots(cur); } }); })(i);
+      dotsWrap.appendChild(d);
+    }
+  }
+
+  function goNext() {
+    if (jumping) return;
+    if (cur === total - 1) {
+      jumping = true;
+      setPos(total, true);
+      updateDots(0);
+      setTimeout(function(){ setPos(0, false); cur = 0; jumping = false; }, TRANS + 30);
+    } else {
+      cur++;
+      setPos(cur, true);
+      updateDots(cur);
+    }
+  }
+
+  function goPrev() {
+    if (jumping) return;
+    cur = (cur - 1 + total) % total;
+    setPos(cur, true);
+    updateDots(cur);
+  }
+
+  buildDots();
+
+  var prevBtn = document.getElementById('cpSlPrev');
+  var nextBtn = document.getElementById('cpSlNext');
+  if (prevBtn) prevBtn.addEventListener('click', goPrev);
+  if (nextBtn) nextBtn.addEventListener('click', goNext);
+
+  track.addEventListener('dragstart', function(e){ e.preventDefault(); });
+
+  var dragging = false, dragStartX = 0, dragStartY = 0, dirLocked = false, horizDrag = false;
+  track.addEventListener('pointerdown', function(e){
+    if (jumping) return;
+    dragging = true; dragStartX = e.clientX; dragStartY = e.clientY;
+    dirLocked = false; horizDrag = false;
+    track.style.transition = 'none';
+    track.classList.add('is-dragging');
+  });
+  track.addEventListener('pointermove', function(e){
+    if (!dragging) return;
+    var dx = e.clientX - dragStartX;
+    var dy = e.clientY - dragStartY;
+    if (!dirLocked && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) {
+      dirLocked = true;
+      horizDrag = Math.abs(dx) > Math.abs(dy);
+      if (horizDrag) { track.setPointerCapture(e.pointerId); }
+      else { dragging = false; track.classList.remove('is-dragging'); track.style.transition = ''; return; }
+    }
+    if (!horizDrag) return;
+    track.style.transform = 'translateX(calc(-' + (cur * 100) + '% + ' + dx + 'px))';
+  });
+  track.addEventListener('pointerup', function(e){
+    if (!dragging) return;
+    dragging = false;
+    track.classList.remove('is-dragging');
+    var diff = dragStartX - e.clientX;
+    if (horizDrag && Math.abs(diff) > 44) { if (diff > 0) goNext(); else goPrev(); }
+    else setPos(cur, true);
+  });
+  track.addEventListener('pointercancel', function(){
+    if (!dragging) return;
+    dragging = false;
+    track.classList.remove('is-dragging');
+    track.style.transition = '';
+    setPos(cur, true);
+  });
+})();
+</script>

@@ -23,45 +23,50 @@ import {
 
 /** "Atualizações" - a linha do tempo da campanha. */
 const copyAtualizacoes = {
-  eyebrow: "Atualizações",
-  title: "O que aconteceu até aqui",
-  lead: "A campanha não começou hoje, e nem tudo nela é boa notícia. Esta é a linha do tempo como ela é.",
+  eyebrow: "Updates",
+  title: "What has happened so far",
+  lead: "This campaign did not start today, and not all of it is good news. This is the timeline exactly as it is.",
 };
 
 /**
  * A linha do tempo da campanha.
  *
  * ⚠️ **Nem toda entrada é boa notícia, e é assim de propósito.** Duas delas são
- * derrota (20 animais que não resistiram, prefeitura que negou apoio pela
+ * derrota (20 animais que não resistiram, o poder público que negou apoio pela
  * terceira vez). Elas vêm da campanha original e ficam: uma linha do tempo em
  * que só há vitória é publicidade, não prestação de contas.
+ *
+ * ⚠️ O texto das quatro entradas é o da página em produção, palavra por
+ * palavra. A de maio de 2026 fala em **aluguel atrasado** (e não no surto de
+ * cinomose que esta rota contava antes) - a ficha do Save Dog Shelter, no
+ * bloco 06, conta a mesma história pelo mesmo motivo.
  *
  * `tone` decide a cor do marcador: `now` é a entrada atual (dourada), `done` é
  * o que já aconteceu com desfecho, `open` é o que ficou em aberto.
  */
 const timeline = [
   {
-    date: "Jun 2026 · Campanha lançada",
-    title: "A história do Caio chegou à internet",
-    text: "Mais de 1.000 compartilhamentos em 24 horas, mas ainda muito longe do necessário para manter os 400+ animais dos abrigos.",
+    date: "Jun 2026 · Campaign launched",
+    title: "Kyle's story reached the internet",
+    text: "Over 1,000 shares in 24 hours, but still far from what's needed to support the 400+ animals in the shelters. Your help makes a difference.",
     tone: "now" as const,
   },
   {
-    date: "Mai 2026 · Crise na Bahia",
-    title: "Abrigo Salve Cão quase fecha por surto de doença",
-    text: "Fizemos o necessário para salvar mais de 90 vidas, porém 22 morreram por surto de cinomose, uma batalha perdida por falta de vacinação.",
+    date: "May 2026 · Crisis in Minas Gerais",
+    title: "Save Dog Shelter nearly closed over unpaid rent",
+    text: "Kyle negotiated a 30-day extension. 92 animals depended on that decision. With donors' help, the shelter stayed open.",
     tone: "done" as const,
   },
   {
     date: "Mar 2026",
-    title: "20 animais não resistiram este ano",
-    text: "Por falta de remédios e ração a tempo. Cada vida perdida é uma batalha que poderia ter sido vencida com recursos suficientes.",
+    title: "20 animals didn't make it this year",
+    text: "Due to medicine and food not arriving in time. Every life lost is a battle that could have been won with enough resources.",
     tone: "done" as const,
   },
   {
-    date: "Dez 2025",
-    title: "Prefeitura nega apoio pela 3ª vez",
-    text: "Caio segue lutando para conseguir doações. Sem patrocínio público, a campanha é a única alternativa.",
+    date: "Dec 2025",
+    title: "Local government denies support for the 3rd time",
+    text: "Kyle keeps fighting to secure donations. With no public funding, the campaign is the only alternative.",
     tone: "open" as const,
   },
 ];

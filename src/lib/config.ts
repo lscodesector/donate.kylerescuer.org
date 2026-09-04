@@ -17,7 +17,7 @@
  *
  * Nenhum bloco deve reescrever o que está aqui - importe daqui.
  *
- * As funções de formatação (`formatBRL`, `formatBRLCurto`) estão em
+ * As funções de formatação (`formatUSD`, `formatUSDCurto`) estão em
  * `lib/format.ts`, junto das outras máscaras.
  */
 
@@ -31,19 +31,11 @@
 export const DOAR_HREF = "#doar";
 
 /**
- * A seção "Pix direto" está **ligada**.
+ * Checkout de valor livre em página: o modal manda o valor em centavos pela
+ * URL. `freq=mensal` marca a intenção de recorrência.
  *
- * No site da SOS Animal Help ela estava desligada, porque a chave solta no meio
- * da página competia com o checkout. Aqui ela volta porque a campanha do Caio a
- * tem, em destaque, e porque a chave é dela (`caioprotetor@sosanimalhelp.org`)
- * e não do CNPJ genérico: quem prefere pagar pelo app do banco consegue, e a
- * doação ainda cai identificada na campanha certa.
- */
-export const showPixSection = true;
-
-/**
- * Checkout de valor livre sem JavaScript: o modal manda o valor em centavos
- * pela URL. `freq=mensal` marca a intenção de recorrência.
+ * É o `href` de verdade dos CTAs de doação - com JavaScript o modal intercepta
+ * o clique e ninguém chega lá. Ver `app/doar/valor/CheckoutValor.tsx`.
  */
 export function checkoutValorHref(cents: number, mensal = false) {
   const freq = mensal ? "&freq=mensal" : "";
@@ -61,7 +53,7 @@ export function checkoutValorHref(cents: number, mensal = false) {
  * Não é o mesmo pedido. Doar R$ 100 uma vez é um gesto; R$ 100 todo mês é um
  * compromisso, e uma escada avulsa oferecida na mensal pede alto demais - a
  * mensal começa mais baixo e sobe mais devagar. A única vai a R$ 1.000, que é
- * até onde a campanha do Caio vai.
+ * até onde a campanha do Kyle vai.
  *
  * `popular` marca **R$ 30** nas duas: é o valor que a campanha aponta como o
  * mais escolhido, e ele existe nas duas escadas.
@@ -87,7 +79,7 @@ export type DonationAmount = {
  *
  * ⚠️ Quem decide se ele aparece é `isLocalhost()` (`lib/test-mode.ts`), pelo
  * endereço de quem está servindo a página - não por variável de build. Em
- * `doe.caioprotetor.org` a grade começa em R$ 15 (mensal) ou R$ 20
+ * `donate.kylerescuer.org` a grade começa em R$ 15 (mensal) ou R$ 20
  * (única), sempre.
  */
 export const testAmount: DonationAmount = {
@@ -97,18 +89,18 @@ export const testAmount: DonationAmount = {
 };
 
 /**
- * Piso do **valor livre da doação única**, em centavos - R$ 10,00.
+ * Piso do **valor livre da doação única**, em centavos - $10.00.
  *
- * A grade da única começa em R$ 20, mas o campo de valor livre aceita qualquer
- * número: sem este piso, quem digita "0,01" fecha uma doação de um centavo. É o
+ * A grade da única começa em $20, mas o campo de valor livre aceita qualquer
+ * número: sem este piso, quem digita "0.01" fecha uma doação de um centavo. É o
  * equivalente, na única, ao `payments.recurring.minCents` da mensal.
  *
- * ⚠️ Em `localhost` quem manda é o `testAmount` (R$ 0,01) - ver
+ * ⚠️ Em `localhost` quem manda é o `testAmount` ($0.01) - ver
  * `DonationModal`. Fora de `localhost` este é o piso, sempre.
  */
 export const donationMinCentsUnica = 1000;
 
-/** Doação **única** - R$ 20 a R$ 1.000. */
+/** Doação **única** - $20 a $1,000. */
 export const donationAmountsUnica: readonly DonationAmount[] = [
   { cents: 2000, popular: false },
   { cents: 3000, popular: true },
@@ -121,7 +113,7 @@ export const donationAmountsUnica: readonly DonationAmount[] = [
   { cents: 100000, popular: false },
 ] as const;
 
-/** Doação **mensal** - R$ 15 a R$ 500, a escada que a campanha pratica. */
+/** Doação **mensal** - $15 a $500, a escada que a campanha pratica. */
 export const donationAmountsMensal: readonly DonationAmount[] = [
   { cents: 1500, popular: false },
   { cents: 3000, popular: true },
@@ -141,7 +133,7 @@ export const donationAmountsMensal: readonly DonationAmount[] = [
  *
  * O menu que o botão flutuante abre. Elas não foram inventadas: são as quatro
  * maiores linhas da **tabela de custos** da própria campanha (ver
- * `monthlyCosts`), que é o que o Caio publica como destino do dinheiro.
+ * `monthlyCosts`), que é o que o Kyle publica como destino do dinheiro.
  *
  * `txid` vai no BR Code do Pix estático e é o que separa uma frente da outra no
  * extrato. Só letras e números, sem acento: o padrão do Pix não aceita mais.
@@ -150,29 +142,29 @@ export const causes = [
   {
     id: "racao",
     icon: "bowl",
-    title: "Ração dos abrigos",
-    text: "Alimentar os mais de 400 animais que o Caio acompanha.",
+    title: "Food for the shelters",
+    text: "Feeding the 400+ animals Kyle looks after.",
     txid: "CAIORACAO",
   },
   {
     id: "veterinario",
     icon: "pulse",
-    title: "Consultas e cirurgias",
-    text: "Tratamento veterinário e medicamentos para quem está doente.",
+    title: "Vet visits and surgeries",
+    text: "Veterinary treatment and medicine for the ones who are sick.",
     txid: "CAIOVET",
   },
   {
     id: "estrutura",
     icon: "home",
-    title: "Aluguel dos abrigos",
-    text: "Manter as portas abertas - foi o que quase fechou o Salve Cão.",
+    title: "Shelter rent",
+    text: "Keeping the doors open - it is what almost closed Save Dog Shelter.",
     txid: "CAIOESTRUTURA",
   },
   {
     id: "urgente",
     icon: "alert",
-    title: "Onde for mais urgente",
-    text: "O Caio direciona para o abrigo que estiver mais apertado no mês.",
+    title: "Wherever it is most urgent",
+    text: "Kyle sends it to whichever shelter is tightest that month.",
     txid: "CAIOURGENTE",
   },
 ] as const;
@@ -187,20 +179,20 @@ export function causeById(id: string | null | undefined): Cause | null {
 /**
  * ⚠️ CONFERIR ANTES DE PUBLICAR ⚠️
  *
- * Quem é o Caio e por onde falar com ele. O WhatsApp e as redes são os da
+ * Quem é o Kyle e por onde falar com ele. O WhatsApp e as redes são os da
  * campanha; o CNPJ é o da SOS Animal Help, que é quem recebe as doações e faz o
  * repasse - por isso os dois nomes convivem aqui.
  */
 export const org = {
   /** O nome da campanha, que é o que a página inteira assina. */
-  name: "Caio Protetor",
+  name: "Kyle Rescuer",
   /**
    * Quem recebe o dinheiro e emite o comprovante.
    *
-   * ⚠️ Daqui para baixo, **os dados são da SOS Animal Help, não do Caio**: o
+   * ⚠️ Daqui para baixo, **os dados são da SOS Animal Help, não do Kyle**: o
    * CNPJ, o e-mail e o endereço são os da organização que recebe as doações e
    * faz o repasse. É isso que a seção de documentação publica, e é isso que a
-   * pessoa confere na Receita Federal antes de doar. O Caio é um protetor
+   * pessoa confere na Receita Federal antes de doar. O Kyle é um protetor
    * independente apoiado por ela - ele não tem CNPJ próprio nesta campanha.
    */
   supporter: "SOS Animal Help",
@@ -218,7 +210,7 @@ export const org = {
     label: "SOS Animal Help",
     href: "https://sosanimalhelp.org/pt-br/",
   },
-  cnpj: "63.153.881/0001-09",
+  cnpj: "41-4770760",
   email: "support@sosanimalhelp.org",
   address: {
     line1: "Av. Francisco de Paula Leite, 487",
@@ -230,30 +222,30 @@ export const org = {
     "https://www.google.com/maps/search/?api=1&query=Av.+Francisco+de+Paula+Leite,+487,+Jardim+Santa+Cruz,+Indaiatuba+SP",
   mapsEmbedSrc:
     "https://www.google.com/maps?q=Av.+Francisco+de+Paula+Leite,+487,+Jardim+Santa+Cruz,+Indaiatuba+SP&output=embed",
-  /* O WhatsApp, as redes e as políticas voltam a ser da campanha do Caio. */
+  /* O WhatsApp, as redes e as políticas voltam a ser da campanha do Kyle. */
   whatsapp: "5585997934599",
   whatsappDisplay: "(85) 99793-4599",
-  whatsappMessage: "Tenho uma dúvida sobre o Caio Protetor",
-  instagram: "@caio.protetor",
-  instagramHref: "https://www.instagram.com/caio.protetor/",
-  facebookHref: "https://www.facebook.com/caioprotetor",
+  whatsappMessage: "I have a question about Kyle Rescuer",
+  instagram: "@kylerescuer",
+  instagramHref: "https://www.instagram.com/kylerescuer",
+  facebookHref: "http://facebook.com/kylerescuer",
   /**
    * As três políticas, no site institucional.
    *
    * Não são rota própria aqui - o texto legal completo mora em
-   * `caioprotetor.org` (WordPress), não nesta campanha. Link absoluto e
+   * `kylerescuer.org` (WordPress), não nesta campanha. Link absoluto e
    * externo: o `Footer` já abre em aba nova (`target="_blank"`) qualquer
    * `href` que comece com `http`.
    */
   policies: [
     {
-      label: "Política de Privacidade",
-      href: "https://caioprotetor.org/politica-de-privacidade/",
+      label: "Privacy Policy",
+      href: "https://kylerescuer.org/privacy-policy",
     },
-    { label: "Termos de Uso", href: "https://caioprotetor.org/termos-de-uso/" },
+    { label: "Terms of Use", href: "https://kylerescuer.org/terms-of-use" },
     {
-      label: "Política de Doação",
-      href: "https://caioprotetor.org/politica-de-doacao/",
+      label: "Donation Policy",
+      href: "https://kylerescuer.org/donation-policy",
     },
   ],
 };
@@ -278,7 +270,7 @@ export function whatsappWith(message: string, phone: string = org.whatsapp) {
  * funciona por um que depende de alguém responder.
  */
 export const recurringHref = whatsappWith(
-  "Olá! Quero ajudar o Caio Protetor todo mês. Como faço?",
+  "Hi! I want to help Kyle Rescuer every month. How do I do it?",
 );
 
 /**
@@ -317,15 +309,15 @@ export type Documento = {
  * Taxa de processamento que o checkout oferece cobrir.
  *
  * ⚠️ **É configuração, não número no componente.** O checkout lê o valor daqui e
- * recalcula a cada doação - nada de "+ R$ 4,99" escrito na tela.
+ * recalcula a cada doação - nada de "+ $4.99" escrito na tela.
  *
- * R$ 4,99 fixo é o valor que a campanha do Caio pratica, e é o mesmo texto que
- * ela usa ("Cubra os custos de R$ 4,99 do pix e garanta que sua doação chegue
- * completa"). `percent` fica em zero: ele existe para o dia em que a conta virar
- * "1,2% + R$ 0,99".
+ * $4.99 fixo é o valor que a campanha do Kyle pratica ("Cover the $4.99
+ * processing cost and make sure your donation reaches Kyle in full").
+ * `percent` fica em zero: ele existe para o dia em que a conta do PayPal for
+ * repassada como ela é de verdade - "2.99% + $0.49" na doação internacional.
  *
  * `defaultChecked` está **desligado**: a caixa abre desmarcada e quem soma os
- * R$ 4,99 é quem quer somar. Marcada por padrão, o valor que a pessoa escolheu
+ * $4.99 é quem quer somar. Marcada por padrão, o valor que a pessoa escolheu
  * na tela anterior não era o valor que ela via no total da tela seguinte - e
  * doação em que o número muda sozinho entre uma tela e outra é a que volta como
  * contestação.
@@ -347,29 +339,16 @@ export function feeCentsFor(amountCents: number) {
 }
 
 /**
- * ⚠️ CONFERIR ANTES DE PUBLICAR ⚠️
- *
- * Chave Pix da campanha. Errar aqui manda o dinheiro de quem doa para a conta
- * errada - é o único dado desta página que não dá para corrigir depois.
- *
- * É a chave **da campanha do Caio** (e-mail), e não o CNPJ da SOS Animal Help:
- * é assim que a doação cai identificada na campanha certa. O recebedor continua
- * sendo a SOS Animal Help, que é quem tem o CNPJ.
- */
-export const pix = {
-  key: "caioprotetor@sosanimalhelp.org",
-  keyType: "E-mail",
-  receiver: "SOS Animal Help",
-};
-
-/**
  * O cartão CNPJ de **quem recebe as doações** - o documento oficial que
  * qualquer pessoa pode conferir. O de cada abrigo está em `Shelter.cnpjDoc`.
  */
 export const cnpjDocument: Documento = {
-  src: "/documentos/cnpj-animal.webp",
-  alt: "Cartão CNPJ da SOS Animal Help emitido pela Receita Federal",
-  title: "Cartão CNPJ · SOS Animal Help",
-  subtitle: "Documento oficial da Receita Federal",
-  caption: `CNPJ ${org.cnpj}`,
+  src: "/documentos/ein-sos-animal-help.webp",
+  alt: "EIN document of SOS Animal Help issued by the US Internal Revenue Service",
+  title: "EIN · SOS Animal Help",
+  subtitle: "Official US Employer Identification Number document",
+  caption: `EIN: ${org.cnpj}`,
+  /* Medida no arquivo: 948 x 1073. Sem isto a moldura assumiria o A4 em pe do
+     antigo cartao da Receita e sobrariam tarjas em volta do documento. */
+  aspect: "948 / 1073",
 };

@@ -42,11 +42,11 @@ import type { Metadata } from "next";
  * aponta para cá (só comentários citam a rota pelo nome), e as props `mensal`
  * dos blocos compartilhados seguem existindo e em uso pelo modal.
  *
- * Esta página é a campanha do Caio (`app/page.tsx`) com **um pedido só**: a
+ * Esta página é a campanha do Kyle (`app/page.tsx`) com **um pedido só**: a
  * doação que se repete todo mês.
  *
  * Ela não é uma cópia dos blocos. São os mesmos quinze arquivos, na mesma
- * ordem, montados aqui - a história do Caio, os cinco abrigos, a tabela de
+ * ordem, montados aqui - a história do Kyle, os cinco abrigos, a tabela de
  * custos, os depoimentos e a documentação não mudam por causa da frequência da
  * doação, e duplicá-los criaria duas versões da mesma verdade para alguém
  * atualizar em dois lugares. O que muda é o pedido, e ele muda em três lugares:
@@ -64,14 +64,15 @@ import type { Metadata } from "next";
  *      checkout, e qualquer botão de doação que apareça aqui amanhã.
  *
  *   3. **A estrutura**, por `TodoMes`. É o único bloco novo, e ele entra
- *      exatamente onde a raiz põe o "Pix direto" - ver logo abaixo.
+ *      exatamente onde a raiz punha o "Pix direto" - ver logo abaixo.
  *
- * ── O que sai: a seção "Pix direto" (bloco 05) ────────────────────────────
- * Ela não é montada aqui. Chave Pix copiada e colada no app do banco é
- * pagamento de uma vez - não existe recorrência que nasça de um Pix estático -,
- * então numa página que pede compromisso mensal ela é o atalho para a pessoa
- * fazer justamente a outra coisa, com a melhor das intenções. Quem prefere a
- * chave continua tendo a página raiz, onde `showPixSection` manda.
+ * ── O que ficou do lugar da antiga seção "Pix direto" (bloco 05) ──────────
+ * Ela não existe mais em lugar nenhum do site - ver o aviso em
+ * `components/campaign/campanha-caio.tsx`. Aqui ela já não era montada antes
+ * disso, e pelo motivo que continua valendo: chave copiada e colada é
+ * pagamento de uma vez, e numa página que pede compromisso mensal ela seria o
+ * atalho para a pessoa fazer justamente a outra coisa, com a melhor das
+ * intenções.
  *
  * ── O que entra no lugar: `TodoMes` ───────────────────────────────────────
  * Por que todo mês, quanto (três degraus da escada mensal, cada um abrindo a
@@ -84,7 +85,7 @@ import type { Metadata } from "next";
  *  01 Menu          a barra fixa e a gaveta - o pedido dela já era só o mensal
  *  02 Hero          o VSL, agora com um botão só: o da recorrência
  *  03 Prova         prova rápida de confiança, antes que a objeção apareça
- *  04 QuemE         "quem é o Caio" - a história, com as fotos dele
+ *  04 QuemE         "quem é o Kyle" - a história, com as fotos dele
  *   M TodoMes       o pedido mensal, a escada e as objeções da recorrência
  *  06 Abrigos       quem recebe a ajuda, com nome, endereço e perfil
  *  07 Doar          o contraste, agora fechado pelo argumento do "todo mês"
@@ -105,9 +106,9 @@ import type { Metadata } from "next";
  */
 export const metadata: Metadata = {
   title:
-    "Ajude Todo Mês e Mantenha Mais de 400 Animais de Pé | Caio Protetor",
+    "Help Every Month and Keep More Than 400 Animals Standing | Kyle Rescuer",
   description:
-    "A conta dos cinco abrigos volta todo mês. Com uma doação mensal, o Caio garante ração, remédios e veterinário sem começar do zero a cada trinta dias. Cancele quando quiser.",
+    "The bills of all five shelters come back every month. With a monthly donation, Kyle secures food, medicine and vet care without starting from zero every thirty days. Cancel anytime.",
   /* `withBasePath`, e não o caminho puro - ver o comentário sobre resolução de
      URL relativa em `app/layout.tsx`. Sem ele, publicado em `/v2`, o canonical
      apontaria para a raiz do domínio, que é outro site. A barra final segue o
@@ -127,7 +128,6 @@ export default function AjudeSempre() {
         <Hero mensal />
         <Prova />
         <QuemE />
-        {/* Onde a raiz põe o "Pix direto" - ver o comentário lá em cima. */}
         <TodoMes />
         <Abrigos mensal />
         <Doar mensal />
@@ -149,7 +149,7 @@ export default function AjudeSempre() {
         Os dois modais, na ordem em que se empilham e em que a decisão acontece:
 
           ModalDoacao(z-60)  quanto - nesta página, sem as abas de frequência
-          Checkout(z-70)     dados e Pix
+          Checkout(z-70)     dados e pagamento
 
         Nenhum dos dois precisa saber que está numa página mensal: quem diz
         isso é a intenção que chega no evento, e nesta rota ela vem travada
